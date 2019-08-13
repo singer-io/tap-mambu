@@ -1,0 +1,190 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "group_members": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "client_key": {
+                "type": ["null", "string"]
+              },
+              "roles": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "role_name": {
+                          "type": ["null", "string"]
+                        },
+                        "encoded_key": {
+                          "type": ["null", "string"]
+                        },
+                        "group_role_name_key": {
+                          "type": ["null", "string"]
+                        }                        
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "migration_event_key": {
+      "type": ["null", "string"]
+    },
+    "preferred_language": {
+      "type": ["null", "string"]
+    },
+    "addresses": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "country": {
+                "type": ["null", "string"]
+              },
+              "parent_key": {
+                "type": ["null", "string"]
+              },
+              "city": {
+                "type": ["null", "string"]
+              },
+              "latitude": {
+                "type": ["null", "number"]
+              },
+              "postcode": {
+                "type": ["null", "string"]
+              },
+              "index_in_list": {
+                "type": ["null", "integer"]
+              },
+              "encoded_key": {
+                "type": ["null", "string"]
+              },
+              "region": {
+                "type": ["null", "string"]
+              },
+              "line2": {
+                "type": ["null", "string"]
+              },
+              "line1": {
+                "type": ["null", "string"]
+              },
+              "longitude": {
+                "type": ["null", "number"]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "notes": {
+      "type": ["null", "string"]
+    },
+    "last_modified_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "home_phone": {
+      "type": ["null", "string"]
+    },
+    "creation_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "assigned_branch_key": {
+      "type": ["null", "string"]
+    },
+    "loan_cycle": {
+      "type": ["null", "string"]
+    },
+    "assigned_centre_key": {
+      "type": ["null", "string"]
+    },
+    "group_name": {
+      "type": ["null", "string"]
+    },
+    "email_address": {
+      "type": ["null", "string"]
+    },
+    "mobile_phone": {
+      "type": ["null", "string"]
+    },
+    "group_role_key": {
+      "type": ["null", "string"]
+    },
+    "encoded_key": {
+      "type": ["null", "string"]
+    },
+    "id": {
+      "type": ["null", "string"]
+    },
+    "assigned_user_key": {
+      "type": ["null", "string"]
+    },
+    "custom_field_sets": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "custom_field_set_id": {
+                "type": ["null", "string"]
+              },
+              "custom_field_values": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "custom_field_id": {
+                          "type": ["null", "string"]
+                        },
+                        "custom_field_value": {
+                          "type": ["null", "string"]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

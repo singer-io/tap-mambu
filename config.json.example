@@ -1,0 +1,7 @@
+{
+    "username": "YOUR_ACCESS_TOKEN",
+    "password": "YOUR_PASSWORD",
+    "base_url": "https://YOUR_INSTANCE<.sandbox>.mambu.com/api",
+    "start_date": "2019-01-01T00:00:00Z",
+    "user_agent": "tap-mambu <api_user_email@your_company.com>"
+}

@@ -1,0 +1,97 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "available_credit_amount": {
+      "type": ["null", "number"]
+    },
+    "amount": {
+      "type": ["null", "number"]
+    },
+    "notes": {
+      "type": ["null", "string"]
+    },
+    "last_modified_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "holder_key": {
+      "type": ["null", "integer"]
+    },
+    "consumed_credit_amount": {
+      "type": ["null", "number"]
+    },
+    "creation_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "approved_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "sub_state": {
+      "type": ["null", "integer"]
+    },
+    "encoded_key": {
+      "type": ["null", "integer"]
+    },
+    "expire_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "id": {
+      "type": ["null", "integer"]
+    },
+    "state": {
+      "type": ["null", "integer"]
+    },
+    "holder_type": {
+      "type": ["null", "integer"]
+    },
+    "start_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "custom_field_sets": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "custom_field_set_id": {
+                "type": ["null", "string"]
+              },
+              "custom_field_values": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "custom_field_id": {
+                          "type": ["null", "string"]
+                        },
+                        "custom_field_value": {
+                          "type": ["null", "string"]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

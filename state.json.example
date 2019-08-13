@@ -1,0 +1,19 @@
+{
+	"currently_syncing": "tasks",
+	"bookmarks": {
+		"branches": "2019-06-11T13:37:55Z",
+		"communications": "2019-06-19T19:48:42Z",
+		"centres": "2019-06-18T18:23:58Z",
+		"clients": "2019-06-20T00:52:46Z",
+		"credit_arrangements": "2019-06-19T19:48:44Z",
+		"custom_field_sets": "2019-06-11T13:37:55Z",
+		"deposits": "2019-06-19T19:48:42Z",
+		"cards": "2019-06-18T18:23:58Z",
+		"deposit_transactions": "2019-06-20T00:52:46Z",
+		"groups": "2019-06-19T19:48:44Z",
+		"loans": "2019-06-11T13:37:55Z",
+		"loan_transactions": "2019-06-19T19:48:42Z",
+		"tasks": "2019-06-18T18:23:58Z",
+		"users": "2019-06-20T00:52:46Z"
+	}
+}
