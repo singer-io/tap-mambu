@@ -13,7 +13,7 @@ This tap:
   - [Centres](https://api.mambu.com/?http#centres-getAll)
   - [Clients](https://api.mambu.com/?http#clients-getAll)
   - [Credit Arrangements](https://api.mambu.com/?http#creditarrangements-getAll)
-  - [Custom Field Sets](https://api.mambu.com/?http#customfieldsets-getAll)
+  - [Custom Field Sets (v1)](https://support.mambu.com/docs/custom-fields-api)
   - [Deposits](https://api.mambu.com/?http#DepositAccounts-getAll)
     - [Cards](https://api.mambu.com/?http#DepositAccounts-getAllCards)
   - [Deposit Transactions](https://api.mambu.com/?http#DepositTransactions-getAll)

@@ -191,5 +191,5 @@ class MambuClient(object):
         total_records = None
         if kwargs:
             if 'paginationDetails=ON' in kwargs['params']:
-                total_records = int(response.headers.get('items-total'))
+                total_records = int(response.headers.get('items-total', 0))
         return response.json(), total_records

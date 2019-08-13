@@ -1,3 +1,5 @@
+import json
+from datetime import datetime, timedelta
 import singer
 from singer import metrics, metadata, Transformer, utils
 from tap_mambu.transform import transform_json
@@ -160,8 +162,11 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
 
         # Squash params to query-string params
         querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
+        body_json = json.dumps(body, sort_keys=True)
         LOGGER.info('URL for {} ({}): {}/{}?{}'\
             .format(stream_name, api_method, client.base_url, path, querystring))
+        if body is not None:
+            LOGGER.info('body = {}'.format(body_json))
 
         # API request data
         data, total_records = client.request(
@@ -170,7 +175,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             version=api_version,
             params=querystring,
             endpoint=stream_name,
-            body=body)
+            body=body_json)
 
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
@@ -182,7 +187,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         ids = [] # Initialize the ids list
         transformed_data = [] # initialize the record list
         if data_key is None:
-            transformed_data = transform_json(data, endpoint)
+            transformed_data = transform_json(data, stream_name)
         elif data_key in data:
             transformed_data = transform_json(data, data_key)[data_key]
         # LOGGER.info('transformed_data = {}'.format(transformed_data))  # TESTING, comment out
