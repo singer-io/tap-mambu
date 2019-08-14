@@ -116,6 +116,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                   parent=None,
                   parent_id=None):
     bookmark_path = bookmark_path + [bookmark_field]
+    ids = [] # Initialize the ids list
 
     # Get the latest bookmark for the stream and set the last_integer/datetime
     last_datetime = None
@@ -162,11 +163,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
 
         # Squash params to query-string params
         querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
-        body_json = json.dumps(body, sort_keys=True)
         LOGGER.info('URL for {} ({}): {}/{}?{}'\
             .format(stream_name, api_method, client.base_url, path, querystring))
         if body is not None:
-            LOGGER.info('body = {}'.format(body_json))
+            LOGGER.info('body = {}'.format(body))
 
         # API request data
         data, total_records = client.request(
@@ -175,7 +175,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             version=api_version,
             params=querystring,
             endpoint=stream_name,
-            json=body_json)
+            json=body)
 
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
@@ -186,8 +186,8 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         #  This function converts camelCase to snake_case for fieldname keys.
         # The data_key may identify array/list of records below the <root> element
         # LOGGER.info('data = {}'.format(data)) # TESTING, comment out
-        ids = [] # Initialize the ids list
         transformed_data = [] # initialize the record list
+        ids = []
         if data_key is None:
             transformed_data = transform_json(data, stream_name)
         elif data_key in data:

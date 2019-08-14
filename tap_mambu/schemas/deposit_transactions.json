@@ -228,7 +228,7 @@
     },
     "value_date": {
       "type": ["null", "string"],
-      "format": "date"
+      "format": "date-time"
     },
     "creation_date": {
       "type": ["null", "string"],

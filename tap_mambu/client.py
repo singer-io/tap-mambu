@@ -145,7 +145,7 @@ class MambuClient(object):
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),
-                          max_tries=7,
+                          max_tries=20,
                           factor=3)
     def request(self, method, path=None, url=None, json=None, version='v2', **kwargs):
         if not self.__verified:
@@ -186,6 +186,7 @@ class MambuClient(object):
             raise Server5xxError()
 
         if response.status_code != 200:
+            LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code, response.text, response.reason))
             raise_for_error(response)
 
         # paginationDetails=ON returns items-total as a header parameter in the response headers
