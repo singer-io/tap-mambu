@@ -1,5 +1,4 @@
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import singer
 from singer import metrics, metadata, Transformer, utils
 from tap_mambu.transform import transform_json
@@ -137,15 +136,11 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Increase the "offset" by the "limit" for each batch.
     # Continue until the "offset" exceeds the total_records.
     offset = 0 # Starting offset value for each batch API call
-    limit = 100 # Batch size; Number of records per API call
+    limit = 500 # Batch size; Number of records per API call
     total_records = limit # Initialize total; set to actual total on first API call
 
     while offset <= total_records:
         params = {
-            # Details Level: https://api.mambu.com/?http#detail-level
-            # FULL includes custom fields
-            'detailsLevel': 'FULL',
-            'paginationDetails': 'ON',
             'offset': offset,
             'limit': limit,
             **static_params # adds in endpoint specific, sort, filter params
@@ -163,8 +158,8 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
 
         # Squash params to query-string params
         querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
-        LOGGER.info('URL for {} ({}): {}/{}?{}'\
-            .format(stream_name, api_method, client.base_url, path, querystring))
+        LOGGER.info('URL for {} ({}, {}): {}/{}?{}'\
+            .format(stream_name, api_method, api_version, client.base_url, path, querystring))
         if body is not None:
             LOGGER.info('body = {}'.format(body))
 
@@ -223,6 +218,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                            stream_name,
                            max_bookmark_value)
 
+        # set total_records for pagination
+        if total_records is None or total_records == 0:
+            total_records = record_count  # OR should this be offset + record_count?
+
         # to_rec: to record; ending record for the batch
         to_rec = offset + limit
         if to_rec > total_records:
@@ -251,7 +250,7 @@ def sync_stream(client, #pylint: disable=too-many-branches
                 id_path=None,
                 parent_id=None):
     if not bookmark_path:
-        bookmark_path = [stream_name] 
+        bookmark_path = [stream_name]
     if not id_path:
         path = format(endpoint_config.get('path'))
     else:
@@ -352,11 +351,14 @@ def sync(client, config, catalog, state):
 
     # Get datetimes for endpoint parameters
     communications_dttm_str = get_bookmark(state, 'communications', start_date)
-    communications_dt_str = datetime.strptime(communications_dttm_str, "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
+    communications_dt_str = datetime.strptime(communications_dttm_str, "%Y-%m-%dT%H:%M:%SZ")\
+        .strftime('%Y-%m-%d')
     deposit_transactions_dttm_str = get_bookmark(state, 'deposit_transaction', start_date)
-    deposit_transactions_dt_str = datetime.strptime(deposit_transactions_dttm_str, "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
+    deposit_transactions_dt_str = datetime.strptime(deposit_transactions_dttm_str, \
+        "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transaction', start_date)
-    loan_transactions_dt_str = datetime.strptime(loan_transactions_dttm_str, "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
+    loan_transactions_dt_str = datetime.strptime(loan_transactions_dttm_str, \
+        "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
 
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))
@@ -386,13 +388,16 @@ def sync(client, config, catalog, state):
     #   children: A collection of child endpoints (where the endpoint path includes the parent id)
     #   parent: On each of the children, the singular stream name for parent element
     #       NOT NEEDED FOR THIS INTEGRATION (The Children all include a reference to the Parent)
+    #   Details Level: https://api.mambu.com/?http#detail-level, FULL includes custom fields
     endpoints = {
         'branches': {
             'path': 'branches',
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -402,7 +407,10 @@ def sync(client, config, catalog, state):
             'path': 'communications/messages:search',
             'api_version': 'v2',
             'api_method': 'POST',
-            'params': {},
+            'params': {
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
+            },
             'body': [
                 {
                     'field': 'state',
@@ -424,7 +432,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -435,7 +445,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -446,7 +458,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'creationDate:ASC'
+                'sortBy': 'creationDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -464,7 +478,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -475,7 +491,10 @@ def sync(client, config, catalog, state):
                     'path': 'deposits/{}/cards',
                     'api_version': 'v2',
                     'api_method': 'GET',
-                    'params': {},
+                    'params': {
+                        'detailsLevel': 'FULL',
+                        'paginationDetails': 'ON'
+                    },
                     'id_fields': ['deposit_id', 'reference_token'],
                     'parent': 'deposit'
                 }
@@ -485,18 +504,21 @@ def sync(client, config, catalog, state):
             'path': 'deposits/transactions:search',
             'api_version': 'v2',
             'api_method': 'POST',
-            'params': {},
+            'params': {
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
+            },
             'body': {
                 "sortingCriteria": {
-                  "field": "creationDate",
-                  "order": "ASC"
+                    "field": "creationDate",
+                    "order": "ASC"
                 },
                 "filterCriteria": [
-                  {
-                    "field": "creationDate",
-                    "operator": "AFTER",
-                    "value": deposit_transactions_dt_str
-                  }
+                    {
+                        "field": "creationDate",
+                        "operator": "AFTER",
+                        "value": deposit_transactions_dt_str
+                    }
                 ]
             },
             'bookmark_field': 'creation_date',
@@ -508,7 +530,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -519,7 +543,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -529,18 +555,21 @@ def sync(client, config, catalog, state):
             'path': 'loans/transactions:search',
             'api_version': 'v2',
             'api_method': 'POST',
-            'params': {},
+            'params': {
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
+            },
             'body': {
                 "sortingCriteria": {
-                  "field": "creationDate",
-                  "order": "ASC"
+                    "field": "creationDate",
+                    "order": "ASC"
                 },
                 "filterCriteria": [
-                  {
-                    "field": "creationDate",
-                    "operator": "AFTER",
-                    "value": loan_transactions_dt_str
-                  }
+                    {
+                        "field": "creationDate",
+                        "operator": "AFTER",
+                        "value": loan_transactions_dt_str
+                    }
                 ]
             },
             'bookmark_field': 'creation_date',
@@ -552,7 +581,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -563,7 +594,9 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'GET',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC'
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',

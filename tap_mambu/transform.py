@@ -39,12 +39,12 @@ def remove_custom_nodes(this_json):
     if isinstance(this_json, list):
         return [remove_custom_nodes(vv) for vv in this_json]
     return {kk: remove_custom_nodes(vv) for kk, vv in this_json.items() \
-        if not(kk[:1] == '_')}
+        if not kk[:1] == '_'}
 
 
 # Convert custom fields and sets
 # Generalize/Abstract custom fields to key/value pairs
-def convert_custom_fields(this_json):    
+def convert_custom_fields(this_json):
     new_json = this_json
     i = 0
     for record in this_json:

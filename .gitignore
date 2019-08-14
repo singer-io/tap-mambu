@@ -15,5 +15,5 @@ dist/
 __pycache__/
 venv/
 build/
-
 tap_mambu/.vscode/settings.json
+*.ipynb

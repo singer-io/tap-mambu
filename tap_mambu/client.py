@@ -1,8 +1,7 @@
-import json
 import backoff
 import requests
 from requests.exceptions import ConnectionError
-from singer import metrics, utils
+from singer import metrics
 import singer
 
 LOGGER = singer.get_logger()
@@ -72,6 +71,8 @@ def get_exception_for_error_code(error_code):
     return ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError)
 
 def raise_for_error(response):
+    LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code,\
+        response.text, response.reason))
     try:
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
@@ -145,11 +146,14 @@ class MambuClient(object):
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),
-                          max_tries=20,
+                          max_tries=7,
                           factor=3)
-    def request(self, method, path=None, url=None, json=None, version='v2', **kwargs):
+    def request(self, method, path=None, url=None, json=None, version=None, **kwargs):
         if not self.__verified:
             self.__verified = self.check_access()
+
+        if not version:
+            version = 'v2'
 
         if not url and path:
             url = '{}/{}'.format(self.base_url, path)
@@ -162,7 +166,7 @@ class MambuClient(object):
 
         if 'headers' not in kwargs:
             kwargs['headers'] = {}
-        
+
         # Version represents API version (e.g. v2): https://api.mambu.com/?http#versioning
         kwargs['headers']['Accept'] = 'application/vnd.mambu.{}+json'.format(version)
 
@@ -186,7 +190,6 @@ class MambuClient(object):
             raise Server5xxError()
 
         if response.status_code != 200:
-            LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code, response.text, response.reason))
             raise_for_error(response)
 
         # paginationDetails=ON returns items-total as a header parameter in the response headers
