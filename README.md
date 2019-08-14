@@ -54,7 +54,7 @@ This tap:
 
     ```json
     {
-        "username": "YOUR_ACCESS_TOKEN",
+        "username": "YOUR_USERNAME",
         "password": "YOUR_PASSWORD",
         "base_url": "https://YOUR_INSTANCE<.sandbox>.mambu.com",
         "start_date": "2019-01-01T00:00:00Z",
