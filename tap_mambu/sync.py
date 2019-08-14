@@ -25,6 +25,12 @@ def write_record(stream_name, record, time_extracted):
         raise err
 
 
+def transform_datetime(this_dttm):
+    with Transformer() as transformer:
+        new_dttm = transformer._transform_datetime(this_dttm)
+    return new_dttm
+
+
 def process_records(catalog, #pylint: disable=too-many-branches
                     stream_name,
                     records,
@@ -65,8 +71,8 @@ def process_records(catalog, #pylint: disable=too-many-branches
                             write_record(stream_name, record, time_extracted=time_extracted)
                             counter.increment()
                     elif bookmark_type == 'datetime':
-                        last_dttm = transformer._transform_datetime(last_datetime)
-                        bookmark_dttm = transformer._transform_datetime(record[bookmark_field])
+                        last_dttm = transform_datetime(last_datetime)
+                        bookmark_dttm = transform_datetime(record[bookmark_field])
                         # Keep only records whose bookmark is after the last_datetime
                         if bookmark_dttm >= last_dttm:
                             write_record(stream_name, record, time_extracted=time_extracted)
@@ -351,14 +357,11 @@ def sync(client, config, catalog, state):
 
     # Get datetimes for endpoint parameters
     communications_dttm_str = get_bookmark(state, 'communications', start_date)
-    communications_dt_str = datetime.strptime(communications_dttm_str, "%Y-%m-%dT%H:%M:%SZ")\
-        .strftime('%Y-%m-%d')
+    communications_dt_str = transform_datetime(communications_dttm_str)[:10]
     deposit_transactions_dttm_str = get_bookmark(state, 'deposit_transaction', start_date)
-    deposit_transactions_dt_str = datetime.strptime(deposit_transactions_dttm_str, \
-        "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
+    deposit_transactions_dt_str = transform_datetime(deposit_transactions_dttm_str)[:10]
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transaction', start_date)
-    loan_transactions_dt_str = datetime.strptime(loan_transactions_dttm_str, \
-        "%Y-%m-%dT%H:%M:%SZ").strftime('%Y-%m-%d')
+    loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
 
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))
