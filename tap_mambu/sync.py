@@ -175,10 +175,12 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             version=api_version,
             params=querystring,
             endpoint=stream_name,
-            body=body_json)
+            json=body_json)
 
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
+        if not data or data is None or data == []:
+            break # No data results
 
         # Transform data with transform_json from transform.py
         #  This function converts camelCase to snake_case for fieldname keys.
@@ -249,11 +251,12 @@ def sync_stream(client, #pylint: disable=too-many-branches
                 id_path=None,
                 parent_id=None):
     if not bookmark_path:
-        bookmark_path = [stream_name]
+        bookmark_path = [stream_name] 
     if not id_path:
-        id_path = []
+        path = format(endpoint_config.get('path'))
+    else:
+        path = endpoint_config.get('path').format(str(id_path))
 
-    path = endpoint_config.get('path').format(*id_path)
     stream_ids = sync_endpoint(
         client=client,
         catalog=catalog,
@@ -289,8 +292,8 @@ def sync_stream(client, #pylint: disable=too-many-branches
             if should_stream:
                 LOGGER.info('START Syncing: {}'.format(child_stream_name))
                 for _ids in stream_ids:
-                    _id = _ids['id']
-                    parent_id = _ids['id']
+                    parent_key = list(_ids.keys())[0]
+                    _id = _ids[parent_key]
 
                     sync_stream(
                         client=client,
@@ -300,8 +303,8 @@ def sync_stream(client, #pylint: disable=too-many-branches
                         id_bag=id_bag,
                         stream_name=child_stream_name,
                         endpoint_config=child_endpoint_config,
-                        bookmark_path=bookmark_path, # + [_id, child_stream_name],
-                        id_path=id_path, # + [_id],
+                        bookmark_path=bookmark_path,
+                        id_path=_id,
                         parent_id=_id)
                 LOGGER.info('FINISHED Syncing: {}'.format(child_stream_name))
 

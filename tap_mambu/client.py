@@ -1,3 +1,4 @@
+import json
 import backoff
 import requests
 from requests.exceptions import ConnectionError
@@ -144,9 +145,9 @@ class MambuClient(object):
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),
-                          max_tries=5,
-                          factor=2)
-    def request(self, method, path=None, url=None, body=None, version='v2', **kwargs):
+                          max_tries=7,
+                          factor=3)
+    def request(self, method, path=None, url=None, json=None, version='v2', **kwargs):
         if not self.__verified:
             self.__verified = self.check_access()
 
@@ -177,6 +178,7 @@ class MambuClient(object):
                 url=url,
                 # Basic Authentication: https://api.mambu.com/?http#authentication
                 auth=(self.__username, self.__password),
+                json=json,
                 **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 

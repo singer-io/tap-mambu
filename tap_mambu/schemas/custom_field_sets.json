@@ -54,7 +54,7 @@
                 "type": ["null", "string"]
               },
               "value_length": {
-                "type": ["null", "integer"]
+                "type": ["null", "string"]
               },
               "is_default": {
                 "type": ["null", "boolean"]
