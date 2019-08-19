@@ -283,7 +283,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         # Pagination: increment the offset by the limit (batch-size)
         offset = offset + limit
 
-    # Return the list of ids to the stream, in case this is a parent stream with children.
+    # Return total_records across all batches
     return total_records
 
 
@@ -362,6 +362,7 @@ def sync(client, config, catalog, state):
     #   children: A collection of child endpoints (where the endpoint path includes the parent id)
     #   parent: On each of the children, the singular stream name for parent element
     #   Details Level: https://api.mambu.com/?http#detail-level, FULL includes custom fields
+
     endpoints = {
         'branches': {
             'path': 'branches',
