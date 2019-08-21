@@ -29,13 +29,15 @@
                 "type": ["null", "string"]
               },
               "amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "trigger": {
                 "type": ["null", "string"]
               },
               "tax_amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "predefined_fee_key": {
                 "type": ["null", "string"]
@@ -56,31 +58,40 @@
       "additionalProperties": false,
       "properties": {
         "fees_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_fees_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "fraction_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "funds_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -89,22 +100,28 @@
       "additionalProperties": false,
       "properties": {
         "tax_interest_from_arrears_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "tax_on_fees_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "tax_rate": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "tax_on_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "tax_on_penalty_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "deferred_tax_on_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -129,18 +146,22 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             },
             "index_interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             }
           }
         },
         "principal_payment_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "principal_payment_percentage": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -168,10 +189,12 @@
             "additionalProperties": false,
             "properties": {
               "tax_on_amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "custom_payment_amount_type": {
                 "type": ["null", "string"]
@@ -197,7 +220,8 @@
       "type": ["null", "string"]
     },
     "amount": {
-      "type": ["null", "number"]
+      "type": ["null", "number"],
+      "multipleOf": 1e-08
     },
     "centre_key": {
       "type": ["null", "string"]
@@ -220,7 +244,8 @@
       "type": ["null", "string"]
     },
     "original_amount": {
-      "type": ["null", "number"]
+      "type": ["null", "number"],
+      "multipleOf": 1e-08
     },
 
     "linked_loan_transaction_key": {
@@ -231,22 +256,28 @@
       "additionalProperties": false,
       "properties": {
         "redraw_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "principal_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "total_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "expected_principal_redraw": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "advance_position": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "arrears_position": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },

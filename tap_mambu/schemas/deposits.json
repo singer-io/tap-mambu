@@ -35,7 +35,8 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             },
             "interest_rate_tiers": {
               "anyOf": [
@@ -46,10 +47,12 @@
                     "additionalProperties": false,
                     "properties": {
                       "ending_balance": {
-                        "type": ["null", "number"]
+                        "type": ["null", "number"],
+                        "multipleOf": 1e-08
                       },
                       "interest_rate": {
-                        "type": ["null", "number"]
+                        "type": ["null", "number"],
+                        "multipleOf": 1e-08
                       },
                       "encoded_key": {
                         "type": ["null", "string"]
@@ -117,31 +120,40 @@
       "additionalProperties": false,
       "properties": {
         "overdraft_interest_due": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "total_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "locked_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "hold_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_interest_due": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "fees_due": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "available_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -166,7 +178,8 @@
           "type": ["null", "boolean"]
         },
         "overdraft_limit": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_expiry_date": {
           "type": ["null", "string"],
@@ -193,10 +206,12 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             },
             "interest_spread": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             },
             "interest_rate_review_unit": {
               "type": ["null", "string"]
@@ -216,10 +231,12 @@
                     "additionalProperties": false,
                     "properties": {
                       "ending_balance": {
-                        "type": ["null", "number"]
+                        "type": ["null", "number"],
+                        "multipleOf": 1e-08
                       },
                       "interest_rate": {
-                        "type": ["null", "number"]
+                        "type": ["null", "number"],
+                        "multipleOf": 1e-08
                       },
                       "encoded_key": {
                         "type": ["null", "string"]
@@ -286,13 +303,16 @@
       "additionalProperties": false,
       "properties": {
         "overdraft_interest_accrued": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "interest_accrued": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_interest_accrued": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -314,13 +334,16 @@
       "additionalProperties": false,
       "properties": {
         "recommended_deposit_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "target_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "max_withdrawal_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },

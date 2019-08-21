@@ -29,13 +29,15 @@
                 "type": ["null", "string"]
               },
               "amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "trigger": {
                 "type": ["null", "string"]
               },
               "tax_amount": {
-                "type": ["null", "number"]
+                "type": ["null", "number"],
+                "multipleOf": 1e-08
               },
               "predefined_fee_key": {
                 "type": ["null", "string"]
@@ -56,31 +58,40 @@
       "additionalProperties": false,
       "properties": {
         "fees_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_fees_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "fraction_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "overdraft_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "technical_overdraft_interest_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "funds_amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -92,7 +103,8 @@
           "type": ["null", "string"]
         },
         "amount": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         },
         "advice": {
           "type": ["null", "boolean"]
@@ -144,7 +156,8 @@
       "additionalProperties": false,
       "properties": {
         "tax_rate": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
@@ -169,7 +182,8 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             }
           }
         },
@@ -178,7 +192,8 @@
           "additionalProperties": false,
           "properties": {
             "overdraft_limit": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             }
           }
         },
@@ -187,10 +202,12 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             },
             "index_interest_rate": {
-              "type": ["null", "number"]
+              "type": ["null", "number"],
+              "multipleOf": 1e-08
             }
           }
         }
@@ -218,7 +235,8 @@
       "type": ["null", "string"]
     },
     "amount": {
-      "type": ["null", "number"]
+      "type": ["null", "number"],
+      "multipleOf": 1e-08
     },
     "centre_key": {
       "type": ["null", "string"]
@@ -248,7 +266,8 @@
       "additionalProperties": false,
       "properties": {
         "total_balance": {
-          "type": ["null", "number"]
+          "type": ["null", "number"],
+          "multipleOf": 1e-08
         }
       }
     },
