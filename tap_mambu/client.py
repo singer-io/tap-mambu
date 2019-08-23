@@ -99,10 +99,12 @@ class MambuClient(object):
     def __init__(self,
                  username,
                  password,
-                 base_url,
+                 subdomain,
                  user_agent=None):
         self.__username = username
         self.__password = password
+        self.__subdomain = subdomain
+        base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
         self.__user_agent = user_agent
         self.__session = requests.Session()
@@ -122,8 +124,8 @@ class MambuClient(object):
     def check_access(self):
         if self.__username is None or self.__password is None:
             raise Exception('Error: Missing username or password in config.json.')
-        if self.base_url is None:
-            raise Exception('Error: Missing base_url in cofig.json.')
+        if self.__subdomain is None:
+            raise Exception('Error: Missing subdomain in cofig.json.')
         headers = {}
         # Endpoint: simple API call to return a single record (org settings) to test access
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings

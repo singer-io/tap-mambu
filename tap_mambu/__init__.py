@@ -14,7 +14,7 @@ LOGGER = singer.get_logger()
 REQUIRED_CONFIG_KEYS = [
     'username',
     'password',
-    'base_url',
+    'subdomain',
     'start_date',
     'user_agent'
 ]
@@ -34,7 +34,7 @@ def main():
 
     with MambuClient(parsed_args.config['username'],
                      parsed_args.config['password'],
-                     parsed_args.config['base_url'],
+                     parsed_args.config['subdomain'],
                      parsed_args.config['user_agent']) as client:
 
         state = {}
