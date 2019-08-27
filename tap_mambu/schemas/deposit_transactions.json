@@ -277,6 +277,47 @@
     },
     "currency_code": {
       "type": ["null", "string"]
+    },
+    "custom_field_sets": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "custom_field_set_id": {
+                "type": ["null", "string"]
+              },
+              "custom_field_values": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "custom_field_id": {
+                          "type": ["null", "string"]
+                        },
+                        "custom_field_value": {
+                          "type": ["null", "string"]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }
