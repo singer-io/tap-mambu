@@ -24,7 +24,7 @@
               },
               "latitude": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "postcode": {
                 "type": ["null", "string"]
@@ -46,7 +46,7 @@
               },
               "longitude": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               }
             }
           }

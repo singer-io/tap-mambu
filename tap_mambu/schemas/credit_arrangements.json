@@ -4,11 +4,11 @@
   "properties": {
     "available_credit_amount": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "amount": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "notes": {
       "type": ["null", "string"]
@@ -22,7 +22,7 @@
     },
     "consumed_credit_amount": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "creation_date": {
       "type": ["null", "string"],

@@ -78,7 +78,7 @@
                   },
                   "amount": {
                     "type": ["null", "number"],
-                    "multipleOf": 1e-08
+                    "multipleOf": 1e-10
                   }
                 }
               }
@@ -119,11 +119,11 @@
         },
         "interest_spread": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_calculation_method": {
           "type": ["null", "string"]
@@ -161,7 +161,7 @@
             "properties": {
               "amount": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
@@ -214,11 +214,11 @@
     },
     "accrued_interest": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "accrued_penalty": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "creation_date": {
       "type": ["null", "string"],
@@ -240,7 +240,7 @@
               },
               "amount": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "disbursement_details": {
                 "type": ["null", "object"],
@@ -272,7 +272,7 @@
     },
     "tax_rate": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "last_tax_rate_review_date": {
       "type": ["null", "string"],
@@ -280,7 +280,7 @@
     },
     "interest_from_arrears_accrued": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "schedule_settings": {
       "type": ["null", "object"],
@@ -291,7 +291,7 @@
         },
         "periodic_payment": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "repayment_schedule_method": {
           "type": ["null", "string"]
@@ -312,7 +312,7 @@
                   },
                   "amount": {
                     "type": ["null", "number"],
-                    "multipleOf": 1e-08
+                    "multipleOf": 1e-10
                   }
                 }
               }
@@ -386,11 +386,11 @@
             "properties": {
               "amount": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "interest_commission": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
@@ -412,7 +412,7 @@
               },
               "share_percentage": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               }
             }
           }
@@ -447,67 +447,67 @@
       "properties": {
         "interest_from_arrears_paid": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_due": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_paid": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "penalty_due": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "fees_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "penalty_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "redraw_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_from_arrears_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_balance": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_due": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "penalty_paid": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "fees_paid": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_from_arrears_due": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "fees_due": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "interest_paid": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         }
       }
     },
@@ -516,7 +516,7 @@
     },
     "interest_commission": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "encoded_key": {
       "type": ["null", "string"]
@@ -534,7 +534,7 @@
         },
         "penalty_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         }
       }
     },
@@ -557,18 +557,18 @@
         },
         "amount": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_floor_value": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_payment_method": {
           "type": ["null", "string"]
         },
         "percentage": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "include_fees_in_floor_amount": {
           "type": ["null", "boolean"]
@@ -578,11 +578,11 @@
         },
         "total_due_amount_floor": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         },
         "principal_ceiling_value": {
           "type": ["null", "number"],
-          "multipleOf": 1e-08
+          "multipleOf": 1e-10
         }
       }
     },
@@ -592,7 +592,7 @@
     },
     "loan_amount": {
       "type": ["null", "number"],
-      "multipleOf": 1e-08
+      "multipleOf": 1e-10
     },
     "closed_date": {
       "type": ["null", "string"],
@@ -614,7 +614,7 @@
             "properties": {
               "amount": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-08
+                "multipleOf": 1e-10
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
