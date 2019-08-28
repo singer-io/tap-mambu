@@ -119,11 +119,11 @@
         },
         "interest_spread": {
           "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "multipleOf": 1e-20
         },
         "interest_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "multipleOf": 1e-20
         },
         "interest_calculation_method": {
           "type": ["null", "string"]
@@ -272,7 +272,7 @@
     },
     "tax_rate": {
       "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "multipleOf": 1e-20
     },
     "last_tax_rate_review_date": {
       "type": ["null", "string"],
@@ -534,7 +534,7 @@
         },
         "penalty_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "multipleOf": 1e-20
         }
       }
     },

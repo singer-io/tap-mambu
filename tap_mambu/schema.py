@@ -10,6 +10,10 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'cards': {
+        'key_properties': ['deposit_id', 'reference_token'],
+        'replication_method': 'FULL_TABLE'
+    },
     'communications': {
         'key_properties': ['encoded_key'],
         'replication_method': 'INCREMENTAL',
@@ -34,14 +38,15 @@ STREAMS = {
         'key_properties': ['id'],
         'replication_method': 'FULL_TABLE'
     },
-    'deposits': {
+    'deposit_accounts': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
-    'cards': {
-        'key_properties': ['deposit_id', 'reference_token'],
-        'replication_method': 'FULL_TABLE'
+    'deposit_products': {
+        'key_properties': ['id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_modified_date']
     },
     'deposit_transactions': {
         'key_properties': ['encoded_key'],
@@ -53,7 +58,7 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
-    'loans': {
+    'loan_accounts': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
@@ -67,11 +72,6 @@ STREAMS = {
         'key_properties': ['encoded_key'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['creation_date']
-    },
-    'savings_products': {
-        'key_properties': ['id'],
-        'replication_method': 'INCREMENTAL',
-        'replication_keys': ['last_modified_date']
     },
     'tasks': {
         'key_properties': ['id'],

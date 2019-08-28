@@ -14,14 +14,14 @@ This tap:
   - [Clients](https://api.mambu.com/?http#clients-getAll)
   - [Credit Arrangements](https://api.mambu.com/?http#creditarrangements-getAll)
   - [Custom Field Sets (v1)](https://support.mambu.com/docs/custom-fields-api)
-  - [Deposits](https://api.mambu.com/?http#DepositAccounts-getAll)
+  - [Deposit Accounts](https://api.mambu.com/?http#DepositAccounts-getAll)
     - [Cards](https://api.mambu.com/?http#DepositAccounts-getAllCards)
+  - [Deposit Products (v1)](https://support.mambu.com/docs/savings-products-api)
   - [Deposit Transactions](https://api.mambu.com/?http#DepositTransactions-getAll)
   - [Groups](https://api.mambu.com/?http#groups-getAll)
-  - [Loans](https://api.mambu.com/?http#LoanAccounts-getAll)
+  - [Loan Accounts](https://api.mambu.com/?http#LoanAccounts-getAll)
   - [Loan Products (v1)](https://support.mambu.com/docs/loan-products-api)
   - [Loan Transactions](https://api.mambu.com/?http#LoanTransactions-getAll)
-  - [Savings Products (v1)](https://support.mambu.com/docs/savings-products-api)
   - [Tasks](https://api.mambu.com/?http#tasks-getAll)
   - [Users](https://api.mambu.com/?http#users-getAll)
 - Outputs the schema for each resource
@@ -80,7 +80,7 @@ This tap:
 - Replication strategy: Full table
 - Transformations: Fields camelCase to snake_case
 
-[**deposits (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAll)
+[**deposit_accounts (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAll)
 - Endpoint: https://instance.sandbox.mambu.com/api/deposits
 - Primary keys: id
 - Foreign keys: assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), assigned_user_key (users), assigned_centre_key (centres), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
@@ -94,6 +94,14 @@ This tap:
 - Primary keys: deposit_id, reference_token
 - Foreign keys: deposit_id (deposits)
 - Replication strategy: Full table (ALL for parent deposit_id)
+- Transformations: Fields camelCase to snake_case
+
+[**deposit_products (GET v1)**](https://support.mambu.com/docs/savings-products-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/savingsproducts/DSP
+- Primary keys: id
+- Foreign keys: None
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
 [**deposit_transactions (POST v2)**](https://api.mambu.com/?http#DepositTransactions-getAll)
@@ -115,7 +123,7 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**loans (GET v2)**](https://api.mambu.com/?http#LoanAccounts-getAll)
+[**loan_accounts (GET v2)**](https://api.mambu.com/?http#LoanAccounts-getAll)
 - Endpoint: https://instance.sandbox.mambu.com/api/loans
 - Primary keys: id
 - Foreign keys: deposit_account_key (deposits), target_deposit_account_key (deposits), assig, ned_user_key (users), assigned_centre_key (centres), assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
@@ -140,14 +148,6 @@ This tap:
   - Bookmark query field: creationDate
   - Sort by: creationDate:ASC
   - Bookmark: creation_date (date-time)
-- Transformations: Fields camelCase to snake_case
-
-[**savings_products (GET v1)**](https://support.mambu.com/docs/savings-products-api)
-- Endpoint: https://instance.sandbox.mambu.com/api/savingsproducts/DSP
-- Primary keys: id
-- Foreign keys: None
-- Replication strategy: Incremental (query all, filter results)
-  - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
 [**tasks (GET v2)**](https://api.mambu.com/?http#tasks-getAll)
@@ -213,19 +213,21 @@ This tap:
     {
         "currently_syncing": "tasks",
         "bookmarks": {
-            "branches": "2019-06-11T13:37:55Z",
+            "branches": "2019-06-11T13:37:51Z",
             "communications": "2019-06-19T19:48:42Z",
-            "centres": "2019-06-18T18:23:58Z",
-            "clients": "2019-06-20T00:52:46Z",
-            "credit_arrangements": "2019-06-19T19:48:44Z",
-            "custom_field_sets": "2019-06-11T13:37:55Z",
-            "deposits": "2019-06-19T19:48:42Z",
+            "centres": "2019-06-18T18:23:53Z",
+            "clients": "2019-06-20T00:52:44Z",
+            "credit_arrangements": "2019-06-19T19:48:45Z",
+            "custom_field_sets": "2019-06-11T13:37:56Z",
+            "deposit_accounts": "2019-06-19T19:48:47Z",
             "cards": "2019-06-18T18:23:58Z",
-            "deposit_transactions": "2019-06-20T00:52:46Z",
-            "groups": "2019-06-19T19:48:44Z",
-            "loans": "2019-06-11T13:37:55Z",
-            "loan_transactions": "2019-06-19T19:48:42Z",
-            "tasks": "2019-06-18T18:23:58Z",
+            "deposit_products": "2019-06-20T00:52:49Z",
+            "deposit_transactions": "2019-06-20T00:52:40Z",
+            "groups": "2019-06-19T19:48:41Z",
+            "loan_accounts": "2019-06-11T13:37:52Z",
+            "loan_products": "2019-06-20T00:52:43Z",
+            "loan_transactions": "2019-06-19T19:48:44Z",
+            "tasks": "2019-06-18T18:23:55Z",
             "users": "2019-06-20T00:52:46Z"
         }
     }
@@ -292,17 +294,17 @@ This tap:
     | clients              | 102     | 1       |
     | loan_products        | 2       | 1       |
     | branches             | 2       | 1       |
-    | savings_products     | 1       | 1       |
+    | deposit_products     | 1       | 1       |
     | centres              | 2       | 1       |
     | users                | 3       | 1       |
     | credit_arrangements  | 2       | 1       |
     | communications       | 1       | 1       |
-    | deposits             | 2       | 1       |
+    | deposit_accounts     | 2       | 1       |
     | custom_field_sets    | 19      | 1       |
     | loan_transactions    | 6       | 1       |
     | groups               | 2       | 1       |
     | tasks                | 7       | 1       |
-    | loans                | 6       | 1       |
+    | loan_accounts        | 6       | 1       |
     +----------------------+---------+---------+
     ```
 ---

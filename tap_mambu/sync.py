@@ -452,7 +452,7 @@ def sync(client, config, catalog, state):
             'params': {},
             'id_fields': ['id']
         },
-        'deposits': {
+        'deposit_accounts': {
             'path': 'deposits',
             'api_version': 'v2',
             'api_method': 'GET',
@@ -478,6 +478,15 @@ def sync(client, config, catalog, state):
                     'parent': 'deposit'
                 }
             }
+        },
+        'deposit_products': {
+            'path': 'savingsproducts/DSP',
+            'api_version': 'v1',
+            'api_method': 'GET',
+            'params': {},
+            'bookmark_field': 'last_modified_date',
+            'bookmark_type': 'datetime',
+            'id_fields': ['id']
         },
         'deposit_transactions': {
             'path': 'deposits/transactions:search',
@@ -517,7 +526,7 @@ def sync(client, config, catalog, state):
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
-        'loans': {
+        'loan_accounts': {
             'path': 'loans',
             'api_version': 'v2',
             'api_method': 'GET',
@@ -563,15 +572,6 @@ def sync(client, config, catalog, state):
             'bookmark_field': 'creation_date',
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
-        },
-        'savings_products': {
-            'path': 'savingsproducts/DSP',
-            'api_version': 'v1',
-            'api_method': 'GET',
-            'params': {},
-            'bookmark_field': 'last_modified_date',
-            'bookmark_type': 'datetime',
-            'id_fields': ['id']
         },
         'tasks': {
             'path': 'tasks',
