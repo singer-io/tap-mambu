@@ -188,6 +188,11 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         # The data_key may identify array/list of records below the <root> element
         # LOGGER.info('data = {}'.format(data)) # TESTING, comment out
         transformed_data = [] # initialize the record list
+        data_list = []
+        # If a single record dictionary, append to a list[]
+        if isinstance(data, dict):
+            data_list.append(data)
+            data = data_list
         if data_key is None:
             transformed_data = transform_json(data, stream_name)
         elif data_key in data:
