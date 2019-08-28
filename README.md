@@ -277,30 +277,32 @@ This tap:
     Check tap resulted in the following:
     ```bash
     The output is valid.
-    It contained 194 messages for 14 streams.
+    It contained 228 messages for 16 streams.
 
-        14 schema messages
-        144 record messages
-        36 state messages
+        17 schema messages
+        167 record messages
+        44 state messages
 
     Details by stream:
     +----------------------+---------+---------+
     | stream               | records | schemas |
     +----------------------+---------+---------+
-    | tasks                | 6       | 1       |
-    | communications       | 1       | 1       |
-    | users                | 2       | 1       |
-    | deposits             | 1       | 1       |
-    | custom_field_sets    | 18      | 1       |
-    | credit_arrangements  | 2       | 1       |
-    | groups               | 2       | 1       |
-    | clients              | 100     | 1       |
-    | centres              | 2       | 1       |
-    | loans                | 0       | 1       |
-    | loan_transactions    | 0       | 1       |
-    | cards                | 0       | 1       |
-    | deposit_transactions | 8       | 1       |
+    | deposit_transactions | 9       | 1       |
+    | cards                | 1       | 2       |
+    | clients              | 102     | 1       |
+    | loan_products        | 2       | 1       |
     | branches             | 2       | 1       |
+    | savings_products     | 1       | 1       |
+    | centres              | 2       | 1       |
+    | users                | 3       | 1       |
+    | credit_arrangements  | 2       | 1       |
+    | communications       | 1       | 1       |
+    | deposits             | 2       | 1       |
+    | custom_field_sets    | 19      | 1       |
+    | loan_transactions    | 6       | 1       |
+    | groups               | 2       | 1       |
+    | tasks                | 7       | 1       |
+    | loans                | 6       | 1       |
     +----------------------+---------+---------+
     ```
 ---
