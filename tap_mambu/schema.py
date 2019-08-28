@@ -58,10 +58,20 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'loan_products': {
+        'key_properties': ['id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_modified_date']
+    },
     'loan_transactions': {
         'key_properties': ['encoded_key'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['creation_date']
+    },
+    'savings_products': {
+        'key_properties': ['id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_modified_date']
     },
     'tasks': {
         'key_properties': ['id'],

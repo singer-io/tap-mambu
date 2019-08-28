@@ -525,6 +525,15 @@ def sync(client, config, catalog, state):
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
+        'loan_products': {
+            'path': 'loanproducts',
+            'api_version': 'v1',
+            'api_method': 'GET',
+            'params': {},
+            'bookmark_field': 'last_modified_date',
+            'bookmark_type': 'datetime',
+            'id_fields': ['id']
+        },
         'loan_transactions': {
             'path': 'loans/transactions:search',
             'api_version': 'v2',
@@ -549,6 +558,15 @@ def sync(client, config, catalog, state):
             'bookmark_field': 'creation_date',
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
+        },
+        'savings_products': {
+            'path': 'savingsproducts/DSP',
+            'api_version': 'v1',
+            'api_method': 'GET',
+            'params': {},
+            'bookmark_field': 'last_modified_date',
+            'bookmark_type': 'datetime',
+            'id_fields': ['id']
         },
         'tasks': {
             'path': 'tasks',

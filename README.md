@@ -19,7 +19,9 @@ This tap:
   - [Deposit Transactions](https://api.mambu.com/?http#DepositTransactions-getAll)
   - [Groups](https://api.mambu.com/?http#groups-getAll)
   - [Loans](https://api.mambu.com/?http#LoanAccounts-getAll)
+  - [Loan Products (v1)](https://support.mambu.com/docs/loan-products-api)
   - [Loan Transactions](https://api.mambu.com/?http#LoanTransactions-getAll)
+  - [Savings Products (v1)](https://support.mambu.com/docs/savings-products-api)
   - [Tasks](https://api.mambu.com/?http#tasks-getAll)
   - [Users](https://api.mambu.com/?http#users-getAll)
 - Outputs the schema for each resource
@@ -122,6 +124,14 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
+[**loan_products (GET v1)**](https://support.mambu.com/docs/loan-products-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/loanproducts
+- Primary keys: id
+- Foreign keys: None
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark: last_modified_date (date-time)
+- Transformations: Fields camelCase to snake_case
+
 [**loan_transactions (POST v2)**](https://api.mambu.com/?http#LoanTransactions-getAll)
 - Endpoint: https://instance.sandbox.mambu.com/api/loans/transactions:search
 - Primary keys: encoded_key
@@ -130,6 +140,14 @@ This tap:
   - Bookmark query field: creationDate
   - Sort by: creationDate:ASC
   - Bookmark: creation_date (date-time)
+- Transformations: Fields camelCase to snake_case
+
+[**savings_products (GET v1)**](https://support.mambu.com/docs/savings-products-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/savingsproducts/DSP
+- Primary keys: id
+- Foreign keys: None
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
 [**tasks (GET v2)**](https://api.mambu.com/?http#tasks-getAll)
