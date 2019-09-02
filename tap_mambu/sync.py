@@ -219,7 +219,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         if total_records is None or total_records == 0:
             total_records = record_count  # OR should this be offset + record_count?
 
-# Loop thru parent batch records for each children objects (if should stream)
+        # Loop thru parent batch records for each children objects (if should stream)
         children = endpoint_config.get('children')
         if children:
             for child_stream_name, child_endpoint_config in children.items():
