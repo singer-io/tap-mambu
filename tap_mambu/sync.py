@@ -480,7 +480,7 @@ def sync(client, config, catalog, state):
             }
         },
         'deposit_products': {
-            'path': 'savingsproducts/DSP',
+            'path': 'savingsproducts',
             'api_version': 'v1',
             'api_method': 'GET',
             'params': {},
