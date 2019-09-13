@@ -207,6 +207,10 @@
               "active": {
                 "type": ["null", "boolean"]
               },
+              "creation_date": {
+                "type": ["null", "string"],
+                "format": "date-time"
+              },
               "amortization_profile": {
                 "type": ["null", "string"]
               },
@@ -214,17 +218,8 @@
                 "type": ["null", "string"]
               },
               "fee_product_rules": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": ["null", "string"]
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+                "type": ["null", "array"],
+                "items": {}
               }
             }
           }
@@ -247,17 +242,8 @@
       "type": ["null", "string"]
     },
     "savings_product_rules": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": ["null", "string"]
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": ["null", "array"],
+      "items": {}
     },
     "interest_accrued_accounting_method": {
       "type": ["null", "string"]
@@ -351,7 +337,217 @@
         {
           "type": "array",
           "items": {
-            "type": ["null", "string"]
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "encoded_key": {
+                "type": ["null", "string"]
+              },
+              "branch_key": {
+                "type": ["null", "string"]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "custom_field_values": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "encoded_key": {
+                "type": ["null", "string"]
+              },
+              "parent_key": {
+                "type": ["null", "string"]
+              },
+              "custom_field_key": {
+                "type": ["null", "string"]
+              },
+              "custom_field": {
+                "type": ["null", "object"],
+                "additionalProperties": false,
+                "properties": {
+                  "encoded_key": {
+                    "type": ["null", "string"]
+                  },
+                  "id": {
+                    "type": ["null", "string"]
+                  },
+                  "name": {
+                    "type": ["null", "string"]
+                  },
+                  "type": {
+                    "type": ["null", "string"]
+                  },
+                  "data_type": {
+                    "type": ["null", "string"]
+                  },
+                  "value_length": {
+                    "type": ["null", "string"]
+                  },
+                  "is_default": {
+                    "type": ["null", "boolean"]
+                  },
+                  "is_required": {
+                    "type": ["null", "boolean"]
+                  },
+                  "custom_field_set": {
+                    "type": ["null", "object"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "encoded_key": {
+                        "type": ["null", "string"]
+                      },
+                      "id": {
+                        "type": ["null", "string"]
+                      },
+                      "name": {
+                        "type": ["null", "string"]
+                      },
+                      "creation_date": {
+                        "type": ["null", "string"],
+                        "format": "date-time"
+                      },
+                      "last_modified_date": {
+                        "type": ["null", "string"],
+                        "format": "date-time"
+                      },
+                      "index_in_list": {
+                        "type": ["null", "integer"]
+                      },
+                      "type": {
+                        "type": ["null", "string"]
+                      },
+                      "usage": {
+                        "type": ["null", "string"]
+                      }
+                    }
+                  },
+                  "index_in_list": {
+                    "type": ["null", "integer"]
+                  },
+                  "state": {
+                    "type": ["null", "string"]
+                  },
+                  "custom_field_selection_options": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "encoded_key": {
+                              "type": ["null", "string"]
+                            },
+                            "value": {
+                              "type": ["null", "string"]
+                            },
+                            "score": {
+                              "type": ["null", "string"]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "view_rights": {
+                    "type": ["null", "object"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "encoded_key": {
+                        "type": ["null", "string"]
+                      },
+                      "is_accessible_by_all_users": {
+                        "type": ["null", "boolean"]
+                      },
+                      "roles": {
+                        "anyOf": [{
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "edit_rights": {
+                    "type": ["null", "object"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "encoded_key": {
+                        "type": ["null", "string"]
+                      },
+                      "is_accessible_by_all_users": {
+                        "type": ["null", "boolean"]
+                      },
+                      "roles": {
+                        "anyOf": [{
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "unique": {
+                    "type": ["null", "boolean"]
+                  },
+                  "values": {
+                    "anyOf": [{
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "amounts": {
+                    "type": ["null", "object"],
+                    "additionalProperties": true,
+                    "properties": {}
+                  }
+                }
+              },
+              "value": {
+                "type": ["null", "string"]
+              },
+              "amount": {
+                "type": ["null", "string"]
+              },
+              "index_in_list": {
+                "type": ["null", "integer"]
+              },
+              "custom_field_id": {
+                "type": ["null", "string"]
+              },
+              "custom_field_set_group_index": {
+                "type": ["null", "integer"]
+              }
+            }
           }
         },
         {

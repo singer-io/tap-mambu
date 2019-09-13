@@ -480,10 +480,12 @@ def sync(client, config, catalog, state):
             }
         },
         'deposit_products': {
-            'path': 'savingsproducts/DSP',
+            'path': 'savingsproducts',
             'api_version': 'v1',
             'api_method': 'GET',
-            'params': {},
+            'params': {
+                "fullDetails": True
+            },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
             'id_fields': ['id']
@@ -543,7 +545,9 @@ def sync(client, config, catalog, state):
             'path': 'loanproducts',
             'api_version': 'v1',
             'api_method': 'GET',
-            'params': {},
+            'params': {
+                "fullDetails": True
+            },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
             'id_fields': ['id']
