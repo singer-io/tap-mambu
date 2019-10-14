@@ -64,7 +64,8 @@ def process_records(catalog, #pylint: disable=too-many-branches
     schema = stream.schema.to_dict()
     stream_metadata = metadata.to_map(stream.metadata)
 
-    with metrics.record_counter(stream_name) as counter:
+    with metrics.record_counter(stream_name) as counter, \
+         Transformer() as transformer:
         for record in records:
             # If child object, add parent_id to record
             if parent_id and parent:
