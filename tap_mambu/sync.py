@@ -64,40 +64,40 @@ def process_records(catalog, #pylint: disable=too-many-branches
     schema = stream.schema.to_dict()
     stream_metadata = metadata.to_map(stream.metadata)
 
-    with metrics.record_counter(stream_name) as counter:
+    with metrics.record_counter(stream_name) as counter, \
+         Transformer() as transformer:
         for record in records:
             # If child object, add parent_id to record
             if parent_id and parent:
                 record[parent + '_id'] = parent_id
 
             # Transform record for Singer.io
-            with Transformer() as transformer:
-                transformed_record = transformer.transform(record,
-                                               schema,
-                                               stream_metadata)
+            transformed_record = transformer.transform(record,
+                                           schema,
+                                           stream_metadata)
 
-                # Reset max_bookmark_value to new value if higher
-                if bookmark_field and (bookmark_field in transformed_record):
-                    if (max_bookmark_value is None) or \
-                        (transformed_record[bookmark_field] > max_bookmark_value):
-                        max_bookmark_value = transformed_record[bookmark_field]
+            # Reset max_bookmark_value to new value if higher
+            if bookmark_field and (bookmark_field in transformed_record):
+                if (max_bookmark_value is None) or \
+                    (transformed_record[bookmark_field] > max_bookmark_value):
+                    max_bookmark_value = transformed_record[bookmark_field]
 
-                if bookmark_field and (bookmark_field in transformed_record):
-                    if bookmark_type == 'integer':
-                        # Keep only records whose bookmark is after the last_integer
-                        if transformed_record[bookmark_field] >= last_integer:
-                            write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                            counter.increment()
-                    elif bookmark_type == 'datetime':
-                        last_dttm = transform_datetime(last_datetime)
-                        bookmark_dttm = transform_datetime(transformed_record[bookmark_field])
-                        # Keep only records whose bookmark is after the last_datetime
-                        if bookmark_dttm >= last_dttm:
-                            write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                            counter.increment()
-                else:
-                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                    counter.increment()
+            if bookmark_field and (bookmark_field in transformed_record):
+                if bookmark_type == 'integer':
+                    # Keep only records whose bookmark is after the last_integer
+                    if transformed_record[bookmark_field] >= last_integer:
+                        write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                        counter.increment()
+                elif bookmark_type == 'datetime':
+                    last_dttm = transform_datetime(last_datetime)
+                    bookmark_dttm = transform_datetime(transformed_record[bookmark_field])
+                    # Keep only records whose bookmark is after the last_datetime
+                    if bookmark_dttm >= last_dttm:
+                        write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                        counter.increment()
+            else:
+                write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                counter.increment()
 
         return max_bookmark_value, counter.value
 
