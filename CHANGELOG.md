@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.4
+  * Update sync.py date handling in process_records and in sync bookmarks for POST endpoints
+
 ## 0.0.3
   * Move Transformer initialization "up a level" to remove noise from logging
 

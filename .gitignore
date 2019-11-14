@@ -17,3 +17,6 @@ venv/
 build/
 tap_mambu/.vscode/settings.json
 *.ipynb
+.DS_Store
+test_configuration.py
+tap_target_commands.sh
