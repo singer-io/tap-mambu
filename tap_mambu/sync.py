@@ -190,6 +190,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             endpoint=stream_name,
             json=body)
 
+        LOGGER.info('Response data: {}'.format(data))
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
         if not data or data is None or data == []:
@@ -635,7 +636,7 @@ def sync(client, config, catalog, state):
                 'to': '{now_date_str}'
             },
             'id_fields': ['entry_id'],
-            'bookmark_field': 'entry_date',
+            'bookmark_field': 'booking_date',
             'bookmark_type': 'datetime'
         }
     }
