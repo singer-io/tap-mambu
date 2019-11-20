@@ -190,7 +190,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             endpoint=stream_name,
             json=body)
 
-        LOGGER.info('Response data: {}'.format(data))
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
         if not data or data is None or data == []:
@@ -284,7 +283,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                             child_total_records))
 
         # Update the state with the max_bookmark_value for the stream
-        LOGGER.info('Check to write_bookmark on stream: {}, type: {}, bookmark_field which is {}'.format(stream_name, sub_type, bookmark_field))
         if bookmark_field:
             write_bookmark(state,
                            stream_name,
