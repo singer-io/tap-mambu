@@ -109,7 +109,9 @@
         },
         "tax_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-20
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
         },
         "tax_on_interest_amount": {
           "type": ["null", "number"],
@@ -147,11 +149,15 @@
           "properties": {
             "interest_rate": {
               "type": ["null", "number"],
-              "multipleOf": 1e-20
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
             },
             "index_interest_rate": {
               "type": ["null", "number"],
-              "multipleOf": 1e-20
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
             }
           }
         },
@@ -161,7 +167,9 @@
         },
         "principal_payment_percentage": {
           "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
         }
       }
     },

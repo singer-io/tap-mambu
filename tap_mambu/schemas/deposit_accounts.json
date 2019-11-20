@@ -36,7 +36,9 @@
           "properties": {
             "interest_rate": {
               "type": ["null", "number"],
-              "multipleOf": 1e-20
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
             },
             "interest_rate_tiers": {
               "anyOf": [
@@ -52,7 +54,9 @@
                       },
                       "interest_rate": {
                         "type": ["null", "number"],
-                        "multipleOf": 1e-20
+                        "multipleOf": 1e-20,
+                        "minimum": -1000000000000000,
+                        "maximum": 1000000000000000
                       },
                       "encoded_key": {
                         "type": ["null", "string"]
@@ -207,11 +211,15 @@
           "properties": {
             "interest_rate": {
               "type": ["null", "number"],
-              "multipleOf": 1e-20
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
             },
             "interest_spread": {
               "type": ["null", "number"],
-              "multipleOf": 1e-20
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
             },
             "interest_rate_review_unit": {
               "type": ["null", "string"]
@@ -236,7 +244,9 @@
                       },
                       "interest_rate": {
                         "type": ["null", "number"],
-                        "multipleOf": 1e-20
+                        "multipleOf": 1e-20,
+                        "minimum": -1000000000000000,
+                        "maximum": 1000000000000000
                       },
                       "encoded_key": {
                         "type": ["null", "string"]

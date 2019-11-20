@@ -123,7 +123,9 @@
         },
         "interest_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-20
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
         },
         "interest_calculation_method": {
           "type": ["null", "string"]
@@ -272,7 +274,9 @@
     },
     "tax_rate": {
       "type": ["null", "number"],
-      "multipleOf": 1e-20
+      "multipleOf": 1e-20,
+      "minimum": -1000000000000000,
+      "maximum": 1000000000000000
     },
     "last_tax_rate_review_date": {
       "type": ["null", "string"],
@@ -534,7 +538,9 @@
         },
         "penalty_rate": {
           "type": ["null", "number"],
-          "multipleOf": 1e-20
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
         }
       }
     },
@@ -568,7 +574,9 @@
         },
         "percentage": {
           "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
         },
         "include_fees_in_floor_amount": {
           "type": ["null", "boolean"]
