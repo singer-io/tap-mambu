@@ -82,7 +82,17 @@ STREAMS = {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
-    }
+    },
+    'gl_accounts': {
+        'key_properties': ['gl_code'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_modified_date']
+     },
+     'gl_journal_entries': {
+        'key_properties': ['entry_id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['booking_date']
+     }
 }
 
 

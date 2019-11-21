@@ -24,6 +24,8 @@ This tap:
   - [Loan Transactions](https://api.mambu.com/?http#LoanTransactions-getAll)
   - [Tasks](https://api.mambu.com/?http#tasks-getAll)
   - [Users](https://api.mambu.com/?http#users-getAll)
+  - [GL Accounts](https://support.mambu.com/docs/gl-accounts-api)
+  - [GL Journal Entries](https://support.mambu.com/docs/gl-journal-entries-api)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 
@@ -168,6 +170,19 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
+[**gl_accounts (GET v1)**](https://support.mambu.com/docs/gl-accounts-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/glaccounts
+- Primary keys: gl_code
+- Replication strategy: Incremental (query filtered based on date and account type)
+  - Bookmark: last_modified_date (date-time)
+- Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
+
+[**gl_journal_entries (GET v1)**](https://support.mambu.com/docs/gl-journal-entries-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries
+- Primary keys: entry_id
+- Replication strategy: Incremental (query filtered based on date)
+  - Bookmark: booking_date (date-time)
+- Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 ## Quick Start
 
@@ -228,7 +243,15 @@ This tap:
             "loan_products": "2019-06-20T00:52:43Z",
             "loan_transactions": "2019-06-19T19:48:44Z",
             "tasks": "2019-06-18T18:23:55Z",
-            "users": "2019-06-20T00:52:46Z"
+            "users": "2019-06-20T00:52:46Z",
+            "gl_journal_entries": "2019-11-01T00:00:00.000000Z",
+            "gl_accounts": {
+                "INCOME": "2019-07-03T15:15:43.000000Z",
+                "EQUITY": "2019-07-03T15:15:43.000000Z",
+                "LIABILITY": "2019-07-03T15:15:43.000000Z",
+                "ASSET": "2019-07-03T15:15:43.000000Z",
+                "EXPENSE": "2019-07-03T15:15:43.000000Z"
+            }
         }
     }
     ```
@@ -305,6 +328,8 @@ This tap:
     | groups               | 2       | 1       |
     | tasks                | 7       | 1       |
     | loan_accounts        | 6       | 1       |
+    | gl_accounts          | 7       | 1       |
+    | gl_journal_entries   | 267     | 1       |
     +----------------------+---------+---------+
     ```
 ---
