@@ -13,6 +13,11 @@ jobs:
             pip install -U 'pip<19.2' setuptools
             pip install .[dev]
       - add_ssh_keys
+      - run:
+          name: 'JSON Validator'
+          command: |
+            source /usr/local/share/virtualenvs/tap-tester/bin/activate
+            stitch-validate-json /usr/local/share/virtualenvs/tap-mambu/lib/python3.5/site-packages/tap_mambu/schemas/*.json
 workflows:
   version: 2
   commit:
