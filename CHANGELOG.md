@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.0
+ * Releasing from Beta --> GA
+
 ## 0.0.5
   * Add stream handling for GL Account and GL Journal Entries endpoints
 
