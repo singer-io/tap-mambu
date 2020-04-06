@@ -194,10 +194,4 @@ class MambuClient(object):
         if response.status_code != 200:
             raise_for_error(response)
 
-        # paginationDetails=ON returns items-total as a header parameter in the response headers
-        # Pagination: https://api.mambu.com/?http#pagination
-        total_records = None
-        if kwargs:
-            if 'paginationDetails=ON' in kwargs['params']:
-                total_records = int(response.headers.get('items-total', 0))
-        return response.json(), total_records
+        return response.json()

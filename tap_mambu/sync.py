@@ -1,7 +1,7 @@
 from datetime import datetime
 import singer
 from singer import metrics, metadata, Transformer, utils
-from singer.utils import strptime_to_utc, strftime
+from singer.utils import strptime_to_utc
 from tap_mambu.transform import transform_json
 
 LOGGER = singer.get_logger()
@@ -26,27 +26,21 @@ def write_record(stream_name, record, time_extracted):
         raise err
 
 
-def get_bookmark(state, stream, sub_type, default):
+def get_bookmark(state, stream, default):
     if (state is None) or ('bookmarks' not in state):
         return default
+    return (
+        state
+        .get('bookmarks', {})
+        .get(stream, default)
+    )
 
-    if sub_type == 'self':
-        return (state.get('bookmarks', {}).get(stream, default))
-    else:
-        return (state.get('bookmarks', {}).get(stream, {}).get(sub_type, default))
 
-
-def write_bookmark(state, stream, sub_type, value):
+def write_bookmark(state, stream, value):
     if 'bookmarks' not in state:
         state['bookmarks'] = {}
-    if stream not in state['bookmarks']:
-        state['bookmarks'][stream] = {}
-    if sub_type == 'self':
-        state['bookmarks'][stream] = value
-    else:
-        if sub_type not in state['bookmarks'][stream]:
-            state['bookmarks'][stream][sub_type] = {}
-        state['bookmarks'][stream][sub_type] = value
+    state['bookmarks'][stream] = value
+    LOGGER.info('Write state for stream: {}, value: {}'.format(stream, value))
     singer.write_state(state)
 
 
@@ -124,7 +118,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                   api_version,
                   api_method,
                   static_params,
-                  sub_type,
                   bookmark_query_field=None,
                   bookmark_field=None,
                   bookmark_type=None,
@@ -140,10 +133,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     last_integer = None
     max_bookmark_value = None
     if bookmark_type == 'integer':
-        last_integer = get_bookmark(state, stream_name, sub_type, 0)
+        last_integer = get_bookmark(state, stream_name, 0)
         max_bookmark_value = last_integer
     else:
-        last_datetime = get_bookmark(state, stream_name, sub_type, start_date)
+        last_datetime = get_bookmark(state, stream_name, start_date)
         max_bookmark_value = last_datetime
 
     write_schema(catalog, stream_name)
@@ -152,12 +145,13 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Pagination reference: https://api.mambu.com/?http#pagination
     # Each page has an offset (starting value) and a limit (batch size, number of records)
     # Increase the "offset" by the "limit" for each batch.
-    # Continue until the "offset" exceeds the total_records.
+    # Continue until the "record_count" returned < "limit" is null/zero or 
     offset = 0 # Starting offset value for each batch API call
     limit = 500 # Batch size; Number of records per API call
-    total_records = limit # Initialize total; set to actual total on first API call
+    total_records = 0 # Initialize total
+    record_count = limit # Initialize, reset for each API call
 
-    while offset <= total_records:
+    while record_count == limit: # break out of loop when record_count < limit (or not data returned)
         params = {
             'offset': offset,
             'limit': limit,
@@ -170,8 +164,8 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             elif bookmark_type == 'integer':
                 params[bookmark_query_field] = last_integer
 
-        LOGGER.info('Stream: {}, Type: {} - Sync start {}'.format(
-            stream_name, sub_type,
+        LOGGER.info('{} - Sync start {}'.format(
+            stream_name,
             'since: {}, '.format(last_datetime) if bookmark_query_field else ''))
 
         # Squash params to query-string params
@@ -182,7 +176,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             LOGGER.info('body = {}'.format(body))
 
         # API request data
-        data, total_records = client.request(
+        data = client.request(
             method=api_method,
             path=path,
             version=api_version,
@@ -193,7 +187,9 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         # time_extracted: datetime when the data was extracted from the API
         time_extracted = utils.now()
         if not data or data is None or data == []:
-            break # No data results
+            record_count = 0
+            LOGGER.warning('Stream: {} - NO DATA RESULTS')
+            break # NO DATA
 
         # Transform data with transform_json from transform.py
         #  This function converts camelCase to snake_case for fieldname keys.
@@ -210,7 +206,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         elif data_key in data:
             transformed_data = transform_json(data, data_key)[data_key]
         # LOGGER.info('transformed_data = {}'.format(transformed_data))  # TESTING, comment out
+
         if not transformed_data or transformed_data is None:
+            record_count = 0
+            LOGGER.warning('Stream: {} - NO TRANSFORMED DATA RESULTS')
             break # No data results
 
         # Process records and get the max_bookmark_value and record_count for the set of records
@@ -227,9 +226,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             parent=parent,
             parent_id=parent_id)
 
-        # set total_records for pagination
-        if total_records is None or total_records == 0:
-            total_records = record_count  # OR should this be offset + record_count?
+        total_records = total_records + record_count
 
         # Loop thru parent batch records for each children objects (if should stream)
         children = endpoint_config.get('children')
@@ -268,7 +265,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                             api_version=child_endpoint_config.get('api_version', 'v2'),
                             api_method=child_endpoint_config.get('api_method', 'GET'),
                             static_params=child_endpoint_config.get('params', {}),
-                            sub_type=sub_type,
                             bookmark_query_field=child_endpoint_config.get('bookmark_query_field'),
                             bookmark_field=child_endpoint_config.get('bookmark_field'),
                             bookmark_type=child_endpoint_config.get('bookmark_type'),
@@ -286,21 +282,21 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         if bookmark_field:
             write_bookmark(state,
                            stream_name,
-                           sub_type,
                            max_bookmark_value)
 
         # to_rec: to record; ending record for the batch
         to_rec = offset + limit
-        if to_rec > total_records:
+        if record_count < limit:
             to_rec = total_records
 
-        LOGGER.info('{} - Synced - {} to {} of total records: {}'.format(
+        LOGGER.info('{} - Synced records: {} to {}'.format(
             stream_name,
             offset,
-            to_rec,
-            total_records))
+            to_rec))
         # Pagination: increment the offset by the limit (batch-size)
         offset = offset + limit
+
+        # End: while record_count == limit
 
     # Return total_records across all batches
     return total_records
@@ -349,17 +345,27 @@ def sync(client, config, catalog, state):
     # LOGGER.info('start_date = {}'.format(start_date))
 
     # Get datetimes for endpoint parameters
-    communications_dttm_str = get_bookmark(state, 'communications', 'self', start_date)
+    communications_dttm_str = get_bookmark(state, 'communications', start_date)
     communications_dt_str = transform_datetime(communications_dttm_str)[:10]
     # LOGGER.info('communications bookmark_date = {}'.format(communications_dt_str))
 
-    deposit_transactions_dttm_str = get_bookmark(state, 'deposit_transactions', 'self', start_date)
+    deposit_transactions_dttm_str = get_bookmark(state, 'deposit_transactions', start_date)
     deposit_transactions_dt_str = transform_datetime(deposit_transactions_dttm_str)[:10]
     # LOGGER.info('deposit_transactions bookmark_date = {}'.format(deposit_transactions_dt_str))
 
-    loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
+    loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', start_date)
     loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
     # LOGGER.info('loan_transactions bookmark_date = {}'.format(loan_transactions_dt_str))
+
+    selected_streams = get_selected_streams(catalog)
+    LOGGER.info('selected_streams: {}'.format(selected_streams))
+
+    if not selected_streams:
+        return
+
+    # last_stream = Previous currently synced stream, if the load was interrupted
+    last_stream = singer.get_currently_syncing(state)
+    LOGGER.info('last/currently syncing stream: {}'.format(last_stream))
 
     # endpoints: API URL endpoints to be called
     # properties:
@@ -612,42 +618,8 @@ def sync(client, config, catalog, state):
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
             'id_fields': ['id']
-        },
-        'gl_accounts': {
-            'path': 'glaccounts',
-            'api_version': 'v1',
-            'api_method': 'GET',
-            'params': {
-                'type': '{sub_type}'
-            },
-            'id_fields': ['gl_code'],
-            'bookmark_field': 'last_modified_date',
-            'bookmark_type': 'datetime',
-            'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
-        },
-        'gl_journal_entries': {
-            'path': 'gljournalentries',
-            'api_version': 'v1',
-            'api_method': 'GET',
-            'params' : {
-                'from': '{gl_journal_entries_from_dt_str}',
-                'to': '{now_date_str}'
-            },
-            'id_fields': ['entry_id'],
-            'bookmark_field': 'booking_date',
-            'bookmark_type': 'datetime'
         }
     }
-
-    selected_streams = get_selected_streams(catalog)
-    LOGGER.info('selected_streams: {}'.format(selected_streams))
-
-    if not selected_streams:
-        return
-
-    # last_stream = Previous currently synced stream, if the load was interrupted
-    last_stream = singer.get_currently_syncing(state)
-    LOGGER.info('last/currently syncing stream: {}'.format(last_stream))
 
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
@@ -655,53 +627,30 @@ def sync(client, config, catalog, state):
         should_stream, last_stream = should_sync_stream(selected_streams,
                                                         last_stream,
                                                         stream_name)
-
         if should_stream:
-            # loop through each sub type
-            sub_types = endpoint_config.get('sub_types', ['self'])
-            for sub_type in sub_types:
-                LOGGER.info('START Syncing: {}, Type: {}'.format(stream_name, sub_type))
+            LOGGER.info('START Syncing: {}'.format(stream_name))
+            update_currently_syncing(state, stream_name)
+            path = endpoint_config.get('path')
+            total_records = sync_endpoint(
+                client=client,
+                catalog=catalog,
+                state=state,
+                start_date=start_date,
+                stream_name=stream_name,
+                path=path,
+                endpoint_config=endpoint_config,
+                api_version=endpoint_config.get('api_version', 'v2'),
+                api_method=endpoint_config.get('api_method', 'GET'),
+                static_params=endpoint_config.get('params', {}),
+                bookmark_query_field=endpoint_config.get('bookmark_query_field'),
+                bookmark_field=endpoint_config.get('bookmark_field'),
+                bookmark_type=endpoint_config.get('bookmark_type'),
+                data_key=endpoint_config.get('data_key', None),
+                body=endpoint_config.get('body', None),
+                id_fields=endpoint_config.get('id_fields'))
 
-                # Now date 
-                if stream_name == 'gl_journal_entries':
-                    now_date_str = strftime(utils.now())[:10]
-                    gl_journal_entries_from_dttm_str = get_bookmark(state, 'gl_journal_entries', sub_type, start_date)
-                    gl_journal_entries_from_dt_str = transform_datetime(gl_journal_entries_from_dttm_str)[:10]
-
-                update_currently_syncing(state, stream_name)
-                path = endpoint_config.get('path')
-                sub_type_param = endpoint_config.get('params', {}).get('type')
-                if sub_type_param:
-                    endpoint_config['params']['type'] = sub_type
-
-                gl_journal_entries_from_param = endpoint_config.get('params', {}).get('from')
-                if gl_journal_entries_from_param:
-                    endpoint_config['params']['from'] = gl_journal_entries_from_dt_str
-                gl_journal_entries_to_param = endpoint_config.get('params', {}).get('to')
-                if gl_journal_entries_to_param:
-                    endpoint_config['params']['to'] = now_date_str
-
-                total_records = sync_endpoint(
-                    client=client,
-                    catalog=catalog,
-                    state=state,
-                    start_date=start_date,
-                    stream_name=stream_name,
-                    path=path,
-                    endpoint_config=endpoint_config,
-                    api_version=endpoint_config.get('api_version', 'v2'),
-                    api_method=endpoint_config.get('api_method', 'GET'),
-                    static_params=endpoint_config.get('params', {}),
-                    sub_type=sub_type,
-                    bookmark_query_field=endpoint_config.get('bookmark_query_field'),
-                    bookmark_field=endpoint_config.get('bookmark_field'),
-                    bookmark_type=endpoint_config.get('bookmark_type'),
-                    data_key=endpoint_config.get('data_key', None),
-                    body=endpoint_config.get('body', None),
-                    id_fields=endpoint_config.get('id_fields'))
-
-                update_currently_syncing(state, None)
-                LOGGER.info('Synced: {}, total_records: {}'.format(
-                                stream_name, 
-                                total_records))
-                LOGGER.info('FINISHED Syncing: {}'.format(stream_name))
+            update_currently_syncing(state, None)
+            LOGGER.info('Synced: {}, total_records: {}'.format(
+                            stream_name, 
+                            total_records))
+            LOGGER.info('FINISHED Syncing: {}'.format(stream_name))
