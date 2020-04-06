@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.1
+ * Change `client.py` and `sync.py` to remove `Items-Total` response header from pagination logic.
+
 ## 1.0.0
  * Releasing from Beta --> GA
 
