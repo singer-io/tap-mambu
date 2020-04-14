@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2
+ * Fix merge issue with `v.1.0.1`. Revert to `v.1.0.0 `and re-apply pagination changes.
+
 ## 1.0.1
  * Change `client.py` and `sync.py` to remove `Items-Total` response header from pagination logic.
 

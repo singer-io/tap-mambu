@@ -193,5 +193,6 @@ class MambuClient(object):
 
         if response.status_code != 200:
             raise_for_error(response)
-
+        
         return response.json()
+
