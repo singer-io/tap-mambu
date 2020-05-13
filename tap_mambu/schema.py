@@ -63,6 +63,10 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'loan_repayments': {
+        'key_properties': ['encoded_key'],
+        'replication_method': 'FULL_TABLE'
+    },
     'loan_products': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
