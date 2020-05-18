@@ -1,0 +1,129 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "encoded_key": {
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      "parentAccountKey": {
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      "due_date": {
+        "type": [
+          "null",
+          "string"
+        ],
+        "format": "date-time"
+      },
+      "principal_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "principal_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "interest_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "interest_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "fees_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "fees_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "penalty_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "penalty_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "state": {
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      "tax_interest_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "tax_interest_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "tax_fees_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "tax_fees_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "tax_penalty_due": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      },
+      "tax_penalty_paid": {
+        "type": [
+          "null",
+          "number"
+        ],
+        "multipleOf": 1e-10
+      }
+    }
+  }
