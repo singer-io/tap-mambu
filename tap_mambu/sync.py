@@ -547,7 +547,20 @@ def sync(client, config, catalog, state):
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
-            'id_fields': ['id']
+            'id_fields': ['id'],
+            'children': {
+                'loan_repayments': {
+                    'path': 'loans/{}/repayments',
+                    'api_version': 'v1',
+                    'api_method': 'GET',
+                    'params': {
+                        'detailsLevel': 'FULL',
+                        'paginationDetails': 'ON'
+                    },
+                    'id_fields': ['encoded_key'],
+                    'parent': 'loan_accounts'
+                }
+            }
         },
         'loan_products': {
             'path': 'loanproducts',
