@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.0.3
+## 1.0.4
  * Remove `paginationDetails` parameter from select paged API calls; no longer needed after recent change to Mambu API. This change requested by Mambu to improve Mambu API server performance.
+
+## 1.0.3
+ * Added json schemas for loan_repayments.
 
 ## 1.0.2
  * Fix merge issue with `v.1.0.1`. Revert to `v.1.0.0 `and re-apply pagination changes.
