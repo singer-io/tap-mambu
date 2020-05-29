@@ -401,8 +401,7 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'POST',
             'params': {
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'body': [
                 {
@@ -439,8 +438,7 @@ def sync(client, config, catalog, state):
             'api_method': 'GET',
             'params': {
                 'sortBy': 'lastModifiedDate:ASC',
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -472,8 +470,7 @@ def sync(client, config, catalog, state):
             'api_method': 'GET',
             'params': {
                 'sortBy': 'lastModifiedDate:ASC',
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -485,8 +482,7 @@ def sync(client, config, catalog, state):
                     'api_version': 'v2',
                     'api_method': 'GET',
                     'params': {
-                        'detailsLevel': 'FULL',
-                        'paginationDetails': 'ON'
+                        'detailsLevel': 'FULL'
                     },
                     'id_fields': ['deposit_id', 'reference_token'],
                     'parent': 'deposit'
@@ -509,8 +505,7 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'POST',
             'params': {
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'body': {
                 "sortingCriteria": {
@@ -535,8 +530,7 @@ def sync(client, config, catalog, state):
             'api_method': 'GET',
             'params': {
                 'sortBy': 'lastModifiedDate:ASC',
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -571,8 +565,7 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'POST',
             'params': {
-                'detailsLevel': 'FULL',
-                'paginationDetails': 'ON'
+                'detailsLevel': 'FULL'
             },
             'body': {
                 "sortingCriteria": {
