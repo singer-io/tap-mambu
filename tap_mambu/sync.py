@@ -110,7 +110,7 @@ def process_records(catalog, #pylint: disable=too-many-branches
                     write_record(stream_name, transformed_record, time_extracted=time_extracted)
                     counter.increment()
 
-        return max_bookmark_value, counter.value
+        return max_bookmark_value, len(records)
 
 
 # Sync a specific parent or child endpoint.
