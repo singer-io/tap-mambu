@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+ * Fix pagination [#11](https://github.com/singer-io/tap-mambu/pull/11)
+
 ## 1.0.3
  * Added json schemas for loan_repayments.
 
