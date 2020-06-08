@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.0.4
+## 1.0.5
  * Remove `paginationDetails` parameter from select paged API calls; no longer needed after recent change to Mambu API. This change requested by Mambu to improve Mambu API server performance.
+
+## 1.0.4
+ * Fix pagination [#11](https://github.com/singer-io/tap-mambu/pull/11)
 
 ## 1.0.3
  * Added json schemas for loan_repayments.
