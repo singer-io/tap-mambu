@@ -302,34 +302,34 @@ This tap:
     Check tap resulted in the following:
     ```bash
     The output is valid.
-    It contained 586 messages for 18 streams.
+    It contained 589 messages for 18 streams.
 
         24 schema messages
-        500 record messages
+        503 record messages
         62 state messages
 
     Details by stream:
     +----------------------+---------+---------+
     | stream               | records | schemas |
     +----------------------+---------+---------+
-    | loan_transactions    | 9       | 1       |
-    | communications       | 1       | 1       |
     | loan_products        | 2       | 1       |
-    | tasks                | 8       | 1       |
-    | deposit_transactions | 31      | 1       |
-    | gl_accounts          | 18      | 5       |
-    | cards                | 1       | 3       |
-    | loan_accounts        | 7       | 1       |
-    | credit_arrangements  | 2       | 1       |
-    | deposit_accounts     | 3       | 1       |
-    | clients              | 104     | 1       |
-    | custom_field_sets    | 21      | 1       |
-    | deposit_products     | 4       | 1       |
-    | gl_journal_entries   | 279     | 1       |
-    | centres              | 2       | 1       |
+    | users                | 3       | 1       |
+    | gl_journal_entries   | 281     | 1       |
     | branches             | 2       | 1       |
     | groups               | 3       | 1       |
-    | users                | 3       | 1       |
+    | credit_arrangements  | 2       | 1       |
+    | clients              | 104     | 1       |
+    | cards                | 1       | 3       |
+    | loan_accounts        | 7       | 1       |
+    | deposit_transactions | 32      | 1       |
+    | centres              | 2       | 1       |
+    | gl_accounts          | 18      | 5       |
+    | communications       | 1       | 1       |
+    | deposit_accounts     | 3       | 1       |
+    | tasks                | 8       | 1       |
+    | loan_transactions    | 9       | 1       |
+    | custom_field_sets    | 21      | 1       |
+    | deposit_products     | 4       | 1       |
     +----------------------+---------+---------+
     ```
 ---
