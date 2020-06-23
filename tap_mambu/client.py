@@ -100,12 +100,14 @@ class MambuClient(object):
                  username,
                  password,
                  subdomain,
+                 page_size,
                  user_agent=None):
         self.__username = username
         self.__password = password
         self.__subdomain = subdomain
         base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
+        self.page_size = page_size
         self.__user_agent = user_agent
         self.__session = requests.Session()
         self.__verified = False
