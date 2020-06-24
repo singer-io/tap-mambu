@@ -19,6 +19,8 @@ REQUIRED_CONFIG_KEYS = [
     'user_agent'
 ]
 
+DEFAULT_PAGE_SIZE = 500
+
 def do_discover():
 
     LOGGER.info('Starting discover')
@@ -35,7 +37,8 @@ def main():
     with MambuClient(parsed_args.config['username'],
                      parsed_args.config['password'],
                      parsed_args.config['subdomain'],
-                     parsed_args.config['user_agent']) as client:
+                     int(parsed_args.config.get('page_size', DEFAULT_PAGE_SIZE)),
+                     user_agent=parsed_args.config['user_agent']) as client:
 
         state = {}
         if parsed_args.state:

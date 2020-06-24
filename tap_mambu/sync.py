@@ -154,7 +154,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Increase the "offset" by the "limit" for each batch.
     # Continue until the "record_count" returned < "limit" is null/zero or 
     offset = 0 # Starting offset value for each batch API call
-    limit = 500 # Batch size; Number of records per API call
+    limit = client.page_size # Batch size; Number of records per API call
     total_records = 0 # Initialize total
     record_count = limit # Initialize, reset for each API call
 

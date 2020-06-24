@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.0
+  * Added a new config parameter `page_size` to allow the limit query param to be customized [#14](https://github.com/singer-io/tap-mambu/pull/14)
+
 ## 1.0.5
  * Remove `paginationDetails` parameter from select paged API calls; no longer needed after recent change to Mambu API. This change requested by Mambu to improve Mambu API server performance.
 

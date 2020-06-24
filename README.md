@@ -218,7 +218,8 @@ This tap:
         "password": "YOUR_PASSWORD",
         "subdomain": "YOUR_SUBDOMAIN",
         "start_date": "2019-01-01T00:00:00Z",
-        "user_agent": "tap-mambu <api_user_email@your_company.com>"
+        "user_agent": "tap-mambu <api_user_email@your_company.com>",
+        "page_size": "500"
     }
     ```
     
