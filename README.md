@@ -150,6 +150,7 @@ This tap:
   - Bookmark query field: creationDate
   - Sort by: creationDate:ASC
   - Bookmark: creation_date (date-time)
+  - Lookback window: 14 day default, overridden by config
 - Transformations: Fields camelCase to snake_case
 
 [**tasks (GET v2)**](https://api.mambu.com/?http#tasks-getAll)
@@ -210,7 +211,7 @@ This tap:
     - [singer-tools](https://github.com/singer-io/singer-tools)
     - [target-stitch](https://github.com/singer-io/target-stitch)
 
-3. Create your tap's `config.json` file. The `subdomain` is everything before `.mambu.com` in the Mambu instance URL.  For the URL: `https://stitch.sandbox.mambu.com`, the subdomain would be `stitch.sandbox`.
+3. Create your tap's `config.json` file. The `subdomain` is everything before `.mambu.com` in the Mambu instance URL.  For the URL: `https://stitch.sandbox.mambu.com`, the subdomain would be `stitch.sandbox`. Lookback window applies only to `loan transactions` stream.
 
     ```json
     {
@@ -218,6 +219,7 @@ This tap:
         "password": "YOUR_PASSWORD",
         "subdomain": "YOUR_SUBDOMAIN",
         "start_date": "2019-01-01T00:00:00Z",
+        "lookback_window: 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
         "page_size": "500"
     }
