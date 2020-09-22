@@ -8,7 +8,7 @@
           "string"
         ]
       },
-      "parentAccountKey": {
+      "parent_account_key": {
         "type": [
           "null",
           "string"

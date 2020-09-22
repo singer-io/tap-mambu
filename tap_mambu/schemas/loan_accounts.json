@@ -20,13 +20,13 @@
         },
         "apply_interest_on_prepayment_method": {
           "type": ["null", "string"]
-        }        
+        }
       }
     },
     "migration_event_key": {
       "type": ["null", "string"]
     },
-    "last_sent_to_arrears_date": {
+    "last_set_to_arrears_date": {
       "type": ["null", "string"],
       "format": "date-time"
     },
@@ -55,7 +55,7 @@
             },
             "target_deposit_account_key": {
               "type": ["null", "string"]
-            }                  
+            }
           }
         },
         "expected_disbursement_date": {
@@ -98,7 +98,7 @@
         },
         "encoded_key": {
           "type": ["null", "string"]
-        }  
+        }
       }
     },
     "days_in_arrears": {
@@ -150,7 +150,7 @@
         },
         "interest_balance_calculation_method": {
           "type": ["null", "string"]
-        }             
+        }
       }
     },
     "assets": {
@@ -254,7 +254,7 @@
                   },
                   "disbursement_transaction_key": {
                     "type": ["null", "string"]
-                  }       
+                  }
                 }
               },
               "tranch_number": {
