@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+ * Fix two fields typed incorrectly in schema reported by bug ticket [#16](https://github.com/singer-io/tap-mambu/pull/16)
+
 ## 1.1.0
   * Added a new config parameter `page_size` to allow the limit query param to be customized [#14](https://github.com/singer-io/tap-mambu/pull/14)
 
