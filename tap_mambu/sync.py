@@ -154,7 +154,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Pagination reference: https://api.mambu.com/?http#pagination
     # Each page has an offset (starting value) and a limit (batch size, number of records)
     # Increase the "offset" by the "limit" for each batch.
-    # Continue until the "record_count" returned < "limit" is null/zero or 
+    # Continue until the "record_count" returned < "limit" is null/zero or
     offset = 0 # Starting offset value for each batch API call
     limit = client.page_size # Batch size; Number of records per API call
     total_records = 0 # Initialize total
@@ -283,7 +283,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                             parent=child_endpoint_config.get('parent'),
                             parent_id=parent_id)
                         LOGGER.info('Synced: {}, parent_id: {}, total_records: {}'.format(
-                            child_stream_name, 
+                            child_stream_name,
                             parent_id,
                             child_total_records))
 
@@ -679,7 +679,7 @@ def sync(client, config, catalog, state):
             for sub_type in sub_types:
                 LOGGER.info('START Syncing: {}, Type: {}'.format(stream_name, sub_type))
 
-                # Now date 
+                # Now date
                 if stream_name == 'gl_journal_entries':
                     now_date_str = strftime(utils.now())[:10]
                     gl_journal_entries_from_dttm_str = get_bookmark(state, 'gl_journal_entries', sub_type, start_date)
@@ -719,6 +719,6 @@ def sync(client, config, catalog, state):
 
                 update_currently_syncing(state, None)
                 LOGGER.info('Synced: {}, total_records: {}'.format(
-                                stream_name, 
+                                stream_name,
                                 total_records))
                 LOGGER.info('FINISHED Syncing: {}'.format(stream_name))
