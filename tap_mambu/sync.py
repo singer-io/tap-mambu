@@ -366,7 +366,7 @@ def sync(client, config, catalog, state):
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
     loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
     loan_transactions_dttm = strptime_to_utc(loan_transactions_dt_str)
-    lookback_days = int(config.get('lookback_window') or LOOKBACK_DEFAULT)
+    lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
     if loan_transactions_dttm > lookback_date:
         loan_transactions_dt_str = transform_datetime(strftime(lookback_date))[:10]
