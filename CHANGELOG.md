@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.2
+  * Added lookback window for loan transactions stream.
+
 ## 1.1.1
 
  * Fix two fields typed incorrectly in schema reported by bug ticket [#16](https://github.com/singer-io/tap-mambu/pull/16)

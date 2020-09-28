@@ -1,11 +1,13 @@
+from _datetime import timedelta
 from datetime import datetime
+
 import singer
-from singer import metrics, metadata, Transformer, utils
-from singer.utils import strptime_to_utc, strftime
+from singer import Transformer, metadata, metrics, utils
+from singer.utils import strftime, strptime_to_utc
 from tap_mambu.transform import transform_json
 
 LOGGER = singer.get_logger()
-
+LOOKBACK_DEFAULT = 14
 
 def write_schema(catalog, stream_name):
     stream = catalog.get_stream(stream_name)
@@ -363,6 +365,11 @@ def sync(client, config, catalog, state):
 
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
     loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
+    loan_transactions_dttm = strptime_to_utc(loan_transactions_dt_str)
+    lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
+    lookback_date = utils.now() - timedelta(lookback_days)
+    if loan_transactions_dttm > lookback_date:
+        loan_transactions_dt_str = transform_datetime(strftime(lookback_date))[:10]
     # LOGGER.info('loan_transactions bookmark_date = {}'.format(loan_transactions_dt_str))
 
     # endpoints: API URL endpoints to be called
