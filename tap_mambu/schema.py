@@ -96,7 +96,21 @@ STREAMS = {
         'key_properties': ['entry_id'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['booking_date']
-     }
+     },
+    'activities': {
+        'key_properties': ['encoded_key'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['timestamp']
+     },
+    'index_rate_sources': {
+        'key_properties': ['encoded_key'],
+        'replication_method': 'FULL_TABLE'
+    },
+    'installments': {
+        'key_properties': ['encoded_key'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_paid_date']
+    }
 }
 
 
