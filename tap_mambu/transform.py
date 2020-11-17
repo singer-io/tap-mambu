@@ -83,4 +83,3 @@ def transform_activities(this_json):
             record[key] = value
         del record['activity']
     return this_json
-
