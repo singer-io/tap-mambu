@@ -214,7 +214,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             transformed_data = transform_json(data, stream_name)
         elif data_key in data:
             transformed_data = transform_json(data, data_key)[data_key]
-        
+      
         if stream_name == 'activities':
             transformed_data = transform_activities(transformed_data)
 
@@ -754,34 +754,46 @@ def sync(client, config, catalog, state):
                 # Now date
                 if stream_name == 'gl_journal_entries':
                     now_date_str = strftime(utils.now())[:10]
-                    gl_journal_entries_from_dttm_str = get_bookmark(state, 'gl_journal_entries', sub_type, start_date)
-                    gl_journal_entries_from_dt_str = transform_datetime(gl_journal_entries_from_dttm_str)[:10]
-                    gl_journal_entries_from_param = endpoint_config.get('body', {}).get('filterConstraints', {})[0].get('value')
+                    gl_journal_entries_from_dttm_str = get_bookmark(
+                        state, 'gl_journal_entries', sub_type, start_date)
+                    gl_journal_entries_from_dt_str = transform_datetime(
+                        gl_journal_entries_from_dttm_str)[:10]
+                    gl_journal_entries_from_param = endpoint_config.get(
+                        'body', {}).get('filterConstraints', {})[0].get('value')
                     if gl_journal_entries_from_param:
                         endpoint_config['body']['filterConstraints'][0]['value'] = gl_journal_entries_from_dt_str
-                    gl_journal_entries_to_param = endpoint_config.get('body', {}).get('filterConstraints', {})[0].get('secondValue')
+                    gl_journal_entries_to_param = endpoint_config.get(
+                        'body', {}).get('filterConstraints', {})[0].get('secondValue')
                     if gl_journal_entries_to_param:
                         endpoint_config['body']['filterConstraints'][0]['secondValue'] = now_date_str
 
                 if stream_name == 'activities':
                     now_date_str = strftime(utils.now())[:10]
-                    activities_from_dttm_str = get_bookmark(state, 'activities', sub_type, start_date)
-                    activities_from_dt_str = transform_datetime(activities_from_dttm_str)[:10]
-                    activities_from_param = endpoint_config.get('params', {}).get('from')
+                    activities_from_dttm_str = get_bookmark(
+                        state, 'activities', sub_type, start_date)
+                    activities_from_dt_str = transform_datetime(
+                        activities_from_dttm_str)[:10]
+                    activities_from_param = endpoint_config.get(
+                        'params', {}).get('from')
                     if activities_from_param:
                         endpoint_config['params']['from'] = activities_from_dt_str
-                    activities_to_param = endpoint_config.get('params', {}).get('to')
+                    activities_to_param = endpoint_config.get(
+                        'params', {}).get('to')
                     if activities_to_param:
                         endpoint_config['params']['to'] = now_date_str
 
                 if stream_name == 'installments':
                     now_date_str = strftime(utils.now())[:10]
-                    installments_from_dttm_str = get_bookmark(state, 'installments', sub_type, start_date)
-                    installments_from_dt_str = transform_datetime(installments_from_dttm_str)[:10]
-                    installments_from_param = endpoint_config.get('params', {}).get('dueFrom')
+                    installments_from_dttm_str = get_bookmark(
+                        state, 'installments', sub_type, start_date)
+                    installments_from_dt_str = transform_datetime(
+                        installments_from_dttm_str)[:10]
+                    installments_from_param = endpoint_config.get(
+                        'params', {}).get('dueFrom')
                     if installments_from_param:
                         endpoint_config['params']['dueFrom'] = installments_from_dt_str
-                    installments_to_param = endpoint_config.get('params', {}).get('dueTo')
+                    installments_to_param = endpoint_config.get(
+                        'params', {}).get('dueTo')
                     if installments_to_param:
                         endpoint_config['params']['dueTo'] = now_date_str
 
