@@ -57,7 +57,7 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**clients (GET v2)**](https://api.mambu.com/?http#clients-getAll)
+[**clients (GET v2)**](https://api.mambu.com/?http#clients-search)
 - Endpoint: https://instance.sandbox.mambu.com/api/clients
 - Primary keys: id
 - Foreign keys: assigned_user_key (users), assigned_centre_key (centres), custom_field_set_id, custom_field_id (custom_field_sets)
@@ -116,7 +116,7 @@ This tap:
   - Bookmark: creation_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
-[**groups (GET v2)**](https://api.mambu.com/?http#groups-getAll)
+[**groups (GET v2)**](https://api.mambu.com/?http#groups-search)
 - Endpoint: https://instance.sandbox.mambu.com/api/groups
 - Primary keys: id
 - Foreign keys: client_key (clients), assigned_branch_key (branches), assigned_centre_key (centers), assigned_user_key (users), custom_field_set_id, custom_field_id (custom_field_sets)
@@ -178,12 +178,34 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**gl_journal_entries (GET v1)**](https://support.mambu.com/docs/gl-journal-entries-api)
-- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries
+[**gl_journal_entries (POST v1)**](https://support.mambu.com/docs/en/gl-journal-entries-api#post-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries/search
 - Primary keys: entry_id
 - Replication strategy: Incremental (query filtered based on date)
   - Bookmark: booking_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
+
+[**activities (GET v1)**](https://support.mambu.com/docs/activities-api)
+- Endpoint: https://instance.sandbox.mambu.com/api/activities
+- Primary keys: encoded_key
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark query field: timestamp
+  - Bookmark: timestamp (date-time)
+- Transformations: Fields camelCase to snake_case, de-nest activity
+
+[**index rate sources (GET v2)**](https://api.mambu.com/#index-rate-sources-getallindexratesources)
+- Endpoint: https://instance.sandbox.mambu.com/api/indexratesources
+- Primary keys: encoded_key
+- Replication strategy: Full table
+- Transformations: Fields camelCase to snake_case
+
+[**installments (GET v2)**](https://api.mambu.com/#mambu-api-v2-installments)
+- Endpoint: https://instance.sandbox.mambu.com/api/installments
+- Primary keys: encoded_key
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark query field: last_paid_date
+  - Bookmark: last_paid_date (date-time)
+- Transformations: Fields camelCase to snake_case
 
 ## Quick Start
 

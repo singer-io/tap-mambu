@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+  * Added endpoints: activities, index rate sources, installments. Client, Groups, GL Journal Entries endpoints changed.
+
 ## 1.1.2
   * Added lookback window for loan transactions stream.
 

@@ -75,3 +75,12 @@ def transform_json(this_json, path):
     out[path] = new_json
     transformed_json = convert_json(out)
     return transformed_json[path]
+
+
+def transform_activities(this_json):
+    for record in this_json:
+        for key, value in record['activity'].items():
+            record[key] = value
+        del record['activity']
+    return this_json
+
