@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.3
+  * Update custom field transformations and schema for streams.
+
 ## 1.1.2
   * Added lookback window for loan transactions stream.
 
