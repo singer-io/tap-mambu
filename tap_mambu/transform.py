@@ -52,12 +52,12 @@ def convert_custom_fields(this_json):
         for key in record:
             if isinstance(record[key], dict):
                 if key[:1] == '_':
-                    field = {}
                     for cf_key, cf_value in record[key].items():
+                        field = {}
                         field['field_set_id'] = key
                         field['id'] = cf_key
                         field['value'] = cf_value
-                    cust_field_sets.append(field)
+                        cust_field_sets.append(field)
         new_json[i]['custom_fields'] = cust_field_sets
         i = i + 1
     return new_json
