@@ -4,7 +4,7 @@ from datetime import datetime
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strftime, strptime_to_utc
-from tap_mambu.transform import transform_json
+from tap_mambu.transform import transform_json, transform_activities
 
 LOGGER = singer.get_logger()
 LOOKBACK_DEFAULT = 14
@@ -214,6 +214,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             transformed_data = transform_json(data, stream_name)
         elif data_key in data:
             transformed_data = transform_json(data, data_key)[data_key]
+      
+        if stream_name == 'activities':
+            transformed_data = transform_activities(transformed_data)
+
         # LOGGER.info('transformed_data = {}'.format(transformed_data))  # TESTING, comment out
         if not transformed_data or transformed_data is None:
             record_count = 0
@@ -366,6 +370,13 @@ def sync(client, config, catalog, state):
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
     loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
     loan_transactions_dttm = strptime_to_utc(loan_transactions_dt_str)
+
+    clients_dttm_str = get_bookmark(state, 'clients', 'self', start_date)
+    clients_dt_str = transform_datetime(clients_dttm_str)[:10]
+
+    groups_dttm_str = get_bookmark(state, 'groups', 'self', start_date)
+    groups_dt_str = transform_datetime(groups_dttm_str)[:10]
+
     lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
     if loan_transactions_dttm > lookback_date:
@@ -440,12 +451,24 @@ def sync(client, config, catalog, state):
             'id_fields': ['id']
         },
         'clients': {
-            'path': 'clients',
+            'path': 'clients:search',
             'api_version': 'v2',
-            'api_method': 'GET',
+            'api_method': 'POST',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC',
                 'detailsLevel': 'FULL'
+            },
+            'body': {
+                "sortingCriteria": {
+                    "field": "lastModifiedDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
+                    {
+                        "field": "lastModifiedDate",
+                        "operator": "AFTER",
+                        "value": clients_dt_str
+                    }
+                ]
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -532,12 +555,24 @@ def sync(client, config, catalog, state):
             'id_fields': ['encoded_key']
         },
         'groups': {
-            'path': 'groups',
+            'path': 'groups:search',
             'api_version': 'v2',
-            'api_method': 'GET',
+            'api_method': 'POST',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC',
                 'detailsLevel': 'FULL'
+            },
+            'body': {
+                "sortingCriteria": {
+                    "field": "lastModifiedDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
+                    {
+                        "field": "lastModifiedDate",
+                        "operator": "AFTER",
+                        "value": groups_dt_str
+                    }
+                ]
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -643,15 +678,52 @@ def sync(client, config, catalog, state):
             'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
         },
         'gl_journal_entries': {
-            'path': 'gljournalentries',
+            'path': 'gljournalentries/search',
             'api_version': 'v1',
-            'api_method': 'GET',
-            'params' : {
-                'from': '{gl_journal_entries_from_dt_str}',
-                'to': '{now_date_str}'
+            'api_method': 'POST',
+            'body': {
+                "filterConstraints": [
+                    {
+                        "filterSelection": "CREATION_DATE",
+                        "filterElement": "BETWEEN",
+                        "value": '{gl_journal_entries_from_dt_str}',
+                        "secondValue": "{now_date_str}"
+                    }
+                ]
             },
             'id_fields': ['entry_id'],
             'bookmark_field': 'booking_date',
+            'bookmark_type': 'datetime'
+        },
+        'activities': {
+            'path': 'activities',
+            'api_version': 'v1',
+            'api_method': 'GET',
+            'params' : {
+                'from': '{activities_from_dt_str}',
+                'to': '{now_date_str}'
+            },
+            'id_fields': ['encoded_key'],
+            'bookmark_field': 'timestamp',
+            'bookmark_type': 'datetime'
+        },
+        'index_rate_sources': {
+            'path': 'indexratesources',
+            'api_version': 'v2',
+            'api_method': 'GET',
+            'id_fields': ['encoded_key'],
+            'params': {}
+        },
+        'installments': {
+            'path': 'installments',
+            'api_version': 'v2',
+            'api_method': 'GET',
+            'id_fields': ['encoded_key'],
+            'params': {
+                'dueFrom': '{installments_from_dt_str}',
+                'dueTo': '{now_date_str}'
+            },
+            'bookmark_field': 'last_paid_date',
             'bookmark_type': 'datetime'
         }
     }
@@ -682,8 +754,49 @@ def sync(client, config, catalog, state):
                 # Now date
                 if stream_name == 'gl_journal_entries':
                     now_date_str = strftime(utils.now())[:10]
-                    gl_journal_entries_from_dttm_str = get_bookmark(state, 'gl_journal_entries', sub_type, start_date)
-                    gl_journal_entries_from_dt_str = transform_datetime(gl_journal_entries_from_dttm_str)[:10]
+                    gl_journal_entries_from_dttm_str = get_bookmark(
+                        state, 'gl_journal_entries', sub_type, start_date)
+                    gl_journal_entries_from_dt_str = transform_datetime(
+                        gl_journal_entries_from_dttm_str)[:10]
+                    gl_journal_entries_from_param = endpoint_config.get(
+                        'body', {}).get('filterConstraints', {})[0].get('value')
+                    if gl_journal_entries_from_param:
+                        endpoint_config['body']['filterConstraints'][0]['value'] = gl_journal_entries_from_dt_str
+                    gl_journal_entries_to_param = endpoint_config.get(
+                        'body', {}).get('filterConstraints', {})[0].get('secondValue')
+                    if gl_journal_entries_to_param:
+                        endpoint_config['body']['filterConstraints'][0]['secondValue'] = now_date_str
+
+                if stream_name == 'activities':
+                    now_date_str = strftime(utils.now())[:10]
+                    activities_from_dttm_str = get_bookmark(
+                        state, 'activities', sub_type, start_date)
+                    activities_from_dt_str = transform_datetime(
+                        activities_from_dttm_str)[:10]
+                    activities_from_param = endpoint_config.get(
+                        'params', {}).get('from')
+                    if activities_from_param:
+                        endpoint_config['params']['from'] = activities_from_dt_str
+                    activities_to_param = endpoint_config.get(
+                        'params', {}).get('to')
+                    if activities_to_param:
+                        endpoint_config['params']['to'] = now_date_str
+
+                if stream_name == 'installments':
+                    now_date_str = strftime(utils.now())[:10]
+                    installments_from_dttm_str = get_bookmark(
+                        state, 'installments', sub_type, start_date)
+                    installments_from_dt_str = transform_datetime(
+                        installments_from_dttm_str)[:10]
+                    installments_from_param = endpoint_config.get(
+                        'params', {}).get('dueFrom')
+                    if installments_from_param:
+                        endpoint_config['params']['dueFrom'] = installments_from_dt_str
+                    installments_to_param = endpoint_config.get(
+                        'params', {}).get('dueTo')
+                    if installments_to_param:
+                        endpoint_config['params']['dueTo'] = now_date_str
+
 
                 update_currently_syncing(state, stream_name)
                 path = endpoint_config.get('path')
@@ -691,12 +804,6 @@ def sync(client, config, catalog, state):
                 if sub_type_param:
                     endpoint_config['params']['type'] = sub_type
 
-                gl_journal_entries_from_param = endpoint_config.get('params', {}).get('from')
-                if gl_journal_entries_from_param:
-                    endpoint_config['params']['from'] = gl_journal_entries_from_dt_str
-                gl_journal_entries_to_param = endpoint_config.get('params', {}).get('to')
-                if gl_journal_entries_to_param:
-                    endpoint_config['params']['to'] = now_date_str
 
                 total_records = sync_endpoint(
                     client=client,
