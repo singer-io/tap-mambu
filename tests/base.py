@@ -244,7 +244,7 @@ class MambuBaseTest(unittest.TestCase):
 
     def get_properties(self):
         return {
-            'start_date': '2020-10-01T00:00:00Z',
+            'start_date': '2019-01-01T00:00:00Z',
             "username": os.environ['TAP_MAMBU_USERNAME'],
             "subdomain": os.environ['TAP_MAMBU_SUBDOMAIN']
             }
@@ -277,3 +277,73 @@ class MambuBaseTest(unittest.TestCase):
         return {table: properties.get(self.REPLICATION_METHOD, None)
                 for table, properties
                 in self.expected_metadata().items()}
+
+    @staticmethod
+    def select_all_streams_and_fields(conn_id, catalogs, select_all_fields: bool = True):
+        """Select all streams and all fields within streams"""
+        for catalog in catalogs:
+            schema = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+
+            non_selected_properties = []
+            if not select_all_fields:
+                # get a list of all properties so that none are selected
+                non_selected_properties = schema.get('annotated-schema', {}).get(
+                    'properties', {}).keys()
+
+            connections.select_catalog_and_fields_via_metadata(
+                conn_id, catalog, schema, [], non_selected_properties)
+
+    def verify_field_selection(self, conn_id, expected_stream_ids):
+        """
+        Verify only expected selected fields are selected
+        """
+
+        catalogs = menagerie.get_catalogs(conn_id)
+        for cat in catalogs:
+            with self.subTest(tap_stream_id=cat.get('tap_stream_id')):
+                # Call  menagerie.get_annotated_schema(conn_id, cat['stream_id'])
+                # Grab `metadata` off of that response
+                # for the empty breadcrumb, if it's selected, assert it's in `expected_stream_ids`
+                #  - if not selected assertFalse
+                # for other breadcrumbs, if it's selected, assert it's in `expected_selected_fields`
+                #  - if not selected assertFalse
+
+                mdata = menagerie.get_annotated_schema(conn_id, cat['stream_id']).get('metadata',[])
+
+                self.assertTrue(cat.get('metadata').get('selected'),
+                                msg="Stream not selected.")
+
+                for item in mdata:
+                    if item.get('breadcrumb') == []:
+                        if item.get('metadata').get('selected'):
+                            self.assertTrue(cat.get('tap_stream_id') in expected_stream_ids)
+                        else:
+                            self.assertFalse(cat.get('tap_stream_id') in expected_stream_ids)
+                    else:
+                        # TODO: dont assert on fields of unselected streams
+                        self.assertTrue(item.get('metadata').get('selected'))
+
+
+    def run_and_verify_sync(self, conn_id):
+        """
+        Run a sync job and make sure it exited properly.
+        Return a dictionary with keys of streams synced
+        and values of records synced for each stream
+        """
+        # Run a sync job using orchestrator
+        sync_job_name = runner.run_sync_mode(self, conn_id)
+
+        # Verify tap and target exit codes
+        exit_status = menagerie.get_exit_status(conn_id, sync_job_name)
+        menagerie.verify_sync_exit_status(self, exit_status, sync_job_name)
+
+        # Verify actual rows were synced
+        sync_record_count = runner.examine_target_output_file(
+            self, conn_id, self.expected_streams(), self.expected_primary_keys())
+        self.assertGreater(
+            sum(sync_record_count.values()), 0,
+            msg="failed to replicate any data: {}".format(sync_record_count)
+        )
+        print("total replicated row count: {}".format(sum(sync_record_count.values())))
+
+        return sync_record_count
