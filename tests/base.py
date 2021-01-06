@@ -272,6 +272,14 @@ class MambuBaseTest(unittest.TestCase):
                 for table, properties
                 in self.expected_metadata().items()}
 
+    def expected_automatic_fields(self):
+        """
+        return a dictionary with key of table name and value as a set of
+        primary key and replication key fields
+        """
+        return {table : self.expected_primary_keys()[table] | self.expected_replication_keys()[table]
+                for table in self.expected_metadata().keys()}
+
     def expected_replication_method(self):
         """return a dictionary with key of table name nd value of replication method"""
         return {table: properties.get(self.REPLICATION_METHOD, None)
