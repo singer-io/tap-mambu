@@ -44,7 +44,10 @@ class AutomaticFieldsTest(MambuBaseTest):
                     non_selected_fields=schema.get('annotated-schema', {}).get('properties', {})
                 )
 
-        # Verify that no fields are selected. Verify that automatic fields are automatic
+        # For expected sync streams, verify that
+        # - no fields are selected
+        # - automatic fields are automatic
+        # - non-automatic fields are "inclusion": "available"
         catalogs = menagerie.get_catalogs(conn_id)
 
         for catalog_entry in catalogs:
@@ -67,13 +70,21 @@ class AutomaticFieldsTest(MambuBaseTest):
                             self.assertTrue(inclusion == 'automatic')
                         else:
                             self.assertFalse(is_selected)
+                            self.assertTrue(inclusion == 'available')
 
         # Run a sync job using orchestrator
         record_count_by_stream = self.run_and_verify_sync(conn_id)
 
-        # Assert all expected streams synced at least
+        # Assert all expected streams synced at least a full pages of records
         for stream in self.expected_sync_streams():
             with self.subTest(stream=stream):
                 self.assertGreater(record_count_by_stream.get(stream, 0),
-                                   100,
+                                   self.get_properties()['page_size'],
                                    msg="{} did not sync more than a page of records".format(stream))
+
+        actual_fields_by_stream = runner.examine_target_output_for_fields()
+
+        for stream_name, actual_fields in actual_fields_by_stream.items():
+            with self.subTest(stream=stream_name):
+                self.assertSetEqual(self.expected_automatic_fields()[stream_name],
+                                    actual_fields)
