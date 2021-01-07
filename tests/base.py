@@ -245,8 +245,9 @@ class MambuBaseTest(unittest.TestCase):
     def get_properties(self):
         return {
             'start_date': '2019-01-01T00:00:00Z',
-            "username": os.environ['TAP_MAMBU_USERNAME'],
-            "subdomain": os.environ['TAP_MAMBU_SUBDOMAIN']
+            'username': os.environ['TAP_MAMBU_USERNAME'],
+            'subdomain': os.environ['TAP_MAMBU_SUBDOMAIN'],
+            'page_size': '100'
             }
 
     def get_credentials(self):
