@@ -37,6 +37,9 @@ class MambuBaseTest(unittest.TestCase):
         """A set of expected stream names"""
         return set(self.expected_metadata().keys())
 
+    def untestable_streams(self):
+        return set()
+
     def expected_sync_streams(self):
         return self.expected_streams() - self.untestable_streams()
 
