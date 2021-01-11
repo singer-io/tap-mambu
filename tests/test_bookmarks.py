@@ -13,9 +13,6 @@ class BookmarksTest(MambuBaseTest):
     def name():
         return "tap_tester_mambu_bookmarks_test"
 
-    def expected_sync_streams(self):
-        return self.expected_streams() - self.untestable_streams()
-
     def untestable_streams(self):
         return set([
             "communications", # Need to set up Twilio or email server to send stuff
