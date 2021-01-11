@@ -30,17 +30,6 @@ class AutomaticFieldsTest(MambuBaseTest):
         Verify that we can get multiple pages of automatic fields for each
         stream
         """
-
-        # conn_id = self.create_connection()
-        # catalogs = menagerie.get_catalogs(conn_id)
-
-        # # Don't select any fields
-        # self.select_all_streams_and_fields(conn_id, catalogs, select_all_fields=False)
-
-        # self.verify_stream_and_field_selection(conn_id)
-
-        # # Run a sync job using orchestrator
-        # record_count_by_stream = self.run_and_verify_sync(conn_id)
         (_,
          record_count_by_stream,
          _,

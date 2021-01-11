@@ -23,17 +23,6 @@ class PaginationTest(MambuBaseTest):
         Verify that we can get multiple pages of unique records for each
         stream
         """
-
-        # conn_id = self.create_connection()
-        # catalogs = menagerie.get_catalogs(conn_id)
-
-        # self.select_all_streams_and_fields(conn_id, catalogs)
-        # self.verify_stream_and_field_selection(conn_id)
-
-        # # Run a sync job using orchestrator
-        # record_count_by_stream = self.run_and_verify_sync(conn_id)
-        # all_records_by_stream = runner.get_records_from_target_output()
-
         (_,
          record_count_by_stream,
          _,
@@ -49,10 +38,7 @@ class PaginationTest(MambuBaseTest):
                 )
 
                 # Assert that records are unique
-                records = self.filter_output_file_for_records(
-                    all_records_by_stream,
-                    stream
-                )
+                records = self.filter_output_file_for_records(all_records_by_stream, stream)
 
                 unique_records = self.get_unique_records(stream, records)
 

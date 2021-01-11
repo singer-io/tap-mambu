@@ -4,7 +4,6 @@ Test that the tap respects the start date
 from singer.utils import strptime_to_utc
 from base import MambuBaseTest
 
-
 class StartDateTest(MambuBaseTest):
     """
     Test that the tap respects the start date
@@ -69,18 +68,6 @@ class StartDateTest(MambuBaseTest):
         future and running a sync results in less records than the first
         sync
         """
-
-        # conn_id = self.create_connection()
-        # catalogs = menagerie.get_catalogs(conn_id)
-
-        # self.select_all_streams_and_fields(conn_id, catalogs)
-        # self.verify_stream_and_field_selection(conn_id)
-
-        # # Run a sync job using orchestrator
-        # first_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
-        # first_sync_state = menagerie.get_state(conn_id)
-        # first_sync_all_records_by_stream = runner.get_records_from_target_output()
-
         (_,
          first_sync_record_count_by_stream,
          first_sync_state,
@@ -92,17 +79,6 @@ class StartDateTest(MambuBaseTest):
          second_sync_all_records_by_stream) = self.make_connection_and_run_sync(
              create_connection_kwargs={"original_properties": False},
          )
-
-        # conn_id = self.create_connection(original_properties=False)
-        # catalogs = menagerie.get_catalogs(conn_id)
-
-        # self.select_all_streams_and_fields(conn_id, catalogs)
-        # self.verify_stream_and_field_selection(conn_id)
-
-        # # Run a sync job using orchestrator
-        # second_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
-        # second_sync_state = menagerie.get_state(conn_id)
-        # second_sync_all_records_by_stream = runner.get_records_from_target_output()
 
         all_metadata = self.expected_metadata()
 

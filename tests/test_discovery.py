@@ -2,9 +2,7 @@
 Test tap discovery
 """
 import re
-
 from tap_tester import menagerie
-
 from base import MambuBaseTest
 
 class DiscoveryTest(MambuBaseTest):
@@ -38,16 +36,16 @@ class DiscoveryTest(MambuBaseTest):
         found_catalogs = [catalog for catalog in catalogs
                           if catalog.get('tap_stream_id') in streams_to_test]
 
-        self.assertGreater(len(found_catalogs), 0,
+        self.assertGreater(len(found_catalogs),
+                           0,
                            msg="unable to locate schemas for connection {}".format(conn_id))
-        self.assertEqual(len(found_catalogs),
-                         len(streams_to_test),
-                         msg="Expected {} streams, actual was {} for connection {}, "
-                             "actual {}".format(
-                                 len(streams_to_test),
-                                 len(found_catalogs),
-                                 found_catalogs,
-                                 conn_id))
+        self.assertEqual(len(streams_to_test),
+                         len(found_catalogs),
+                         msg="Expected {} streams, actual was {} for connection {}".format(
+                             len(streams_to_test),
+                             len(found_catalogs),
+                             conn_id)
+                         )
 
         # Verify the stream names discovered were what we expect
         found_catalog_names = {c['tap_stream_id'] for c in found_catalogs}
@@ -73,15 +71,14 @@ class DiscoveryTest(MambuBaseTest):
 
                 # verify there is only 1 top level breadcrumb
                 stream_properties = [item for item in metadata if item.get("breadcrumb") == []]
+                stream_metadata = stream_properties[0].get("metadata", {})
                 self.assertTrue(len(stream_properties) == 1,
                                 msg=("There is NOT only one top level breadcrumb for {}"
                                 "\nstream_properties | {}").format(stream, stream_properties))
 
                 # verify replication key(s)
                 expected = self.expected_replication_keys()[stream]
-                actual = set(
-                    stream_properties[0].get("metadata", {}).get(self.REPLICATION_KEYS, [])
-                )
+                actual = set(stream_metadata.get(self.REPLICATION_KEYS, []))
 
                 self.assertEqual(
                     expected,
@@ -90,9 +87,7 @@ class DiscoveryTest(MambuBaseTest):
 
                 # verify primary key(s)
                 expected = self.expected_primary_keys()[stream]
-                actual = set(
-                    stream_properties[0].get("metadata", {}).get(self.PRIMARY_KEYS, [])
-                )
+                actual = set(stream_metadata.get(self.PRIMARY_KEYS, []))
 
                 self.assertEqual(
                     expected,
@@ -102,13 +97,9 @@ class DiscoveryTest(MambuBaseTest):
                 # verify that if there is a replication key we are doing INCREMENTAL otherwise FULL
 
 
-                actual_replication_method = (
-                    stream_properties[0]
-                    .get("metadata", {})
-                    .get(self.REPLICATION_METHOD)
-                )
+                actual_replication_method = stream_metadata.get(self.REPLICATION_METHOD)
 
-                if stream_properties[0].get("metadata", {}).get(self.REPLICATION_KEYS):
+                if stream_metadata.get(self.REPLICATION_KEYS):
                     self.assertTrue(
                         self.INCREMENTAL == actual_replication_method,
                         msg="Expected INCREMENTAL replication since there is a replication key")
@@ -122,7 +113,7 @@ class DiscoveryTest(MambuBaseTest):
                 self.assertEqual(
                     expected_replication_method,
                     actual_replication_method,
-                    msg="expected primary key {} but actual is {}".format(
+                    msg="expected replication method {} but actual is {}".format(
                         expected_replication_method,
                         actual_replication_method))
 
@@ -130,8 +121,8 @@ class DiscoveryTest(MambuBaseTest):
                 expected_replication_keys = self.expected_replication_keys()[stream]
                 expected_automatic_fields = expected_primary_keys | expected_replication_keys
 
-                # verify that primary, replication and foreign keys
-                # are given the inclusion of automatic in metadata.
+                # verify that primary and replication keys are given `"inclusion": "automatic"`
+                # metadata.
 
                 for item in metadata:
                     # Skip the stream level metadata

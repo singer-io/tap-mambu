@@ -18,15 +18,6 @@ class SyncCanaryTest(MambuBaseTest):
         verify exit codes do not throw errors. This is meant to be a smoke test for the tap. If this
         is failing do not expect any other tests to pass.
         """
-        # conn_id = self.create_connection()
-        # catalogs = menagerie.get_catalogs(conn_id)
-
-        # self.select_all_streams_and_fields(conn_id, catalogs)
-        # self.verify_stream_and_field_selection(conn_id)
-
-        # # Run a sync job using orchestrator
-        # record_count_by_stream = self.run_and_verify_sync(conn_id)
-
         (_,
          record_count_by_stream,
          _,
