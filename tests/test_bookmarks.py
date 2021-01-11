@@ -25,28 +25,6 @@ class BookmarksTest(MambuBaseTest):
         adjusted_bookmark = bookmark_dt - timedelta(days=1)
         return singer.utils.strftime(adjusted_bookmark)
 
-    def get_bookmark_key(self, stream):
-        stuff = {
-            "branches": "last_modified_date",
-            "communications": "creation_date",
-            "centres": "last_modified_date",
-            "clients": "last_modified_date",
-            "credit_arrangements": "last_modified_date",
-            "deposit_accounts": "last_modified_date",
-            "deposit_products": "last_modified_date",
-            "deposit_transactions": "creation_date",
-            "groups":"last_modified_date",
-            "loan_accounts": "last_modified_date",
-            "loan_products": "last_modified_date",
-            "loan_transactions": "creation_date",
-            "tasks": "last_modified_date",
-            "users": "last_modified_date",
-            "gl_journal_entries": "booking_date",
-            "activities": "timestamp",
-            "installments": "last_paid_date",
-        }
-        return stuff[stream]
-
     def test_run(self):
         """
         Verify that we can get multiple pages of data for each stream
@@ -102,7 +80,6 @@ class BookmarksTest(MambuBaseTest):
 
                 if replication_method == self.INCREMENTAL:
                     replication_key = self.expected_replication_keys().get(stream).pop()
-                    bookmark_key = self.get_bookmark_key(stream)  # BUG_SRCE-4609
 
                     # bookmarked states (actual values)
                     first_sync_bookmark_value = first_sync_bookmarks['bookmarks'][stream]
