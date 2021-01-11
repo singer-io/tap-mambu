@@ -307,39 +307,8 @@ class MambuBaseTest(unittest.TestCase):
                     non_selected_properties = schema.get('annotated-schema', {}).get(
                         'properties', {}).keys()
 
-                    connections.select_catalog_and_fields_via_metadata(
-                        conn_id, catalog, schema, [], non_selected_properties)
-
-    def verify_field_selection(self, conn_id, expected_stream_ids):
-        """
-        Verify only expected selected fields are selected
-        """
-
-        catalogs = menagerie.get_catalogs(conn_id)
-        for cat in catalogs:
-            with self.subTest(tap_stream_id=cat.get('tap_stream_id')):
-                # Call  menagerie.get_annotated_schema(conn_id, cat['stream_id'])
-                # Grab `metadata` off of that response
-                # for the empty breadcrumb, if it's selected, assert it's in `expected_stream_ids`
-                #  - if not selected assertFalse
-                # for other breadcrumbs, if it's selected, assert it's in `expected_selected_fields`
-                #  - if not selected assertFalse
-
-                mdata = menagerie.get_annotated_schema(conn_id, cat['stream_id']).get('metadata',[])
-
-                self.assertTrue(cat.get('metadata').get('selected'),
-                                msg="Stream not selected.")
-
-                for item in mdata:
-                    if item.get('breadcrumb') == []:
-                        if item.get('metadata').get('selected'):
-                            self.assertTrue(cat.get('tap_stream_id') in expected_stream_ids)
-                        else:
-                            self.assertFalse(cat.get('tap_stream_id') in expected_stream_ids)
-                    else:
-                        # TODO: dont assert on fields of unselected streams
-                        self.assertTrue(item.get('metadata').get('selected'))
-
+                connections.select_catalog_and_fields_via_metadata(
+                    conn_id, catalog, schema, [], non_selected_properties)
 
     def run_and_verify_sync(self, conn_id):
         """
@@ -379,3 +348,45 @@ class MambuBaseTest(unittest.TestCase):
             # Cast to a tuple to make it hashable
             unique_records.add(tuple(record_primary_key))
         return unique_records
+
+    def verify_stream_and_field_selection(self, conn_id):
+        """
+        For expected sync streams, verify that
+        - all fields are selected
+        - automatic fields are automatic
+        - non-automatic fields are "inclusion": "available"
+
+        For streams we don't expect to sync, verify that
+        - "selected" is false
+        """
+        catalogs = menagerie.get_catalogs(conn_id)
+
+        for catalog_entry in catalogs:
+            tap_stream_id = catalog_entry['tap_stream_id']
+
+            with self.subTest(tap_stream_id=tap_stream_id):
+                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
+                entry_metadata = schema.get('metadata', [])
+                if tap_stream_id in self.expected_sync_streams():
+                    for mdata in entry_metadata:
+                        is_selected = mdata.get('metadata').get('selected')
+                        if mdata.get('breadcrumb') == []:
+                            # Verify all expected sync streams are selected
+                            self.assertTrue(is_selected)
+                        else:
+                            inclusion = mdata.get('metadata', {}).get('inclusion')
+                            field_name = mdata.get('breadcrumb', ['properties', None])[1]
+
+                            automatic_fields = self.expected_automatic_fields()[tap_stream_id]
+
+                            self.assertIsNotNone(field_name)
+
+                            if field_name in automatic_fields:
+                                self.assertTrue(inclusion == 'automatic')
+                            else:
+                                self.assertTrue(is_selected)
+                                self.assertTrue(inclusion == 'available')
+                else:
+                    for mdata in entry_metadata:
+                        if mdata.get('breadcrumb') == []:
+                            self.assertFalse(mdata.get('metadata').get('selected'))

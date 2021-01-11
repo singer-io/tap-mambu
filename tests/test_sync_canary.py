@@ -26,10 +26,7 @@ class SyncCanaryTest(MambuBaseTest):
         catalogs = menagerie.get_catalogs(conn_id)
 
         self.select_all_streams_and_fields(conn_id, catalogs)
-
-        # Verify all expected streams are selected
-        # Verify all fields for expected streams are selected
-        self.verify_field_selection(conn_id, self.expected_streams())
+        self.verify_stream_and_field_selection(conn_id)
 
         # Run a sync job using orchestrator
         record_count_by_stream = self.run_and_verify_sync(conn_id)
