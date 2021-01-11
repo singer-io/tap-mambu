@@ -86,45 +86,8 @@ class StartDateTest(MambuBaseTest):
         conn_id = self.create_connection(original_properties=False)
         catalogs = menagerie.get_catalogs(conn_id)
 
-        # Select all fields
-        for catalog_entry in catalogs:
-            if catalog_entry["tap_stream_id"] in self.expected_sync_streams():
-                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
-                connections.select_catalog_and_fields_via_metadata(
-                    conn_id,
-                    catalog_entry,
-                    schema,
-                )
-
-        # For expected sync streams, verify that
-        # - all fields are selected
-        # - automatic fields are automatic
-        # - non-automatic fields are "inclusion": "available"
-        catalogs = menagerie.get_catalogs(conn_id)
-
-        for catalog_entry in catalogs:
-            tap_stream_id = catalog_entry['tap_stream_id']
-            if tap_stream_id in self.expected_sync_streams():
-                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
-                entry_metadata = schema.get('metadata', [])
-
-                for mdata in entry_metadata:
-                    is_selected = mdata.get('metadata').get('selected')
-                    if mdata.get('breadcrumb') == []:
-                        self.assertTrue(is_selected)
-                    else:
-                        inclusion = mdata.get('metadata', {}).get('inclusion')
-                        field_name = mdata.get('breadcrumb', ['properties', None])[1]
-
-                        automatic_fields = self.expected_automatic_fields()[tap_stream_id]
-
-                        self.assertIsNotNone(field_name)
-
-                        if field_name in automatic_fields:
-                            self.assertTrue(inclusion == 'automatic')
-                        else:
-                            self.assertTrue(is_selected)
-                            self.assertTrue(inclusion == 'available')
+        self.select_all_streams_and_fields(conn_id, catalogs)
+        self.verify_stream_and_field_selection(conn_id)
 
         # Run a sync job using orchestrator
         second_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
