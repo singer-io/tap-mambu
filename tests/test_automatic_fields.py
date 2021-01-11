@@ -21,22 +21,14 @@ class AutomaticFieldsTest(MambuBaseTest):
             "communications", # Need to set up Twilio or email server to send stuff
         ])
 
-    def test_run(self):
+    def verify_stream_and_field_selection(self, conn_id):
         """
-        Verify that we can get multiple pages of automatic fields for each
-        stream
+        For expected sync streams, verify that
+        - no fields are selected
+        - automatic fields are automatic
+        - non-automatic fields are "inclusion": "available"
         """
 
-        conn_id = self.create_connection()
-        catalogs = menagerie.get_catalogs(conn_id)
-
-        # Don't select any fields
-        self.select_all_streams_and_fields(conn_id, catalogs, select_all_fields=False)
-
-        # For expected sync streams, verify that
-        # - no fields are selected
-        # - automatic fields are automatic
-        # - non-automatic fields are "inclusion": "available"
         catalogs = menagerie.get_catalogs(conn_id)
 
         for catalog_entry in catalogs:
