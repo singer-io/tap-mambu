@@ -61,8 +61,28 @@ class AutomaticFieldsTest(MambuBaseTest):
                             self.assertFalse(is_selected)
                             self.assertTrue(inclusion == 'available')
 
-        # Run a sync job using orchestrator
-        record_count_by_stream = self.run_and_verify_sync(conn_id)
+    def test_run(self):
+        """
+        Verify that we can get multiple pages of automatic fields for each
+        stream
+        """
+
+        # conn_id = self.create_connection()
+        # catalogs = menagerie.get_catalogs(conn_id)
+
+        # # Don't select any fields
+        # self.select_all_streams_and_fields(conn_id, catalogs, select_all_fields=False)
+
+        # self.verify_stream_and_field_selection(conn_id)
+
+        # # Run a sync job using orchestrator
+        # record_count_by_stream = self.run_and_verify_sync(conn_id)
+        (conn_id,
+         record_count_by_stream,
+         _,
+         _) = self.make_connection_and_run_sync(selection_kwargs={"select_all_fields": False})
+
+        actual_fields_by_stream = runner.examine_target_output_for_fields()
 
         # Assert all expected streams synced at least a full pages of records
         for stream in self.expected_sync_streams():
@@ -70,8 +90,6 @@ class AutomaticFieldsTest(MambuBaseTest):
                 self.assertGreater(record_count_by_stream.get(stream, 0),
                                    self.get_properties()['page_size'],
                                    msg="{} did not sync more than a page of records".format(stream))
-
-        actual_fields_by_stream = runner.examine_target_output_for_fields()
 
         for stream_name, actual_fields in actual_fields_by_stream.items():
             with self.subTest(stream=stream_name):

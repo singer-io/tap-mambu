@@ -72,27 +72,39 @@ class StartDateTest(MambuBaseTest):
         sync
         """
 
-        conn_id = self.create_connection()
-        catalogs = menagerie.get_catalogs(conn_id)
+        # conn_id = self.create_connection()
+        # catalogs = menagerie.get_catalogs(conn_id)
 
-        self.select_all_streams_and_fields(conn_id, catalogs)
-        self.verify_stream_and_field_selection(conn_id)
+        # self.select_all_streams_and_fields(conn_id, catalogs)
+        # self.verify_stream_and_field_selection(conn_id)
 
-        # Run a sync job using orchestrator
-        first_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
-        first_sync_state = menagerie.get_state(conn_id)
-        first_sync_all_records_by_stream = runner.get_records_from_target_output()
+        # # Run a sync job using orchestrator
+        # first_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
+        # first_sync_state = menagerie.get_state(conn_id)
+        # first_sync_all_records_by_stream = runner.get_records_from_target_output()
 
-        conn_id = self.create_connection(original_properties=False)
-        catalogs = menagerie.get_catalogs(conn_id)
+        (_,
+         first_sync_record_count_by_stream,
+         first_sync_state,
+         first_sync_all_records_by_stream) = self.make_connection_and_run_sync()
 
-        self.select_all_streams_and_fields(conn_id, catalogs)
-        self.verify_stream_and_field_selection(conn_id)
+        (_,
+         second_sync_record_count_by_stream,
+         second_sync_state,
+         second_sync_all_records_by_stream) = self.make_connection_and_run_sync(
+             create_connection_kwargs={original_properties: False},
+         )
 
-        # Run a sync job using orchestrator
-        second_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
-        second_sync_state = menagerie.get_state(conn_id)
-        second_sync_all_records_by_stream = runner.get_records_from_target_output()
+        # conn_id = self.create_connection(original_properties=False)
+        # catalogs = menagerie.get_catalogs(conn_id)
+
+        # self.select_all_streams_and_fields(conn_id, catalogs)
+        # self.verify_stream_and_field_selection(conn_id)
+
+        # # Run a sync job using orchestrator
+        # second_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
+        # second_sync_state = menagerie.get_state(conn_id)
+        # second_sync_all_records_by_stream = runner.get_records_from_target_output()
 
         all_metadata = self.expected_metadata()
 

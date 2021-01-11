@@ -26,15 +26,20 @@ class PaginationTest(MambuBaseTest):
         stream
         """
 
-        conn_id = self.create_connection()
-        catalogs = menagerie.get_catalogs(conn_id)
+        # conn_id = self.create_connection()
+        # catalogs = menagerie.get_catalogs(conn_id)
 
-        self.select_all_streams_and_fields(conn_id, catalogs)
-        self.verify_stream_and_field_selection(conn_id)
+        # self.select_all_streams_and_fields(conn_id, catalogs)
+        # self.verify_stream_and_field_selection(conn_id)
 
-        # Run a sync job using orchestrator
-        record_count_by_stream = self.run_and_verify_sync(conn_id)
-        all_records_by_stream = runner.get_records_from_target_output()
+        # # Run a sync job using orchestrator
+        # record_count_by_stream = self.run_and_verify_sync(conn_id)
+        # all_records_by_stream = runner.get_records_from_target_output()
+
+        (conn_id,
+         record_count_by_stream,
+         _,
+         all_records_by_stream) = self.make_connection_and_run_sync()
 
         for stream in self.expected_sync_streams():
             with self.subTest(stream=stream):

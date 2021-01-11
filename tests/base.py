@@ -393,3 +393,28 @@ class MambuBaseTest(unittest.TestCase):
                     for mdata in entry_metadata:
                         if mdata.get('breadcrumb') == []:
                             self.assertFalse(mdata.get('metadata').get('selected'))
+
+    def make_connection_and_run_sync(self, create_connection_kwargs=None, selection_kwargs=None):
+        """
+        These lines of code are at the start of every test, and some tests repeat this logic a 
+        second time
+        """
+        if create_connection_kwargs is None:
+            create_connection_kwargs = {}
+
+        if selection_kwargs is None:
+            selection_kwargs = {}
+
+        conn_id = self.create_connection(**create_connection_kwargs)
+        catalogs = menagerie.get_catalogs(conn_id)
+
+        self.select_all_streams_and_fields(conn_id, catalogs, **selection_kwargs)
+        self.verify_stream_and_field_selection(conn_id)
+
+        # Run a sync job using orchestrator
+        record_count = self.run_and_verify_sync(conn_id)
+
+        bookmarks = menagerie.get_state(conn_id)
+        records = runner.get_records_from_target_output()
+
+        return conn_id, record_count, bookmarks, records
