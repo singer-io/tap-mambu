@@ -86,19 +86,13 @@ class PaginationTest(MambuBaseTest):
                     msg="{} did not sync more than a page of records".format(stream)
                 )
 
-
                 # Assert that records are unique
-                records = [message['data']
-                           for message in all_records_by_stream[stream]['messages']
-                           if message['action'] == 'upsert']
+                records = self.filter_output_file_for_records(
+                    all_records_by_stream,
+                    stream
+                )
 
-                unique_records = set()
-                for record in records:
-                    # Build the primary key for this record, maintaining the same order for the fields
-                    record_primary_key = [record[field]
-                                          for field in sorted(self.expected_primary_keys()[stream])]
-                    # Cast to a tuple to make it hashable
-                    unique_records.add(tuple(record_primary_key))
+                unique_records = self.get_unique_records(stream, records)
 
                 self.assertGreater(len(unique_records),
                                    self.get_properties()['page_size'])

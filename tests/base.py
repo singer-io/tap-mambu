@@ -242,18 +242,23 @@ class MambuBaseTest(unittest.TestCase):
         menagerie.verify_check_exit_status(self, exit_status, check_job_name)
         return conn_id
 
-    def get_properties(self):
-        return {
-            'start_date': '2019-01-01T00:00:00Z',
+    def get_properties(self, original_properties=True):
+        properties = {
+            'start_date': '2017-01-01T00:00:00Z',
             'username': os.environ['TAP_MAMBU_USERNAME'],
             'subdomain': os.environ['TAP_MAMBU_SUBDOMAIN'],
             'page_size': 100
-            }
+        }
+
+        if not original_properties:
+            properties['start_date'] = '2021-01-01T00:00:00Z'
+
+        return properties
 
     def get_credentials(self):
         return {
             "password": os.environ['TAP_MAMBU_PASSWORD']
-            }
+        }
 
     def expected_primary_keys(self):
         """
@@ -356,3 +361,18 @@ class MambuBaseTest(unittest.TestCase):
         print("total replicated row count: {}".format(sum(sync_record_count.values())))
 
         return sync_record_count
+
+    def filter_output_file_for_records(self, output_file, stream_name):
+        return [message['data']
+                for message in output_file[stream_name]['messages']
+                if message['action'] == 'upsert']
+
+    def get_unique_records(self, stream, records):
+        unique_records = set()
+        for record in records:
+            # Build the primary key for this record, maintaining the same order for the fields
+            record_primary_key = [record[field]
+                                  for field in sorted(self.expected_primary_keys()[stream])]
+            # Cast to a tuple to make it hashable
+            unique_records.add(tuple(record_primary_key))
+        return unique_records
