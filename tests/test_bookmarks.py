@@ -40,13 +40,12 @@ class BookmarksTest(MambuBaseTest):
         # Run a sync job using orchestrator
         first_sync_record_count = self.run_and_verify_sync(conn_id)
 
-        first_sync_state = menagerie.get_state(conn_id)
-        first_sync_bookmarks = dict(first_sync_state)
+        first_sync_bookmarks = menagerie.get_state(conn_id)
         first_sync_records = runner.get_records_from_target_output()
 
 
         new_bookmarks = {}
-        for stream_name, current_bookmark in first_sync_state['bookmarks'].items():
+        for stream_name, current_bookmark in first_sync_bookmarks['bookmarks'].items():
             if stream_name == 'gl_accounts':
                 new_gl_bookmarks = {
                     sub_stream : self.subtract_day(sub_bookmark)
@@ -62,8 +61,7 @@ class BookmarksTest(MambuBaseTest):
 
         # Run a sync job using orchestrator
         second_sync_record_count = self.run_and_verify_sync(conn_id)
-        second_sync_state = menagerie.get_state(conn_id)
-        second_sync_bookmarks = dict(second_sync_state)
+        second_sync_bookmarks = menagerie.get_state(conn_id)
         second_sync_records = runner.get_records_from_target_output()
 
         for stream in self.expected_sync_streams():
