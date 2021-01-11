@@ -36,7 +36,6 @@ class BookmarksTest(MambuBaseTest):
         self.select_all_streams_and_fields(conn_id, catalogs)
         self.verify_stream_and_field_selection(conn_id)
 
-
         # Run a sync job using orchestrator
         first_sync_record_count = self.run_and_verify_sync(conn_id)
 
@@ -68,28 +67,26 @@ class BookmarksTest(MambuBaseTest):
             with self.subTest(stream=stream):
                 replication_method = self.expected_replication_method().get(stream)
 
-                # record counts
                 first_sync_count = first_sync_record_count.get(stream, 0)
                 second_sync_count = second_sync_record_count.get(stream, 0)
 
-                # record messages
                 first_sync_messages = first_sync_records.get(stream, {'messages': []}).get('messages')
                 second_sync_messages = second_sync_records.get(stream, {'messages': []}).get('messages')
 
                 if replication_method == self.INCREMENTAL:
                     replication_key = self.expected_replication_keys().get(stream).pop()
 
-                    # bookmarked states (actual values)
                     first_sync_bookmark_value = first_sync_bookmarks['bookmarks'][stream]
                     second_sync_bookmark_value = second_sync_bookmarks['bookmarks'][stream]
-                    # bookmarked values as utc for comparing against records
+                    # bookmarked values as utc datetime objects for comparing against records
                     first_sync_bookmark_value_utc = singer.utils.strptime_to_utc(first_sync_bookmark_value)
                     second_sync_bookmark_value_utc = singer.utils.strptime_to_utc(second_sync_bookmark_value)
 
                     simulated_bookmark_value = new_state['bookmarks'][stream]
 
-                    # Verify the second sync bookmark is Equal to the first sync bookmark
-                    self.assertEqual(second_sync_bookmark_value, first_sync_bookmark_value) # assumes no changes to data during test
+                    # Verify the both syncs end on the same bookmark
+                    self.assertEqual(first_sync_bookmark_value,
+                                     second_sync_bookmark_value)
 
                     # Verify that first sync records fall betwen the start date and the final
                     # bookmark value
@@ -117,10 +114,8 @@ class BookmarksTest(MambuBaseTest):
                     self.assertGreater(second_sync_count, 0, msg="We are not fully testing bookmarking for {}".format(stream))
 
                 elif replication_method == self.FULL_TABLE:
-                    # Verify the first sync sets a bookmark of the expected form
+                    # Verify no bookmark exists
                     self.assertNotIn(stream, first_sync_bookmarks['bookmarks'])
-
-                    # Verify the second sync sets a bookmark of the expected form
                     self.assertNotIn(stream, second_sync_bookmarks['bookmarks'])
 
                 else:

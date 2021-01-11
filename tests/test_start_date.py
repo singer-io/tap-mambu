@@ -75,7 +75,6 @@ class StartDateTest(MambuBaseTest):
         conn_id = self.create_connection()
         catalogs = menagerie.get_catalogs(conn_id)
 
-        # Select all fields
         self.select_all_streams_and_fields(conn_id, catalogs)
         self.verify_stream_and_field_selection(conn_id)
 

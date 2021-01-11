@@ -36,7 +36,6 @@ class PaginationTest(MambuBaseTest):
         record_count_by_stream = self.run_and_verify_sync(conn_id)
         all_records_by_stream = runner.get_records_from_target_output()
 
-
         for stream in self.expected_sync_streams():
             with self.subTest(stream=stream):
                 # Assert all expected streams synced at least a full pages of records
