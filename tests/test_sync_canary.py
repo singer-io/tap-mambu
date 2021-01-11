@@ -1,11 +1,7 @@
 """
 Test that with no fields selected for a stream automatic fields are still replicated
 """
-
-from tap_tester import runner, menagerie
-
 from base import MambuBaseTest
-
 
 class SyncCanaryTest(MambuBaseTest):
     """
@@ -31,7 +27,7 @@ class SyncCanaryTest(MambuBaseTest):
         # # Run a sync job using orchestrator
         # record_count_by_stream = self.run_and_verify_sync(conn_id)
 
-        (conn_id,
+        (_,
          record_count_by_stream,
          _,
          _) = self.make_connection_and_run_sync()

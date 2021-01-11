@@ -1,11 +1,9 @@
 """
 Test that the tap respects the start date
 """
-
-from tap_tester import runner, menagerie, connections
-
+from singer.utils import strptime_to_utc
 from base import MambuBaseTest
-import singer
+
 
 class StartDateTest(MambuBaseTest):
     """
@@ -49,8 +47,8 @@ class StartDateTest(MambuBaseTest):
 
         for value in rep_values:
             self.assertGreaterEqual(
-                singer.utils.strptime_to_utc(value),
-                singer.utils.strptime_to_utc(start_date)
+                strptime_to_utc(value),
+                strptime_to_utc(start_date)
             )
 
     def verify_replication_key_values(self, stream_name):
@@ -92,7 +90,7 @@ class StartDateTest(MambuBaseTest):
          second_sync_record_count_by_stream,
          second_sync_state,
          second_sync_all_records_by_stream) = self.make_connection_and_run_sync(
-             create_connection_kwargs={original_properties: False},
+             create_connection_kwargs={"original_properties": False},
          )
 
         # conn_id = self.create_connection(original_properties=False)

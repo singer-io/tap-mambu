@@ -1,8 +1,10 @@
-from tap_tester import runner, menagerie, connections
-
-from base import MambuBaseTest
-import singer
+"""
+Test that the tap can replicate multiple pages of data
+"""
 from datetime import timedelta
+from singer.utils import strftime, strptime_to_utc
+from tap_tester import runner, menagerie
+from base import MambuBaseTest
 
 class BookmarksTest(MambuBaseTest):
     """
@@ -21,9 +23,9 @@ class BookmarksTest(MambuBaseTest):
         ])
 
     def subtract_day(self, bookmark):
-        bookmark_dt = singer.utils.strptime_to_utc(bookmark)
+        bookmark_dt = strptime_to_utc(bookmark)
         adjusted_bookmark = bookmark_dt - timedelta(days=1)
-        return singer.utils.strftime(adjusted_bookmark)
+        return strftime(adjusted_bookmark)
 
     def test_run(self):
         """
@@ -75,18 +77,14 @@ class BookmarksTest(MambuBaseTest):
                 first_sync_count = first_sync_record_count.get(stream, 0)
                 second_sync_count = second_sync_record_count.get(stream, 0)
 
-                first_sync_messages = first_sync_records.get(stream, {'messages': []}).get('messages')
-                second_sync_messages = second_sync_records.get(stream, {'messages': []}).get('messages')
+                first_sync_messages = first_sync_records.get(stream, {}).get('messages', [])
+                second_sync_messages = second_sync_records.get(stream, {}).get('messages', [])
 
                 if replication_method == self.INCREMENTAL:
                     replication_key = self.expected_replication_keys().get(stream).pop()
 
                     first_sync_bookmark_value = first_sync_bookmarks['bookmarks'][stream]
                     second_sync_bookmark_value = second_sync_bookmarks['bookmarks'][stream]
-                    # bookmarked values as utc datetime objects for comparing against records
-                    first_sync_bookmark_value_utc = singer.utils.strptime_to_utc(first_sync_bookmark_value)
-                    second_sync_bookmark_value_utc = singer.utils.strptime_to_utc(second_sync_bookmark_value)
-
                     simulated_bookmark_value = new_state['bookmarks'][stream]
 
                     # Verify the both syncs end on the same bookmark
@@ -96,27 +94,35 @@ class BookmarksTest(MambuBaseTest):
                     # Verify that first sync records fall betwen the start date and the final
                     # bookmark value
                     for message in first_sync_messages:
-                        lower_bound = singer.utils.strptime_to_utc(self.get_properties()['start_date'])
-                        actual_value = singer.utils.strptime_to_utc(message.get('data').get(replication_key))
-                        upper_bound = first_sync_bookmark_value_utc
-                        self.assertTrue(lower_bound <= actual_value <= upper_bound,
-                                        msg="First sync records fall outside of expected sync window")
+                        lower_bound = strptime_to_utc(self.get_properties()['start_date'])
+                        actual_value = strptime_to_utc(message.get('data').get(replication_key))
+                        upper_bound = strptime_to_utc(first_sync_bookmark_value)
+                        self.assertTrue(
+                            lower_bound <= actual_value <= upper_bound,
+                            msg="First sync records fall outside of expected sync window"
+                        )
 
                     # Verify the second sync records fall between simulated bookmark value and the
                     # final bookmark value
                     for message in second_sync_messages:
-                        lower_bound = singer.utils.strptime_to_utc(simulated_bookmark_value)
-                        actual_value = singer.utils.strptime_to_utc(message.get('data').get(replication_key))
-                        upper_bound = second_sync_bookmark_value_utc
-                        self.assertTrue(lower_bound <= actual_value <= upper_bound,
-                                        msg="Second sync records fall outside of expected sync window")
+                        lower_bound = strptime_to_utc(simulated_bookmark_value)
+                        actual_value = strptime_to_utc(message.get('data',{}).get(replication_key))
+                        upper_bound = strptime_to_utc(second_sync_bookmark_value)
+                        self.assertTrue(
+                            lower_bound <= actual_value <= upper_bound,
+                            msg="Second sync records fall outside of expected sync window"
+                        )
 
 
                     # Verify the number of records in the 2nd sync is less then the first
                     self.assertLess(second_sync_count, first_sync_count)
 
                     # Verify at least 1 record was replicated in the second sync
-                    self.assertGreater(second_sync_count, 0, msg="We are not fully testing bookmarking for {}".format(stream))
+                    self.assertGreater(
+                        second_sync_count,
+                        0,
+                        msg="We are not fully testing bookmarking for {}".format(stream)
+                    )
 
                 elif replication_method == self.FULL_TABLE:
                     # Verify no bookmark exists
@@ -124,4 +130,6 @@ class BookmarksTest(MambuBaseTest):
                     self.assertNotIn(stream, second_sync_bookmarks['bookmarks'])
 
                 else:
-                    raise NotImplementedError("invalid replication method: {}".format(replication_method))
+                    raise NotImplementedError(
+                        "invalid replication method: {}".format(replication_method)
+                    )

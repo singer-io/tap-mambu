@@ -2,8 +2,6 @@
 Test that when no fields are selected for a stream, automatic fields are still replicated
 """
 
-from tap_tester import runner, menagerie, connections
-
 from base import MambuBaseTest
 
 class PaginationTest(MambuBaseTest):
@@ -36,7 +34,7 @@ class PaginationTest(MambuBaseTest):
         # record_count_by_stream = self.run_and_verify_sync(conn_id)
         # all_records_by_stream = runner.get_records_from_target_output()
 
-        (conn_id,
+        (_,
          record_count_by_stream,
          _,
          all_records_by_stream) = self.make_connection_and_run_sync()

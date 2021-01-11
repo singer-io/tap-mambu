@@ -2,9 +2,8 @@
 Setup expectations for test sub classes
 Run discovery for as a prerequisite for most tests
 """
-import unittest
 import os
-
+import unittest
 from tap_tester import connections, menagerie, runner
 
 
@@ -234,7 +233,6 @@ class MambuBaseTest(unittest.TestCase):
             }
         }
 
-
     def create_connection(self, original_properties: bool = True):
         """Create a new connection with the test name"""
         # Create the connection
@@ -268,8 +266,7 @@ class MambuBaseTest(unittest.TestCase):
 
     def expected_primary_keys(self):
         """
-        return a dictionary with key of table name
-        and value as a set of primary key fields
+        return a dictionary with key of table name and value as a set of primary key fields
         """
         return {table: properties.get(self.PRIMARY_KEYS, set())
                 for table, properties
@@ -277,8 +274,7 @@ class MambuBaseTest(unittest.TestCase):
 
     def expected_replication_keys(self):
         """
-        return a dictionary with key of table name
-        and value as a set of replication key fields
+        return a dictionary with key of table name and value as a set of replication key fields
         """
         return {table: properties.get(self.REPLICATION_KEYS, set())
                 for table, properties
@@ -286,11 +282,13 @@ class MambuBaseTest(unittest.TestCase):
 
     def expected_automatic_fields(self):
         """
-        return a dictionary with key of table name and value as a set of
-        primary key and replication key fields
+        return a dictionary with key of table name and value as a set of primary key and replication
+        key fields
         """
-        return {table : self.expected_primary_keys()[table] | self.expected_replication_keys()[table]
-                for table in self.expected_metadata().keys()}
+        return {
+            table : self.expected_primary_keys()[table] | self.expected_replication_keys()[table]
+            for table in self.expected_metadata().keys()
+        }
 
     def expected_replication_method(self):
         """return a dictionary with key of table name nd value of replication method"""
@@ -316,8 +314,7 @@ class MambuBaseTest(unittest.TestCase):
     def run_and_verify_sync(self, conn_id):
         """
         Run a sync job and make sure it exited properly.
-        Return a dictionary with keys of streams synced
-        and values of records synced for each stream
+        Return a dictionary with keys of streams synced and values of records synced for each stream
         """
         # Run a sync job using orchestrator
         sync_job_name = runner.run_sync_mode(self, conn_id)
@@ -352,10 +349,15 @@ class MambuBaseTest(unittest.TestCase):
             unique_records.add(tuple(record_primary_key))
         return unique_records
 
+    def verify_is_selected(self, is_selected):
+        """This is the assertion for the metadata for each field for every stream"""
+        self.assertTrue(is_selected)
+
     def verify_stream_and_field_selection(self, conn_id):
         """
         For expected sync streams, verify that
-        - all fields are selected
+        - fields that should be selected are selected
+          - controlled by `self.verify_is_selected()`
         - automatic fields are automatic
         - non-automatic fields are "inclusion": "available"
 
@@ -387,7 +389,7 @@ class MambuBaseTest(unittest.TestCase):
                             if field_name in automatic_fields:
                                 self.assertTrue(inclusion == 'automatic')
                             else:
-                                self.assertTrue(is_selected)
+                                self.verify_is_selected(is_selected)
                                 self.assertTrue(inclusion == 'available')
                 else:
                     for mdata in entry_metadata:
@@ -396,7 +398,7 @@ class MambuBaseTest(unittest.TestCase):
 
     def make_connection_and_run_sync(self, create_connection_kwargs=None, selection_kwargs=None):
         """
-        These lines of code are at the start of every test, and some tests repeat this logic a 
+        These lines of code are at the start of every test, and some tests repeat this logic a
         second time
         """
         if create_connection_kwargs is None:

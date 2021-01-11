@@ -3,7 +3,7 @@ Test tap discovery
 """
 import re
 
-from tap_tester import menagerie, connections, runner
+from tap_tester import menagerie
 
 from base import MambuBaseTest
 
@@ -68,7 +68,6 @@ class DiscoveryTest(MambuBaseTest):
 
                 schema_and_metadata = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
                 metadata = schema_and_metadata["metadata"]
-                schema = schema_and_metadata["annotated-schema"]
 
                 # verify the stream level properties are as expected
 
@@ -149,6 +148,6 @@ class DiscoveryTest(MambuBaseTest):
                             self.assertNotIn(field_name, expected_automatic_fields)
                         else:
                             raise RuntimeError("Stream {} got unexpected `inclusion` value {}"
-                                               .format(stream_name, field_name))
+                                               .format(stream, field_name))
                     else:
-                        raise RuntimeError("Got null field name on stream".format(stream_name))
+                        raise RuntimeError("Got null field name on stream {}".format(stream))

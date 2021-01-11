@@ -1,9 +1,7 @@
 """
 Test that when no fields are selected for a stream, automatic fields are still replicated
 """
-
-from tap_tester import runner, menagerie, connections
-
+from tap_tester import runner
 from base import MambuBaseTest
 
 class AutomaticFieldsTest(MambuBaseTest):
@@ -21,37 +19,11 @@ class AutomaticFieldsTest(MambuBaseTest):
             "communications", # Need to set up Twilio or email server to send stuff
         ])
 
-    def verify_stream_and_field_selection(self, conn_id):
+    def verify_is_selected(self, is_selected):
         """
-        For expected sync streams, verify that
-        - no fields are selected
-        - automatic fields are automatic
-        - non-automatic fields are "inclusion": "available"
+        Override the default `verify_is_selected` because we only want automatic fields selected
         """
-
-        catalogs = menagerie.get_catalogs(conn_id)
-
-        for catalog_entry in catalogs:
-            if catalog_entry["tap_stream_id"] in self.expected_sync_streams():
-                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
-                entry_metadata = schema.get('metadata', [])
-
-                for mdata in entry_metadata:
-                    is_selected = mdata.get('metadata').get('selected')
-                    if mdata.get('breadcrumb') == []:
-                        self.assertTrue(is_selected)
-                    else:
-                        inclusion = mdata.get('metadata', {}).get('inclusion')
-                        field_name = mdata.get('breadcrumb', ['properties', None])[1]
-                        automatic_fields = self.expected_automatic_fields()[catalog_entry['tap_stream_id']]
-
-                        self.assertIsNotNone(field_name)
-
-                        if field_name in automatic_fields:
-                            self.assertTrue(inclusion == 'automatic')
-                        else:
-                            self.assertFalse(is_selected)
-                            self.assertTrue(inclusion == 'available')
+        self.assertFalse(is_selected)
 
     def test_run(self):
         """
@@ -69,7 +41,7 @@ class AutomaticFieldsTest(MambuBaseTest):
 
         # # Run a sync job using orchestrator
         # record_count_by_stream = self.run_and_verify_sync(conn_id)
-        (conn_id,
+        (_,
          record_count_by_stream,
          _,
          _) = self.make_connection_and_run_sync(selection_kwargs={"select_all_fields": False})
