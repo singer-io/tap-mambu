@@ -76,14 +76,7 @@ class StartDateTest(MambuBaseTest):
         catalogs = menagerie.get_catalogs(conn_id)
 
         # Select all fields
-        for catalog_entry in catalogs:
-            if catalog_entry["tap_stream_id"] in self.expected_sync_streams():
-                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
-                connections.select_catalog_and_fields_via_metadata(
-                    conn_id,
-                    catalog_entry,
-                    schema,
-                )
+        self.select_all_streams_and_fields(conn_id, catalogs)
 
         # For expected sync streams, verify that
         # - all fields are selected

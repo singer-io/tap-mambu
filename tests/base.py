@@ -295,20 +295,20 @@ class MambuBaseTest(unittest.TestCase):
                 for table, properties
                 in self.expected_metadata().items()}
 
-    @staticmethod
-    def select_all_streams_and_fields(conn_id, catalogs, select_all_fields: bool = True):
+    def select_all_streams_and_fields(self, conn_id, catalogs, select_all_fields: bool = True):
         """Select all streams and all fields within streams"""
         for catalog in catalogs:
-            schema = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
+            if catalog["tap_stream_id"] in self.expected_sync_streams():
+                schema = menagerie.get_annotated_schema(conn_id, catalog['stream_id'])
 
-            non_selected_properties = []
-            if not select_all_fields:
-                # get a list of all properties so that none are selected
-                non_selected_properties = schema.get('annotated-schema', {}).get(
-                    'properties', {}).keys()
+                non_selected_properties = []
+                if not select_all_fields:
+                    # get a list of all properties so that none are selected
+                    non_selected_properties = schema.get('annotated-schema', {}).get(
+                        'properties', {}).keys()
 
-            connections.select_catalog_and_fields_via_metadata(
-                conn_id, catalog, schema, [], non_selected_properties)
+                    connections.select_catalog_and_fields_via_metadata(
+                        conn_id, catalog, schema, [], non_selected_properties)
 
     def verify_field_selection(self, conn_id, expected_stream_ids):
         """

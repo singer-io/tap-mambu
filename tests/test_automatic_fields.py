@@ -31,15 +31,7 @@ class AutomaticFieldsTest(MambuBaseTest):
         catalogs = menagerie.get_catalogs(conn_id)
 
         # Don't select any fields
-        for catalog_entry in catalogs:
-            if catalog_entry["tap_stream_id"] in self.expected_sync_streams():
-                schema = menagerie.get_annotated_schema(conn_id, catalog_entry['stream_id'])
-                connections.select_catalog_and_fields_via_metadata(
-                    conn_id,
-                    catalog_entry,
-                    schema,
-                    non_selected_fields=schema.get('annotated-schema', {}).get('properties', {})
-                )
+        self.select_all_streams_and_fields(conn_id, catalogs, select_all_fields=False)
 
         # For expected sync streams, verify that
         # - no fields are selected
