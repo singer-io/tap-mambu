@@ -1,10 +1,16 @@
 """
 Test that the tap can replicate multiple pages of data
 """
+import backoff
 from datetime import timedelta
 from singer.utils import strftime, strptime_to_utc
 from tap_tester import runner, menagerie
 from base import MambuBaseTest
+
+@backoff.on_predicate(backoff.expo, lambda x: x <= 0, max_tries=10)
+def poll_state_version(conn_id):
+    """Make the request for state version until it returns a version greater than 0"""
+    return menagerie.get_state_version(conn_id)
 
 class BookmarksTest(MambuBaseTest):
     """
@@ -49,6 +55,9 @@ class BookmarksTest(MambuBaseTest):
                 new_bookmarks[stream_name] = self.subtract_day(current_bookmark)
 
         new_state = {"bookmarks" : new_bookmarks}
+
+        # Ensure the test is not the first to post a state
+        poll_state_version(conn_id)
 
         menagerie.set_state(conn_id, new_state)
 
