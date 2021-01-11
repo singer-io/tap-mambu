@@ -28,12 +28,14 @@ class PaginationTest(MambuBaseTest):
          _,
          all_records_by_stream) = self.make_connection_and_run_sync()
 
+        page_size = int(self.get_properties()['page_size'])
+
         for stream in self.expected_sync_streams():
             with self.subTest(stream=stream):
                 # Assert all expected streams synced at least a full pages of records
                 self.assertGreater(
                     record_count_by_stream.get(stream, 0),
-                    self.get_properties()['page_size'],
+                    page_size,
                     msg="{} did not sync more than a page of records".format(stream)
                 )
 
@@ -43,4 +45,4 @@ class PaginationTest(MambuBaseTest):
                 unique_records = self.get_unique_records(stream, records)
 
                 self.assertGreater(len(unique_records),
-                                   self.get_properties()['page_size'])
+                                   page_size)

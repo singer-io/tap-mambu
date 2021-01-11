@@ -41,7 +41,7 @@ class AutomaticFieldsTest(MambuBaseTest):
         for stream in self.expected_sync_streams():
             with self.subTest(stream=stream):
                 self.assertGreater(record_count_by_stream.get(stream, 0),
-                                   self.get_properties()['page_size'],
+                                   int(self.get_properties()['page_size']),
                                    msg="{} did not sync more than a page of records".format(stream))
 
         for stream_name, actual_fields in actual_fields_by_stream.items():
