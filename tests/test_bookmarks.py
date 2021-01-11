@@ -93,25 +93,24 @@ class BookmarksTest(MambuBaseTest):
                     # Verify the second sync bookmark is Equal to the first sync bookmark
                     self.assertEqual(second_sync_bookmark_value, first_sync_bookmark_value) # assumes no changes to data during test
 
-                    # Verify the first sync bookmark value is the max replication key value for a given stream
+                    # Verify that first sync records fall betwen the start date and the final
+                    # bookmark value
                     for message in first_sync_messages:
-                        replication_key_value = message.get('data').get(replication_key)
-                        self.assertLessEqual(singer.utils.strptime_to_utc(replication_key_value),
-                                             first_sync_bookmark_value_utc,
-                                             msg="First sync bookmark was set incorrectly, a record with a greater rep key value was synced")
+                        lower_bound = singer.utils.strptime_to_utc(self.get_properties()['start_date'])
+                        actual_value = singer.utils.strptime_to_utc(message.get('data').get(replication_key))
+                        upper_bound = first_sync_bookmark_value_utc
+                        self.assertTrue(lower_bound <= actual_value <= upper_bound,
+                                        msg="First sync records fall outside of expected sync window")
 
+                    # Verify the second sync records fall between simulated bookmark value and the
+                    # final bookmark value
                     for message in second_sync_messages:
-                        replication_key_value = message.get('data').get(replication_key)
+                        lower_bound = singer.utils.strptime_to_utc(simulated_bookmark_value)
+                        actual_value = singer.utils.strptime_to_utc(message.get('data').get(replication_key))
+                        upper_bound = second_sync_bookmark_value_utc
+                        self.assertTrue(lower_bound <= actual_value <= upper_bound,
+                                        msg="Second sync records fall outside of expected sync window")
 
-                        # Verify the second sync records respect the previous (simulated) bookmark value
-                        self.assertGreaterEqual(singer.utils.strptime_to_utc(replication_key_value),
-                                                singer.utils.strptime_to_utc(simulated_bookmark_value),
-                                                msg="Second sync records do not repect the previous bookmark.")
-
-                        # Verify the second sync bookmark value is the max replication key value for a given stream
-                        self.assertLessEqual(singer.utils.strptime_to_utc(replication_key_value),
-                                             second_sync_bookmark_value_utc,
-                                             msg="Second sync bookmark was set incorrectly, a record with a greater rep key value was synced")
 
                     # Verify the number of records in the 2nd sync is less then the first
                     self.assertLess(second_sync_count, first_sync_count)
