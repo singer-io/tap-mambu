@@ -44,8 +44,6 @@ class PaginationTest(MambuBaseTest):
                     msg="{} did not sync more than a page of records".format(stream)
                 )
 
-                # Assert that records are unique
-
                 records = [ x['data'] for x in all_records_by_stream[stream]['messages']]
 
                 unique_records = self.get_unique_records(stream, records)

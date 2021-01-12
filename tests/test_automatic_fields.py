@@ -1,7 +1,7 @@
 """
 Test that when no fields are selected for a stream, automatic fields are still replicated
 """
-from tap_tester import runner
+from tap_tester import runner, connections
 from base import MambuBaseTest
 
 class AutomaticFieldsTest(MambuBaseTest):
@@ -30,10 +30,13 @@ class AutomaticFieldsTest(MambuBaseTest):
         Verify that we can get multiple pages of automatic fields for each
         stream
         """
-        (_,
-         record_count_by_stream,
-         _,
-         _) = self.make_connection_and_run_sync(selection_kwargs={"select_all_fields": False})
+
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id, select_all_fields = False)
+
+        record_count_by_stream = self.run_and_verify_sync(conn_id)
 
         actual_fields_by_stream = runner.examine_target_output_for_fields()
 

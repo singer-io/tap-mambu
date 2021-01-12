@@ -1,8 +1,8 @@
 """
 Test that the tap can replicate multiple pages of data
 """
-import backoff
 from datetime import timedelta
+import backoff
 from singer.utils import strftime, strptime_to_utc
 from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
