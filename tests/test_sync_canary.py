@@ -1,6 +1,7 @@
 """
 Test that with no fields selected for a stream automatic fields are still replicated
 """
+from tap_tester import connections
 from base import MambuBaseTest
 
 class SyncCanaryTest(MambuBaseTest):
@@ -18,10 +19,13 @@ class SyncCanaryTest(MambuBaseTest):
         verify exit codes do not throw errors. This is meant to be a smoke test for the tap. If this
         is failing do not expect any other tests to pass.
         """
-        (_,
-         record_count_by_stream,
-         _,
-         _) = self.make_connection_and_run_sync()
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id)
+
+        record_count_by_stream = self.run_and_verify_sync(conn_id)
+
 
         # Assert all expected streams synced at least one record
         for stream in self.expected_streams():

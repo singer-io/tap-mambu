@@ -2,7 +2,7 @@
 Test tap discovery
 """
 import re
-from tap_tester import menagerie
+from tap_tester import connections, menagerie
 from base import MambuBaseTest
 
 class DiscoveryTest(MambuBaseTest):
@@ -29,7 +29,8 @@ class DiscoveryTest(MambuBaseTest):
         """
         streams_to_test = self.expected_streams()
 
-        conn_id = self.create_connection()
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
 
         # Verify number of actual streams discovered match expected
         catalogs = menagerie.get_catalogs(conn_id)

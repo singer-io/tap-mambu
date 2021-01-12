@@ -2,6 +2,7 @@
 Test that the tap respects the start date
 """
 from singer.utils import strptime_to_utc
+from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
 
 class StartDateTest(MambuBaseTest):
@@ -68,20 +69,29 @@ class StartDateTest(MambuBaseTest):
         future and running a sync results in less records than the first
         sync
         """
-        (_,
-         first_sync_record_count_by_stream,
-         first_sync_state,
-         first_sync_all_records_by_stream) = self.make_connection_and_run_sync()
 
-        (_,
-         second_sync_record_count_by_stream,
-         second_sync_state,
-         second_sync_all_records_by_stream) = self.make_connection_and_run_sync(
-             create_connection_kwargs={"original_properties": False},
-         )
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id)
+
+        first_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
+
+        first_sync_state = menagerie.get_state(conn_id)
+        first_sync_all_records_by_stream = runner.get_records_from_target_output()
+
+
+        conn_id = connections.ensure_connection(self, original_properties = False)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id)
+
+        second_sync_record_count_by_stream = self.run_and_verify_sync(conn_id)
+
+        second_sync_state = menagerie.get_state(conn_id)
+        second_sync_all_records_by_stream = runner.get_records_from_target_output()
 
         all_metadata = self.expected_metadata()
-
         for stream_name in self.expected_sync_streams():
             stream_metadata = all_metadata[stream_name]
             with self.subTest(stream=stream_name):
@@ -117,6 +127,9 @@ class StartDateTest(MambuBaseTest):
                     self.assertNotIn(stream_name, second_sync_state['bookmarks'])
 
                     # Criteria 3
+                    # - Note: This may cover up the scenario where we sync
+                    #   duplicate records, but we check for that in a
+                    #   different test. So we ignore that here
                     first_sync_unique_records = self.get_unique_records(stream_name,
                                                                         self.first_sync_records)
                     second_sync_unique_records = self.get_unique_records(stream_name,

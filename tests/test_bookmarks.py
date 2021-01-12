@@ -4,7 +4,7 @@ Test that the tap can replicate multiple pages of data
 import backoff
 from datetime import timedelta
 from singer.utils import strftime, strptime_to_utc
-from tap_tester import runner, menagerie
+from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
 
 @backoff.on_predicate(backoff.expo, lambda x: x <= 0, max_tries=10)
@@ -37,10 +37,15 @@ class BookmarksTest(MambuBaseTest):
         """
         Verify that we can get multiple pages of data for each stream
         """
-        (conn_id,
-         first_sync_record_count,
-         first_sync_bookmarks,
-         first_sync_records) = self.make_connection_and_run_sync()
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id)
+
+        first_sync_record_count = self.run_and_verify_sync(conn_id)
+
+        first_sync_bookmarks = menagerie.get_state(conn_id)
+        first_sync_records = runner.get_records_from_target_output()
 
 
         new_bookmarks = {}

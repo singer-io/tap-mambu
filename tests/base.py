@@ -233,10 +233,12 @@ class MambuBaseTest(unittest.TestCase):
             }
         }
 
-    def create_connection(self, original_properties: bool = True):
-        """Create a new connection with the test name"""
-        # Create the connection
-        conn_id = connections.ensure_connection(self, original_properties)
+
+    def run_and_verify_check_mode(self, conn_id):
+        """
+        Run the tap in check mode and verify it succeeds.
+        This should be ran prior to field selection and initial sync.
+        """
 
         # Run a check job using orchestrator (discovery)
         check_job_name = runner.run_check_mode(self, conn_id)
@@ -244,7 +246,6 @@ class MambuBaseTest(unittest.TestCase):
         # Assert that the check job succeeded
         exit_status = menagerie.get_exit_status(conn_id, check_job_name)
         menagerie.verify_check_exit_status(self, exit_status, check_job_name)
-        return conn_id
 
     def get_properties(self, original_properties=True):
         properties = {
@@ -396,6 +397,16 @@ class MambuBaseTest(unittest.TestCase):
                         if mdata.get('breadcrumb') == []:
                             self.assertFalse(mdata.get('metadata').get('selected'))
 
+    def select_and_verify_fields(self, conn_id, only_automatic=False):
+        """
+        Select all expected sync streams and fields.
+
+        If only_automatic is true, only select automatic fields
+        """
+        catalogs = menagerie.get_catalogs(conn_id)
+        self.select_all_streams_and_fields(conn_id, catalogs)
+        self.verify_stream_and_field_selection(conn_id)
+
     def make_connection_and_run_sync(self, create_connection_kwargs=None, selection_kwargs=None):
         """
         These lines of code are at the start of every test, and some tests repeat this logic a
@@ -408,14 +419,8 @@ class MambuBaseTest(unittest.TestCase):
             selection_kwargs = {}
 
         conn_id = self.create_connection(**create_connection_kwargs)
-        catalogs = menagerie.get_catalogs(conn_id)
-
-        self.select_all_streams_and_fields(conn_id, catalogs, **selection_kwargs)
-        self.verify_stream_and_field_selection(conn_id)
-
-        # Run a sync job using orchestrator
         record_count = self.run_and_verify_sync(conn_id)
-
+        # ---------------------------------------------------------------------
         bookmarks = menagerie.get_state(conn_id)
         records = runner.get_records_from_target_output()
 

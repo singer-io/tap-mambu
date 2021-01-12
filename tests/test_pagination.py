@@ -2,6 +2,7 @@
 Test that when no fields are selected for a stream, automatic fields are still replicated
 """
 
+from tap_tester import connections, runner
 from base import MambuBaseTest
 
 class PaginationTest(MambuBaseTest):
@@ -23,11 +24,15 @@ class PaginationTest(MambuBaseTest):
         Verify that we can get multiple pages of unique records for each
         stream
         """
-        (_,
-         record_count_by_stream,
-         _,
-         all_records_by_stream) = self.make_connection_and_run_sync()
 
+        conn_id = connections.ensure_connection(self)
+        self.run_and_verify_check_mode(conn_id)
+
+        self.select_and_verify_fields(conn_id)
+
+        record_count_by_stream = self.run_and_verify_sync(conn_id)
+
+        all_records_by_stream = runner.get_records_from_target_output()
         page_size = int(self.get_properties()['page_size'])
 
         for stream in self.expected_sync_streams():
@@ -40,7 +45,8 @@ class PaginationTest(MambuBaseTest):
                 )
 
                 # Assert that records are unique
-                records = self.filter_output_file_for_records(all_records_by_stream, stream)
+
+                records = [ x['data'] for x in all_records_by_stream[stream]['messages']]
 
                 unique_records = self.get_unique_records(stream, records)
 
