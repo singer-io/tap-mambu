@@ -239,6 +239,7 @@ This tap:
     {
         "username": "YOUR_USERNAME",
         "password": "YOUR_PASSWORD",
+        "apikey": "YOUR_APIKEY",
         "subdomain": "YOUR_SUBDOMAIN",
         "start_date": "2019-01-01T00:00:00Z",
         "lookback_window: 30,
