@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+  * Added integration tests
+  * Added api key auth
+  * Fixed issue where some streams did not automatically select replication keys
+
 ## 1.2.0
   * Added endpoints: activities, index rate sources, installments. Client, Groups, GL Journal Entries endpoints changed.
 
