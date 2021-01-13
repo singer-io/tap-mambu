@@ -335,11 +335,6 @@ class MambuBaseTest(unittest.TestCase):
 
         return sync_record_count
 
-    def filter_output_file_for_records(self, output_file, stream_name):
-        return [message['data']
-                for message in output_file[stream_name]['messages']
-                if message['action'] == 'upsert']
-
     def get_unique_records(self, stream, records):
         unique_records = set()
         for record in records:

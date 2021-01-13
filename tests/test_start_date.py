@@ -42,27 +42,6 @@ class StartDateTest(MambuBaseTest):
             all_records.append(record_rep_key[0])
         return all_records
 
-    def do_verify_replication_key_values(self, stream_name, records, start_date):
-        rep_values = self.get_replication_key_values(stream_name, records)
-
-        for value in rep_values:
-            self.assertGreaterEqual(
-                strptime_to_utc(value),
-                strptime_to_utc(start_date)
-            )
-
-    def verify_replication_key_values(self, stream_name):
-        self.do_verify_replication_key_values(
-            stream_name,
-            self.first_sync_records,
-            self.first_sync_start_date
-        )
-        self.do_verify_replication_key_values(
-            stream_name,
-            self.second_sync_records,
-            self.second_sync_start_date
-        )
-
     def test_run(self):
         """
         Verify that running a sync, then moving the start date into the
@@ -101,15 +80,15 @@ class StartDateTest(MambuBaseTest):
                 first_sync_count = first_sync_record_count_by_stream.get(stream_name,0)
                 second_sync_count = second_sync_record_count_by_stream.get(stream_name,0)
 
-                self.first_sync_records = self.filter_output_file_for_records(
-                    first_sync_all_records_by_stream,
-                    stream_name
-                )
+                first_sync_records = []
+                for message in first_sync_all_records_by_stream[stream_name]['messages']:
+                    if message['action'] == 'upsert':
+                        first_sync_records.append(message['data'])
 
-                self.second_sync_records = self.filter_output_file_for_records(
-                    second_sync_all_records_by_stream,
-                    stream_name
-                )
+                second_sync_records = []
+                for message in second_sync_all_records_by_stream[stream_name]['messages']:
+                    if message['action'] == 'upsert':
+                        second_sync_records.append(message['data'])
 
                 if  replication_method == self.FULL_TABLE:
                     """
@@ -131,9 +110,9 @@ class StartDateTest(MambuBaseTest):
                     #   duplicate records, but we check for that in a
                     #   different test. So we ignore that here
                     first_sync_unique_records = self.get_unique_records(stream_name,
-                                                                        self.first_sync_records)
+                                                                        first_sync_records)
                     second_sync_unique_records = self.get_unique_records(stream_name,
-                                                                         self.second_sync_records)
+                                                                         second_sync_records)
                     self.assertSetEqual(first_sync_unique_records, second_sync_unique_records)
                 else:
                     """
@@ -152,4 +131,18 @@ class StartDateTest(MambuBaseTest):
                     self.assertIn(stream_name, second_sync_state['bookmarks'])
 
                     # Criteria 3
-                    self.verify_replication_key_values(stream_name)
+                    rep_values = self.get_replication_key_values(stream_name, first_sync_records)
+
+                    for value in rep_values:
+                        self.assertGreaterEqual(
+                            strptime_to_utc(value),
+                            strptime_to_utc(self.first_sync_start_date)
+                        )
+
+                    rep_values = self.get_replication_key_values(stream_name, second_sync_records)
+
+                    for value in rep_values:
+                        self.assertGreaterEqual(
+                            strptime_to_utc(value),
+                            strptime_to_utc(self.second_sync_start_date)
+                        )
