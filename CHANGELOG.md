@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0
+  * Update custom field transformations and schema for streams.
+
 ## 1.3.0
   * Added integration tests
   * Added api key auth
