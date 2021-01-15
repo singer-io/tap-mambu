@@ -360,27 +360,27 @@ def sync(client, config, catalog, state):
 
     # Get datetimes for endpoint parameters
     communications_dttm_str = get_bookmark(state, 'communications', 'self', start_date)
-    communications_dt_str = transform_datetime(communications_dttm_str)[:10]
+    communications_dt_str = transform_datetime(communications_dttm_str)
     # LOGGER.info('communications bookmark_date = {}'.format(communications_dt_str))
 
     deposit_transactions_dttm_str = get_bookmark(state, 'deposit_transactions', 'self', start_date)
-    deposit_transactions_dt_str = transform_datetime(deposit_transactions_dttm_str)[:10]
+    deposit_transactions_dt_str = transform_datetime(deposit_transactions_dttm_str)
     # LOGGER.info('deposit_transactions bookmark_date = {}'.format(deposit_transactions_dt_str))
 
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
-    loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
+    loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)
     loan_transactions_dttm = strptime_to_utc(loan_transactions_dt_str)
 
     clients_dttm_str = get_bookmark(state, 'clients', 'self', start_date)
-    clients_dt_str = transform_datetime(clients_dttm_str)[:10]
+    clients_dt_str = transform_datetime(clients_dttm_str)
 
     groups_dttm_str = get_bookmark(state, 'groups', 'self', start_date)
-    groups_dt_str = transform_datetime(groups_dttm_str)[:10]
+    groups_dt_str = transform_datetime(groups_dttm_str)
 
     lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
     if loan_transactions_dttm > lookback_date:
-        loan_transactions_dt_str = transform_datetime(strftime(lookback_date))[:10]
+        loan_transactions_dt_str = transform_datetime(strftime(lookback_date))
     # LOGGER.info('loan_transactions bookmark_date = {}'.format(loan_transactions_dt_str))
 
     # endpoints: API URL endpoints to be called
