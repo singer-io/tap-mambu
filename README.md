@@ -178,12 +178,15 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**gl_journal_entries (POST v1)**](https://support.mambu.com/docs/en/gl-journal-entries-api#post-search)
-- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries/search
+[**gl_journal_entries (POST v2)**](https://support.mambu.com/docs/en/gl-journal-entries-api#post-search)
+
+- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries:search
 - Primary keys: entry_id
 - Replication strategy: Incremental (query filtered based on date)
+  - Bookmark query field: bookingDate
+  - Sort by: bookingDate:ASC
   - Bookmark: booking_date (date-time)
-- Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
+- Transformations: Fields camelCase to snake_case
 
 [**activities (GET v1)**](https://support.mambu.com/docs/activities-api)
 - Endpoint: https://instance.sandbox.mambu.com/api/activities
