@@ -374,8 +374,16 @@ def sync(client, config, catalog, state):
     clients_dttm_str = get_bookmark(state, 'clients', 'self', start_date)
     clients_dt_str = transform_datetime(clients_dttm_str)
 
+    # TEMP: pre fetch of deposit accounts using search
+    # REVIEW: Can we remove `[:19].replace('T', ' ')`
+    saving_accounts_str = get_bookmark(state, 'saving_accounts', 'self', start_date)
+    saving_accounts_dt_str = transform_datetime(saving_accounts_str)[:19].replace('T', ' ')
+
     groups_dttm_str = get_bookmark(state, 'groups', 'self', start_date)
     groups_dt_str = transform_datetime(groups_dttm_str)
+
+    gl_journal_entries_dttm_str = get_bookmark(state, 'gl_journal_entries', 'self', start_date)
+    gl_journal_entries_dt_str = transform_datetime(gl_journal_entries_dttm_str)
 
     lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
@@ -518,6 +526,29 @@ def sync(client, config, catalog, state):
                     'parent': 'deposit'
                 }
             }
+        },
+        # TEMP: pre fetch of deposit accounts using search
+        'saving_accounts': {
+            'path': 'savings/search',
+            'api_version': 'v1',
+            'api_method': 'POST',
+            'params': {
+                'sortBy': 'lastModifiedDate:ASC',
+                'fullDetails': True
+            },
+            'body': {
+                "filterConstraints": [
+                    {
+                        "filterSelection": "LAST_MODIFIED_DATE",
+                        "filterElement": "AFTER",
+                        "value": saving_accounts_dt_str
+                    }
+                ]
+            },
+            'bookmark_field': 'last_modified_date',
+            'bookmark_type': 'datetime',
+            'id_fields': ['id'],
+            'store_ids': True,
         },
         'deposit_products': {
             'path': 'savingsproducts',
@@ -678,16 +709,19 @@ def sync(client, config, catalog, state):
             'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
         },
         'gl_journal_entries': {
-            'path': 'gljournalentries/search',
-            'api_version': 'v1',
+            'path': 'gljournalentries:search',
+            'api_version': 'v2',
             'api_method': 'POST',
             'body': {
-                "filterConstraints": [
+                "sortingCriteria": {
+                    "field": "bookingDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
                     {
-                        "filterSelection": "CREATION_DATE",
-                        "filterElement": "BETWEEN",
-                        "value": '{gl_journal_entries_from_dt_str}',
-                        "secondValue": "{now_date_str}"
+                        "field": "bookingDate",
+                        "operator": "AFTER",
+                        "value": gl_journal_entries_dt_str
                     }
                 ]
             },
@@ -750,22 +784,6 @@ def sync(client, config, catalog, state):
             sub_types = endpoint_config.get('sub_types', ['self'])
             for sub_type in sub_types:
                 LOGGER.info('START Syncing: {}, Type: {}'.format(stream_name, sub_type))
-
-                # Now date
-                if stream_name == 'gl_journal_entries':
-                    now_date_str = strftime(utils.now())[:10]
-                    gl_journal_entries_from_dttm_str = get_bookmark(
-                        state, 'gl_journal_entries', sub_type, start_date)
-                    gl_journal_entries_from_dt_str = transform_datetime(
-                        gl_journal_entries_from_dttm_str)[:10]
-                    gl_journal_entries_from_param = endpoint_config.get(
-                        'body', {}).get('filterConstraints', {})[0].get('value')
-                    if gl_journal_entries_from_param:
-                        endpoint_config['body']['filterConstraints'][0]['value'] = gl_journal_entries_from_dt_str
-                    gl_journal_entries_to_param = endpoint_config.get(
-                        'body', {}).get('filterConstraints', {})[0].get('secondValue')
-                    if gl_journal_entries_to_param:
-                        endpoint_config['body']['filterConstraints'][0]['secondValue'] = now_date_str
 
                 if stream_name == 'activities':
                     now_date_str = strftime(utils.now())[:10]

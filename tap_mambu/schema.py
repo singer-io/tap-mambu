@@ -43,6 +43,11 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'saving_accounts': {
+        'key_properties': ['id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['last_modified_date']
+    },
     'deposit_products': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',

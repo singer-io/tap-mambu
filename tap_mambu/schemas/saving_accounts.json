@@ -1,0 +1,136 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "encoded_key": {
+        "type": ["null", "string"]
+    },
+    "id": {
+        "type": ["null", "string"]
+    },
+    "account_state": {
+      "type": ["null", "string"]
+    },
+    "account_holder_key": {
+      "type": ["null", "string"]
+    },
+    "account_holder_type": {
+      "type": ["null", "string"]
+    },
+    "name": {
+      "type": ["null", "string"]
+    },
+    "creation_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "approved_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "activation_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "last_modified_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "last_account_appraisal_date": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "product_type_key": {
+      "type": ["null", "string"]
+    },
+    "account_type": {
+      "type": ["null", "string"]
+    },
+    "balance": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "accrued_interest": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "overdraft_interest_accrued": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "technical_overdraft_interest_accrued": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "technical_overdraft_amount": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "interest_due": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "technical_interest_due": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "fees_due": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "overdraft_limit": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "allow_overdraft": {
+      "type": ["null", "boolean"]
+    },
+    "locked_balance": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "hold_balance": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    },
+    "currency_code": {
+      "type": ["null", "string"]
+    },
+    "currency": {
+      "type": ["null", "object"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": ["null", "string"]
+        },
+        "name": {
+          "type": ["null", "string"]
+        },
+        "symbol": {
+          "type": ["null", "string"]
+        },
+        "digits_after_decimal": {
+          "type": ["null", "integer"]
+        },
+        "currency_symbol_position": {
+          "type": ["null", "string"]
+        },
+        "is_base_currency": {
+          "type": ["null", "boolean"]
+        },
+        "creation_date": {
+          "type": ["null", "string"],
+          "format": "date-time"
+        },
+        "last_modified_date": {
+          "type": ["null", "string"],
+          "format": "date-time"
+        }
+      }
+    },
+    "available_balance": {
+      "type": ["null", "number"],
+      "multipleOf": 1e-10
+    }
+  }
+}
