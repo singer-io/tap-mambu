@@ -377,6 +377,10 @@ def sync(client, config, catalog, state):
     groups_dttm_str = get_bookmark(state, 'groups', 'self', start_date)
     groups_dt_str = transform_datetime(groups_dttm_str)[:10]
 
+    gl_journal_entries_dttm_str = get_bookmark(state, 'gl_journal_entries', 'self', start_date)
+    gl_journal_entries_dt_str = transform_datetime(gl_journal_entries_dttm_str)
+    # LOGGER.info('gl_journal_entries bookmark_date = {}'.format(gl_journal_entries_dt_str))
+
     lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
     if loan_transactions_dttm > lookback_date:
@@ -678,16 +682,19 @@ def sync(client, config, catalog, state):
             'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
         },
         'gl_journal_entries': {
-            'path': 'gljournalentries/search',
-            'api_version': 'v1',
+            'path': 'gljournalentries:search',
+            'api_version': 'v2',
             'api_method': 'POST',
             'body': {
-                "filterConstraints": [
+                "sortingCriteria": {
+                    "field": "bookingDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
                     {
-                        "filterSelection": "CREATION_DATE",
-                        "filterElement": "BETWEEN",
-                        "value": '{gl_journal_entries_from_dt_str}',
-                        "secondValue": "{now_date_str}"
+                        "field": "bookingDate",
+                        "operator": "AFTER",
+                        "value": gl_journal_entries_dt_str
                     }
                 ]
             },
@@ -750,22 +757,6 @@ def sync(client, config, catalog, state):
             sub_types = endpoint_config.get('sub_types', ['self'])
             for sub_type in sub_types:
                 LOGGER.info('START Syncing: {}, Type: {}'.format(stream_name, sub_type))
-
-                # Now date
-                if stream_name == 'gl_journal_entries':
-                    now_date_str = strftime(utils.now())[:10]
-                    gl_journal_entries_from_dttm_str = get_bookmark(
-                        state, 'gl_journal_entries', sub_type, start_date)
-                    gl_journal_entries_from_dt_str = transform_datetime(
-                        gl_journal_entries_from_dttm_str)[:10]
-                    gl_journal_entries_from_param = endpoint_config.get(
-                        'body', {}).get('filterConstraints', {})[0].get('value')
-                    if gl_journal_entries_from_param:
-                        endpoint_config['body']['filterConstraints'][0]['value'] = gl_journal_entries_from_dt_str
-                    gl_journal_entries_to_param = endpoint_config.get(
-                        'body', {}).get('filterConstraints', {})[0].get('secondValue')
-                    if gl_journal_entries_to_param:
-                        endpoint_config['body']['filterConstraints'][0]['secondValue'] = now_date_str
 
                 if stream_name == 'activities':
                     now_date_str = strftime(utils.now())[:10]
