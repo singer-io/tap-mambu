@@ -390,11 +390,11 @@
             "properties": {
               "amount": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "multipleOf": 1e-20
               },
               "interest_commission": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "multipleOf": 1e-20
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
@@ -416,7 +416,7 @@
               },
               "share_percentage": {
                 "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "multipleOf": 1e-20
               }
             }
           }
