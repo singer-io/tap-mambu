@@ -720,9 +720,17 @@ def sync(client, config, catalog, state):
     last_stream = singer.get_currently_syncing(state)
     LOGGER.info('last/currently syncing stream: {}'.format(last_stream))
 
+    # Start syncing from last/currently syncing stream
+    if last_stream in selected_streams:
+        selected_streams = selected_streams[selected_streams.index(last_stream):] + selected_streams[:selected_streams.index(last_stream)]
+
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
-    for stream_name, endpoint_config in endpoints.items():
+    for stream_name in selected_streams:
+
+        endpoint_config = endpoints.get(stream_name)
+        if endpoint_config is None:
+            continue
 
         # loop through each sub type
         sub_types = endpoint_config.get('sub_types', ['self'])
