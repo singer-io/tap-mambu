@@ -287,12 +287,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                         parent_id,
                         child_total_records))
 
-        # Update the state with the max_bookmark_value for the stream
-        if bookmark_field:
-            write_bookmark(state,
-                           stream_name,
-                           sub_type,
-                           max_bookmark_value)
 
         # to_rec: to record; ending record for the batch
         to_rec = offset + limit
@@ -307,6 +301,13 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         offset = offset + limit
 
         # End: while record_count == limit
+
+    # Update the state with the max_bookmark_value for the stream
+    if bookmark_field:
+        write_bookmark(state,
+                        stream_name,
+                        sub_type,
+                        max_bookmark_value)
 
     # Return total_records across all batches
     return total_records
