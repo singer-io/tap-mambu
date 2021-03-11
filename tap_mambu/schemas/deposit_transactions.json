@@ -29,15 +29,15 @@
                 "type": ["null", "string"]
               },
               "amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "trigger": {
                 "type": ["null", "string"]
               },
               "tax_amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "predefined_fee_key": {
                 "type": ["null", "string"]
@@ -58,40 +58,40 @@
       "additionalProperties": false,
       "properties": {
         "fees_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "overdraft_interest_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "overdraft_fees_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "fraction_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "technical_overdraft_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "overdraft_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "technical_overdraft_interest_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "funds_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -103,8 +103,8 @@
           "type": ["null", "string"]
         },
         "amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "advice": {
           "type": ["null", "boolean"]
@@ -156,8 +156,8 @@
       "additionalProperties": false,
       "properties": {
         "tax_rate": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-20,
+          "type": ["null", "string"],
+          "format": "singer.decimal",
           "minimum": -1000000000000000,
           "maximum": 1000000000000000
         }
@@ -184,8 +184,8 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             }
@@ -196,8 +196,8 @@
           "additionalProperties": false,
           "properties": {
             "overdraft_limit": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-10
+              "type": ["null", "string"],
+              "format": "singer.decimal"
             }
           }
         },
@@ -206,14 +206,14 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
             "index_interest_rate": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             }
@@ -243,8 +243,8 @@
       "type": ["null", "string"]
     },
     "amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "centre_key": {
       "type": ["null", "string"]
@@ -274,8 +274,8 @@
       "additionalProperties": false,
       "properties": {
         "total_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },

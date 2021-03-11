@@ -70,8 +70,8 @@
                 "type": ["null", "string"]
               },
               "latitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "postcode": {
                 "type": ["null", "string"]
@@ -92,8 +92,8 @@
                 "type": ["null", "string"]
               },
               "longitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               }
             }
           }
