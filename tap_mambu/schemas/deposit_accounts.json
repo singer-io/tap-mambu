@@ -35,8 +35,8 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
@@ -49,12 +49,12 @@
                     "additionalProperties": false,
                     "properties": {
                       "ending_balance": {
-                        "type": ["null", "number"],
-                        "multipleOf": 1e-10
+                        "type": ["null", "string"],
+                        "format": "singer.decimal"
                       },
                       "interest_rate": {
-                        "type": ["null", "number"],
-                        "multipleOf": 1e-20,
+                        "type": ["null", "string"],
+                        "format": "singer.decimal",
                         "minimum": -1000000000000000,
                         "maximum": 1000000000000000
                       },
@@ -124,40 +124,40 @@
       "additionalProperties": false,
       "properties": {
         "overdraft_interest_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "total_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "locked_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "technical_overdraft_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "overdraft_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "hold_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "technical_overdraft_interest_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "fees_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "available_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -182,8 +182,8 @@
           "type": ["null", "boolean"]
         },
         "overdraft_limit": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "overdraft_expiry_date": {
           "type": ["null", "string"],
@@ -210,14 +210,14 @@
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
             "interest_spread": {
-              "type": ["null", "number"],
-              "multipleOf": 1e-20,
+              "type": ["null", "string"],
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
@@ -239,12 +239,12 @@
                     "additionalProperties": false,
                     "properties": {
                       "ending_balance": {
-                        "type": ["null", "number"],
-                        "multipleOf": 1e-10
+                        "type": ["null", "string"],
+                        "format": "singer.decimal"
                       },
                       "interest_rate": {
-                        "type": ["null", "number"],
-                        "multipleOf": 1e-20,
+                        "type": ["null", "string"],
+                        "format": "singer.decimal",
                         "minimum": -1000000000000000,
                         "maximum": 1000000000000000
                       },
@@ -313,16 +313,16 @@
       "additionalProperties": false,
       "properties": {
         "overdraft_interest_accrued": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_accrued": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "technical_overdraft_interest_accrued": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -344,16 +344,16 @@
       "additionalProperties": false,
       "properties": {
         "recommended_deposit_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "target_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "max_withdrawal_amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
