@@ -58,6 +58,18 @@ def transform_datetime(this_dttm):
     return new_dttm
 
 
+def reorder_endpoint_configs(last_stream, endpoints):
+    endpoint_items = list(endpoints.items())
+
+    matching_index = 0
+    for idx, val in enumerate(endpoint_items):
+        if val[0] == last_stream:
+            matching_index = idx
+            break
+
+    return endpoint_items[matching_index:] + endpoint_items[:matching_index]
+
+
 def process_records(catalog, #pylint: disable=too-many-branches
                     stream_name,
                     records,
@@ -742,10 +754,11 @@ def sync(client, config, catalog, state):
     # Start syncing from last/currently syncing stream
     if last_stream in selected_streams:
         selected_streams = selected_streams[selected_streams.index(last_stream):] + selected_streams[:selected_streams.index(last_stream)]
+        endpoint_items = reorder_endpoint_configs(last_stream, endpoints)
 
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
-    for stream_name, endpoint_config in endpoints.items():
+    for stream_name, endpoint_config in endpoint_items:
         should_stream, last_stream = should_sync_stream(selected_streams,
                                                         last_stream,
                                                         stream_name)
