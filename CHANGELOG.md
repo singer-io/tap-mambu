@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.0
+ * Changed `number` values to use `singer.decimal` in schemas  [#38](https://github.com/singer-io/tap-mambu/pull/38)
+
 ## 1.3.0
   * Added integration tests
   * Added api key auth
