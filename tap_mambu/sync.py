@@ -747,6 +747,9 @@ def sync(client, config, catalog, state):
     #   (based on the catalog and last_stream), then sync those streams.
     for stream_name in selected_streams:
         endpoint_config = endpoints.get(stream_name)
+        if endpoint_config is None:
+            # null endpoint_config signifies that this is a child stream
+            continue
         should_stream, last_stream = should_sync_stream(selected_streams,
                                                         last_stream,
                                                         stream_name)
