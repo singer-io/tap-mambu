@@ -26,8 +26,8 @@
         "type": ["null", "string"]
       },
       "amount": {
-        "type": ["null", "number"],
-        "multipleOf": 1e-10
+        "type": ["null", "string"],
+        "format": "singer.decimal"
       },
       "type": {
         "type": ["null", "string"]
@@ -107,8 +107,8 @@
             }
           },
           "balance": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
+            "type": ["null", "string"],
+            "format": "singer.decimal"
           }
         }
       }

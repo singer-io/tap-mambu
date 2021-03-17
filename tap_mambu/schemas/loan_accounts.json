@@ -77,8 +77,8 @@
                     "type": ["null", "string"]
                   },
                   "amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
+                    "type": ["null", "string"],
+                    "format": "singer.decimal"
                   }
                 }
               }
@@ -118,12 +118,12 @@
           "type": ["null", "string"]
         },
         "interest_spread": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-20
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_rate": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-20,
+          "type": ["null", "string"],
+          "format": "singer.decimal",
           "minimum": -1000000000000000,
           "maximum": 1000000000000000
         },
@@ -162,8 +162,8 @@
             "additionalProperties": false,
             "properties": {
               "amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
@@ -215,12 +215,12 @@
       ]
     },
     "accrued_interest": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "accrued_penalty": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "creation_date": {
       "type": ["null", "string"],
@@ -241,8 +241,8 @@
                 "type": ["null", "string"]
               },
               "amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "disbursement_details": {
                 "type": ["null", "object"],
@@ -273,8 +273,8 @@
       "format": "date-time"
     },
     "tax_rate": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-20,
+      "type": ["null", "string"],
+      "format": "singer.decimal",
       "minimum": -1000000000000000,
       "maximum": 1000000000000000
     },
@@ -283,8 +283,8 @@
       "format": "date-time"
     },
     "interest_from_arrears_accrued": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "schedule_settings": {
       "type": ["null", "object"],
@@ -294,8 +294,8 @@
           "type": ["null", "integer"]
         },
         "periodic_payment": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "repayment_schedule_method": {
           "type": ["null", "string"]
@@ -315,8 +315,8 @@
                     "type": ["null", "string"]
                   },
                   "amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
+                    "type": ["null", "string"],
+                    "format": "singer.decimal"
                   }
                 }
               }
@@ -389,12 +389,12 @@
             "additionalProperties": false,
             "properties": {
               "amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "interest_commission": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
@@ -415,8 +415,8 @@
                 "type": ["null", "string"]
               },
               "share_percentage": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               }
             }
           }
@@ -450,68 +450,68 @@
       "additionalProperties": false,
       "properties": {
         "interest_from_arrears_paid": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_paid": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "penalty_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "fees_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "penalty_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "redraw_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_from_arrears_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_balance": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "penalty_paid": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "fees_paid": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_from_arrears_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "fees_due": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "interest_paid": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -519,8 +519,8 @@
       "type": ["null", "string"]
     },
     "interest_commission": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "encoded_key": {
       "type": ["null", "string"]
@@ -537,8 +537,8 @@
           "type": ["null", "string"]
         },
         "penalty_rate": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-20,
+          "type": ["null", "string"],
+          "format": "singer.decimal",
           "minimum": -1000000000000000,
           "maximum": 1000000000000000
         }
@@ -562,19 +562,19 @@
           "type": ["null", "string"]
         },
         "amount": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_floor_value": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_payment_method": {
           "type": ["null", "string"]
         },
         "percentage": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-20,
+          "type": ["null", "string"],
+          "format": "singer.decimal",
           "minimum": -1000000000000000,
           "maximum": 1000000000000000
         },
@@ -585,12 +585,12 @@
           "type": ["null", "string"]
         },
         "total_due_amount_floor": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_ceiling_value": {
-          "type": ["null", "number"],
-          "multipleOf": 1e-10
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -599,8 +599,8 @@
       "format": "date-time"
     },
     "loan_amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "closed_date": {
       "type": ["null", "string"],
@@ -621,8 +621,8 @@
             "additionalProperties": false,
             "properties": {
               "amount": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": ["null", "string"],
+                "format": "singer.decimal"
               },
               "deposit_account_key": {
                 "type": ["null", "string"]
