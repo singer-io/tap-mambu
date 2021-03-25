@@ -159,11 +159,15 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     limit = client.page_size # Batch size; Number of records per API call
     total_records = 0 # Initialize total
     record_count = limit # Initialize, reset for each API call
+    paginate = endpoint_config.get('paginate', True)
 
     while record_count == limit: # break out of loop when record_count < limit (or not data returned)
+        pagination_params = {}
+        if paginate:
+            pagination_params['offset'] = offset
+            pagination_params['limit'] = limit
         params = {
-            'offset': offset,
-            'limit': limit,
+            **pagination_params,
             **static_params # adds in endpoint specific, sort, filter params
         }
 
@@ -303,10 +307,11 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         if record_count < limit:
             to_rec = total_records
 
-        LOGGER.info('{} - Synced records: {} to {}'.format(
-            stream_name,
-            offset,
-            to_rec))
+        if paginate:
+            LOGGER.info('{} - Synced records: {} to {}'.format(
+                stream_name,
+                offset,
+                to_rec))
         # Pagination: increment the offset by the limit (batch-size)
         offset = offset + limit
 
@@ -682,6 +687,16 @@ def sync(client, config, catalog, state):
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
             'id_fields': ['id']
+        },
+        'transaction_channels': {
+            'path': 'organization/transactionChannels',
+            'api_version': 'v2',
+            'api_method': 'GET',
+            'params': {
+                'detailsLevel': 'FULL',
+            },
+            'id_fields': ['id'],
+            'paginate': False
         },
         'users': {
             'path': 'users',
