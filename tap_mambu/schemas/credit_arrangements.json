@@ -3,12 +3,12 @@
   "additionalProperties": false,
   "properties": {
     "available_credit_amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "notes": {
       "type": ["null", "string"]
@@ -21,8 +21,8 @@
       "type": ["null", "string"]
     },
     "consumed_credit_amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": ["null", "string"],
+      "format": "singer.decimal"
     },
     "creation_date": {
       "type": ["null", "string"],

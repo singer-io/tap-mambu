@@ -291,12 +291,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                             parent_id,
                             child_total_records))
 
-        # Update the state with the max_bookmark_value for the stream
-        if bookmark_field:
-            write_bookmark(state,
-                           stream_name,
-                           sub_type,
-                           max_bookmark_value)
 
         # to_rec: to record; ending record for the batch
         to_rec = offset + limit
@@ -311,6 +305,13 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         offset = offset + limit
 
         # End: while record_count == limit
+
+    # Update the state with the max_bookmark_value for the stream
+    if bookmark_field:
+        write_bookmark(state,
+                        stream_name,
+                        sub_type,
+                        max_bookmark_value)
 
     # Return total_records across all batches
     return total_records
@@ -738,9 +739,17 @@ def sync(client, config, catalog, state):
     last_stream = singer.get_currently_syncing(state)
     LOGGER.info('last/currently syncing stream: {}'.format(last_stream))
 
+    # Start syncing from last/currently syncing stream
+    if last_stream in selected_streams:
+        selected_streams = selected_streams[selected_streams.index(last_stream):] + selected_streams[:selected_streams.index(last_stream)]
+
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
-    for stream_name, endpoint_config in endpoints.items():
+    for stream_name in selected_streams:
+        endpoint_config = endpoints.get(stream_name)
+        if endpoint_config is None:
+            # null endpoint_config signifies that this is a child stream
+            continue
         should_stream, last_stream = should_sync_stream(selected_streams,
                                                         last_stream,
                                                         stream_name)

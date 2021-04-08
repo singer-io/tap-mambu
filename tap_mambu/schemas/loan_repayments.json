@@ -24,58 +24,58 @@
       "principal_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "principal_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "interest_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "interest_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "fees_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "fees_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "penalty_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "penalty_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "state": {
         "type": [
@@ -86,44 +86,44 @@
       "tax_interest_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "tax_interest_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "tax_fees_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "tax_fees_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "tax_penalty_due": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       },
       "tax_penalty_paid": {
         "type": [
           "null",
-          "number"
+          "string"
         ],
-        "multipleOf": 1e-10
+        "format": "singer.decimal"
       }
     }
   }
