@@ -66,8 +66,8 @@
         }
       },
       "balance": {
-        "type": ["null", "number"],
-        "multipleOf": 1e-10
+        "type": ["null", "string"],
+        "format": "singer.decimal"
       }
     }
   }

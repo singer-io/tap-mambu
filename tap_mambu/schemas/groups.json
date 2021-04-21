@@ -99,9 +99,9 @@
               "latitude": {
                 "type": [
                   "null",
-                  "number"
+                  "string"
                 ],
-                "multipleOf": 1e-10
+                "format": "singer.decimal"
               },
               "postcode": {
                 "type": [
@@ -142,9 +142,9 @@
               "longitude": {
                 "type": [
                   "null",
-                  "number"
+                  "string"
                 ],
-                "multipleOf": 1e-10
+                "format": "singer.decimal"
               }
             }
           }

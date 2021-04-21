@@ -12,8 +12,6 @@ from tap_mambu.sync import sync
 LOGGER = singer.get_logger()
 
 REQUIRED_CONFIG_KEYS = [
-    'username',
-    'password',
     'subdomain',
     'start_date',
     'user_agent'
@@ -34,8 +32,9 @@ def main():
 
     parsed_args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
 
-    with MambuClient(parsed_args.config['username'],
-                     parsed_args.config['password'],
+    with MambuClient(parsed_args.config.get('username'),
+                     parsed_args.config.get('password'),
+                     parsed_args.config.get('apikey'),
                      parsed_args.config['subdomain'],
                      int(parsed_args.config.get('page_size', DEFAULT_PAGE_SIZE)),
                      user_agent=parsed_args.config['user_agent']) as client:

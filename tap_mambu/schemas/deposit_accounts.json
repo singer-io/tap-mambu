@@ -64,9 +64,9 @@
             "interest_rate": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
-              "multipleOf": 1e-20,
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
@@ -81,16 +81,16 @@
                       "ending_balance": {
                         "type": [
                           "null",
-                          "number"
+                          "string"
                         ],
-                        "multipleOf": 1e-10
+                        "format": "singer.decimal"
                       },
                       "interest_rate": {
                         "type": [
                           "null",
-                          "number"
+                          "string"
                         ],
-                        "multipleOf": 1e-20,
+                        "format": "singer.decimal",
                         "minimum": -1000000000000000,
                         "maximum": 1000000000000000
                       },
@@ -195,65 +195,65 @@
         "overdraft_interest_due": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "total_balance": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "locked_balance": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "technical_overdraft_amount": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "overdraft_amount": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "hold_balance": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "technical_overdraft_interest_due": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "fees_due": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "available_balance": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         }
       }
     },
@@ -298,9 +298,9 @@
         "overdraft_limit": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "overdraft_expiry_date": {
           "type": [
@@ -347,18 +347,18 @@
             "interest_rate": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
-              "multipleOf": 1e-20,
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
             "interest_spread": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
-              "multipleOf": 1e-20,
+              "format": "singer.decimal",
               "minimum": -1000000000000000,
               "maximum": 1000000000000000
             },
@@ -391,16 +391,16 @@
                       "ending_balance": {
                         "type": [
                           "null",
-                          "number"
+                          "string"
                         ],
-                        "multipleOf": 1e-10
+                        "format": "singer.decimal"
                       },
                       "interest_rate": {
                         "type": [
                           "null",
-                          "number"
+                          "string"
                         ],
-                        "multipleOf": 1e-20,
+                        "format": "singer.decimal",
                         "minimum": -1000000000000000,
                         "maximum": 1000000000000000
                       },
@@ -516,23 +516,23 @@
         "overdraft_interest_accrued": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "interest_accrued": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "technical_overdraft_interest_accrued": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         }
       }
     },
@@ -571,23 +571,23 @@
         "recommended_deposit_amount": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "target_amount": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         },
         "max_withdrawal_amount": {
           "type": [
             "null",
-            "number"
+            "string"
           ],
-          "multipleOf": 1e-10
+          "format": "singer.decimal"
         }
       }
     },

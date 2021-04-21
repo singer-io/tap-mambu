@@ -1,7 +1,20 @@
 # Changelog
-
-## 1.1.3
+## 2.0.0
   * Update custom field transformations and schema for streams.
+
+## 1.3.3
+ * Updates singer-python version to 5.12.1  [#41](https://github.com/singer-io/tap-mambu/pull/41)
+
+## 1.3.2
+ * Changed `number` values to use `singer.decimal` in schemas  [#38](https://github.com/singer-io/tap-mambu/pull/38)
+
+## 1.3.0
+  * Added integration tests
+  * Added api key auth
+  * Fixed issue where some streams did not automatically select replication keys
+
+## 1.2.0
+  * Added endpoints: activities, index rate sources, installments. Client, Groups, GL Journal Entries endpoints changed.
 
 ## 1.1.2
   * Added lookback window for loan transactions stream.

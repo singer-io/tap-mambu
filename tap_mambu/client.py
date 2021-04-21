@@ -99,6 +99,7 @@ class MambuClient(object):
     def __init__(self,
                  username,
                  password,
+                 apikey,
                  subdomain,
                  page_size,
                  user_agent=None):
@@ -109,6 +110,7 @@ class MambuClient(object):
         self.base_url = base_url
         self.page_size = page_size
         self.__user_agent = user_agent
+        self.__apikey = apikey
         self.__session = requests.Session()
         self.__verified = False
 
@@ -124,8 +126,14 @@ class MambuClient(object):
                           max_tries=5,
                           factor=2)
     def check_access(self):
+        use_apikey = False
         if self.__username is None or self.__password is None:
-            raise Exception('Error: Missing username or password in config.json.')
+            if self.__apikey is None:
+                raise Exception(
+                    'Error: Missing username or password, or apikey in config.json.'
+                )
+            else:
+                use_apikey = True
         if self.__subdomain is None:
             raise Exception('Error: Missing subdomain in cofig.json.')
         headers = {}
@@ -136,11 +144,15 @@ class MambuClient(object):
         if self.__user_agent:
             headers['User-Agent'] = self.__user_agent
         headers['Accept'] = 'application/vnd.mambu.v1+json'
+        if use_apikey:
+            # Api Key API Consumer Authentication: https://support.mambu.com/docs/api-consumers
+            self.__session.headers['apikey'] = self.__apikey
+        else:
+            # Basic Authentication: https://api.mambu.com/?http#authentication
+            self.__session.auth = (self.__username, self.__password)
         response = self.__session.get(
             url=url,
-            headers=headers,
-            # Basic Authentication: https://api.mambu.com/?http#authentication
-            auth=(self.__username, self.__password))
+            headers=headers)
         if response.status_code != 200:
             LOGGER.error('Error status_code = {}'.format(response.status_code))
             raise_for_error(response)
@@ -184,8 +196,6 @@ class MambuClient(object):
             response = self.__session.request(
                 method=method,
                 url=url,
-                # Basic Authentication: https://api.mambu.com/?http#authentication
-                auth=(self.__username, self.__password),
                 json=json,
                 **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code

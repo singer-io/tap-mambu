@@ -5,16 +5,16 @@
     "available_credit_amount": {
       "type": [
         "null",
-        "number"
+        "string"
       ],
-      "multipleOf": 1e-10
+      "format": "singer.decimal"
     },
     "amount": {
       "type": [
         "null",
-        "number"
+        "string"
       ],
-      "multipleOf": 1e-10
+      "format": "singer.decimal"
     },
     "notes": {
       "type": [
@@ -38,9 +38,9 @@
     "consumed_credit_amount": {
       "type": [
         "null",
-        "number"
+        "string"
       ],
-      "multipleOf": 1e-10
+      "format": "singer.decimal"
     },
     "creation_date": {
       "type": [
