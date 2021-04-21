@@ -11,38 +11,71 @@
             "additionalProperties": false,
             "properties": {
               "country": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "parent_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "city": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "latitude": {
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "format": "singer.decimal"
               },
               "postcode": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "index_in_list": {
-                "type": ["null", "integer"]
+                "type": [
+                  "null",
+                  "integer"
+                ]
               },
               "encoded_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "region": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line2": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line1": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "longitude": {
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "format": "singer.decimal"
               }
             }
@@ -54,33 +87,60 @@
       ]
     },
     "notes": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "last_modified_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "name": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "meeting_day": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "encoded_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "state": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "creation_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "assigned_branch_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "custom_field_sets": {
       "anyOf": [
@@ -91,7 +151,10 @@
             "additionalProperties": false,
             "properties": {
               "custom_field_set_id": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "custom_field_values": {
                 "anyOf": [
@@ -102,10 +165,16 @@
                       "additionalProperties": false,
                       "properties": {
                         "custom_field_id": {
-                          "type": ["null", "string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "custom_field_value": {
-                          "type": ["null", "string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         }
                       }
                     }
