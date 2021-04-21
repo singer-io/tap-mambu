@@ -240,7 +240,7 @@
         "string"
       ]
     },
-    "custom_field_sets": {
+    "custom_fields": {
       "anyOf": [
         {
           "type": "array",
@@ -248,38 +248,22 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "custom_field_set_id": {
+              "field_set_id": {
                 "type": [
                   "null",
                   "string"
                 ]
               },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
-                          "type": [
-                            "null",
-                            "string"
-                          ]
-                        },
-                        "custom_field_value": {
-                          "type": [
-                            "null",
-                            "string"
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               }
             }

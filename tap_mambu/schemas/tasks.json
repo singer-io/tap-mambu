@@ -44,45 +44,28 @@
     "state": {
       "type": ["null", "string"]
     },
-    "custom_field_sets": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "custom_field_set_id": {
-                "type": ["null", "string"]
-              },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
+    "custom_fields": {
+      "anyOf": [{
+              "type": "array",
+              "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                      "field_set_id": {
                           "type": ["null", "string"]
-                        },
-                        "custom_field_value": {
+                      },
+                      "id": {
                           "type": ["null", "string"]
-                        }
+                      },
+                      "value": {
+                          "type": ["null", "string"]
                       }
-                    }
-                  },
-                  {
-                    "type": "null"
                   }
-                ]
               }
-            }
+          },
+          {
+              "type": "null"
           }
-        },
-        {
-          "type": "null"
-        }
       ]
     }
   }
