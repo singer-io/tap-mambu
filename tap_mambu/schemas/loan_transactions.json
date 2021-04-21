@@ -1,319 +1,525 @@
 {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "migration_event_key": {
-            "type": ["null", "string"]
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "migration_event_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "transaction_details": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "transaction_channel_id": {
+          "type": [
+            "null",
+            "string"
+          ]
         },
-        "transaction_details": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "transaction_channel_id": {
-                    "type": ["null", "string"]
-                },
-                "transaction_channel_key": {
-                    "type": ["null", "string"]
-                }
-            }
-        },
-        "fees": {
-            "anyOf": [{
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "name": {
-                                "type": ["null", "string"]
-                            },
-                            "amount": {
-                                "type": ["null", "number"],
-                                "multipleOf": 1e-10
-                            },
-                            "trigger": {
-                                "type": ["null", "string"]
-                            },
-                            "tax_amount": {
-                                "type": ["null", "number"],
-                                "multipleOf": 1e-10
-                            },
-                            "predefined_fee_key": {
-                                "type": ["null", "string"]
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "null"
-                }
-            ]
-        },
-        "notes": {
-            "type": ["null", "string"]
-        },
-        "affected_amounts": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "fees_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "overdraft_interest_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "overdraft_fees_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "fraction_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "technical_overdraft_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "overdraft_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "interest_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "technical_overdraft_interest_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "funds_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                }
-            }
-        },
-        "taxes": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "tax_interest_from_arrears_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "tax_on_fees_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "tax_rate": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-20,
-                    "minimum": -1000000000000000,
-                    "maximum": 1000000000000000
-                },
-                "tax_on_interest_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "tax_on_penalty_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "deferred_tax_on_interest_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                }
-            }
-        },
-        "till_key": {
-            "type": ["null", "string"]
-        },
-        "adjustment_transaction_key": {
-            "type": ["null", "string"]
-        },
-        "type": {
-            "type": ["null", "string"]
-        },
-        "branch_key": {
-            "type": ["null", "string"]
-        },
-        "terms": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "interest_settings": {
-                    "type": ["null", "object"],
-                    "additionalProperties": false,
-                    "properties": {
-                        "interest_rate": {
-                            "type": ["null", "number"],
-                            "multipleOf": 1e-20,
-                            "minimum": -1000000000000000,
-                            "maximum": 1000000000000000
-                        },
-                        "index_interest_rate": {
-                            "type": ["null", "number"],
-                            "multipleOf": 1e-20,
-                            "minimum": -1000000000000000,
-                            "maximum": 1000000000000000
-                        }
-                    }
-                },
-                "principal_payment_amount": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "principal_payment_percentage": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-20,
-                    "minimum": -1000000000000000,
-                    "maximum": 1000000000000000
-                }
-            }
-        },
-        "transfer_details": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "linked_loan_transaction_key": {
-                    "type": ["null", "string"]
-                },
-                "linked_deposit_transaction_key": {
-                    "type": ["null", "string"]
-                }
-            }
-        },
-        "parent_loan_transaction_key": {
-            "type": ["null", "string"]
-        },
-        "custom_payment_amounts": {
-            "anyOf": [{
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "tax_on_amount": {
-                                "type": ["null", "number"],
-                                "multipleOf": 1e-10
-                            },
-                            "amount": {
-                                "type": ["null", "number"],
-                                "multipleOf": 1e-10
-                            },
-                            "custom_payment_amount_type": {
-                                "type": ["null", "string"]
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "null"
-                }
-            ]
-        },
-        "encoded_key": {
-            "type": ["null", "string"]
-        },
-        "id": {
-            "type": ["null", "string"]
-        },
-        "original_currency_code": {
-            "type": ["null", "string"]
-        },
-        "original_transaction_key": {
-            "type": ["null", "string"]
-        },
-        "amount": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
-        },
-        "centre_key": {
-            "type": ["null", "string"]
-        },
-        "external_id": {
-            "type": ["null", "string"]
-        },
-        "value_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "creation_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "user_key": {
-            "type": ["null", "string"]
-        },
-        "parent_account_key": {
-            "type": ["null", "string"]
-        },
-        "original_amount": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
-        },
-
-        "linked_loan_transaction_key": {
-            "type": ["null", "string"]
-        },
-        "account_balances": {
-            "type": ["null", "object"],
-            "additionalProperties": false,
-            "properties": {
-                "redraw_balance": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "principal_balance": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "total_balance": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "expected_principal_redraw": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "advance_position": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                },
-                "arrears_position": {
-                    "type": ["null", "number"],
-                    "multipleOf": 1e-10
-                }
-            }
-        },
-        "booking_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "custom_fields": {
-            "anyOf": [{
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "field_set_id": {
-                                "type": ["null", "string"]
-                            },
-                            "id": {
-                                "type": ["null", "string"]
-                            },
-                            "value": {
-                                "type": ["null", "string"]
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "null"
-                }
-            ]
+        "transaction_channel_key": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
+      }
+    },
+    "fees": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "null",
+                  "number"
+                ],
+                "multipleOf": 1e-10
+              },
+              "trigger": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "tax_amount": {
+                "type": [
+                  "null",
+                  "number"
+                ],
+                "multipleOf": 1e-10
+              },
+              "predefined_fee_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "affected_amounts": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fees_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "overdraft_interest_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "overdraft_fees_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "fraction_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "technical_overdraft_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "overdraft_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "interest_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "technical_overdraft_interest_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "funds_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        }
+      }
+    },
+    "taxes": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tax_interest_from_arrears_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "tax_on_fees_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "tax_rate": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
+        },
+        "tax_on_interest_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "tax_on_penalty_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "deferred_tax_on_interest_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        }
+      }
+    },
+    "till_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "adjustment_transaction_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "branch_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "terms": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "interest_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "interest_rate": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
+            },
+            "index_interest_rate": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "multipleOf": 1e-20,
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
+            }
+          }
+        },
+        "principal_payment_amount": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "principal_payment_percentage": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-20,
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
+        }
+      }
+    },
+    "transfer_details": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "linked_loan_transaction_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "linked_deposit_transaction_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "parent_loan_transaction_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "custom_payment_amounts": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tax_on_amount": {
+                "type": [
+                  "null",
+                  "number"
+                ],
+                "multipleOf": 1e-10
+              },
+              "amount": {
+                "type": [
+                  "null",
+                  "number"
+                ],
+                "multipleOf": 1e-10
+              },
+              "custom_payment_amount_type": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "original_currency_code": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "original_transaction_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "multipleOf": 1e-10
+    },
+    "centre_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "external_id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "value_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "user_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "parent_account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "original_amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "multipleOf": 1e-10
+    },
+    "linked_loan_transaction_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "account_balances": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "redraw_balance": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "principal_balance": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "total_balance": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "expected_principal_redraw": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "advance_position": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "arrears_position": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        }
+      }
+    },
+    "booking_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "custom_fields": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
+  }
 }

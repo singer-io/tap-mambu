@@ -1,83 +1,138 @@
 {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "available_credit_amount": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "available_credit_amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "multipleOf": 1e-10
+    },
+    "amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "multipleOf": 1e-10
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "holder_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "consumed_credit_amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "multipleOf": 1e-10
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "approved_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "sub_state": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "expire_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "state": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "holder_type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "start_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "custom_fields": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
         },
-        "amount": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
-        },
-        "notes": {
-            "type": ["null", "string"]
-        },
-        "last_modified_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "holder_key": {
-            "type": ["null", "string"]
-        },
-        "consumed_credit_amount": {
-            "type": ["null", "number"],
-            "multipleOf": 1e-10
-        },
-        "creation_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "approved_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "sub_state": {
-            "type": ["null", "string"]
-        },
-        "encoded_key": {
-            "type": ["null", "string"]
-        },
-        "expire_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "id": {
-            "type": ["null", "string"]
-        },
-        "state": {
-            "type": ["null", "string"]
-        },
-        "holder_type": {
-            "type": ["null", "string"]
-        },
-        "start_date": {
-            "type": ["null", "string"],
-            "format": "date-time"
-        },
-        "custom_fields": {
-            "anyOf": [{
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "field_set_id": {
-                                "type": ["null", "string"]
-                            },
-                            "id": {
-                                "type": ["null", "string"]
-                            },
-                            "value": {
-                                "type": ["null", "string"]
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "null"
-                }
-            ]
+        {
+          "type": "null"
         }
+      ]
     }
+  }
 }
