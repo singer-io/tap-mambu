@@ -101,6 +101,7 @@ class MambuClient(object):
                  password,
                  apikey,
                  subdomain,
+                 apikey_audit,
                  page_size,
                  user_agent=None):
         self.__username = username
@@ -113,6 +114,7 @@ class MambuClient(object):
         self.__apikey = apikey
         self.__session = requests.Session()
         self.__verified = False
+        self.__apikey_audit = apikey_audit
 
     def __enter__(self):
         self.__verified = self.check_access()
@@ -164,7 +166,7 @@ class MambuClient(object):
                           (Server5xxError, ConnectionError, Server429Error),
                           max_tries=7,
                           factor=3)
-    def request(self, method, path=None, url=None, json=None, version=None, **kwargs):
+    def request(self, method, path=None, url=None, json=None, version=None, apikey_type=None, **kwargs):
         if not self.__verified:
             self.__verified = self.check_access()
 
@@ -184,7 +186,11 @@ class MambuClient(object):
             kwargs['headers'] = {}
 
         # Version represents API version (e.g. v2): https://api.mambu.com/?http#versioning
-        kwargs['headers']['Accept'] = 'application/vnd.mambu.{}+json'.format(version)
+        if version == 'v2':
+            kwargs['headers']['Accept'] = 'application/vnd.mambu.{}+json'.format(version)
+
+        if apikey_type == 'audit' and self.__apikey_audit:
+            kwargs['headers']['apikey'] = self.__apikey_audit
 
         if self.__user_agent:
             kwargs['headers']['User-Agent'] = self.__user_agent

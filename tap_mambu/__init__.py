@@ -36,6 +36,7 @@ def main():
                      parsed_args.config.get('password'),
                      parsed_args.config.get('apikey'),
                      parsed_args.config['subdomain'],
+                     parsed_args.config.get('apikey_audit'),
                      int(parsed_args.config.get('page_size', DEFAULT_PAGE_SIZE)),
                      user_agent=parsed_args.config['user_agent']) as client:
 

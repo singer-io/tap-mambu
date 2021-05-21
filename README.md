@@ -26,6 +26,7 @@ This tap:
   - [Users](https://api.mambu.com/?http#users-getAll)
   - [GL Accounts](https://support.mambu.com/docs/gl-accounts-api)
   - [GL Journal Entries](https://support.mambu.com/docs/gl-journal-entries-api)
+  - [Audit Trail (v1)](https://support.mambu.com/docs/audit-trail)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 
@@ -82,13 +83,14 @@ This tap:
 - Replication strategy: Full table
 - Transformations: Fields camelCase to snake_case
 
-[**deposit_accounts (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAll)
-- Endpoint: https://instance.sandbox.mambu.com/api/deposits
+[**deposit_accounts (POST v2)**](https://api.mambu.com/?http#deposit-accounts-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/deposits:search
 - Primary keys: id
 - Foreign keys: assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), assigned_user_key (users), assigned_centre_key (centres), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
 - Replication strategy: Incremental (query all, filter results)
   - Sort by: lastModifiedDate:ASC
   - Bookmark: last_modified_date (date-time)
+  - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**cards (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAllCards)
@@ -125,13 +127,14 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**loan_accounts (GET v2)**](https://api.mambu.com/?http#LoanAccounts-getAll)
-- Endpoint: https://instance.sandbox.mambu.com/api/loans
+[**loan_accounts (POST v2)**](https://api.mambu.com/?http#loan-accounts-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/loans:search
 - Primary keys: id
 - Foreign keys: deposit_account_key (deposits), target_deposit_account_key (deposits), assig, ned_user_key (users), assigned_centre_key (centres), assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
 - Replication strategy: Incremental (query all, filter results)
   - Sort by: lastModifiedDate:ASC
   - Bookmark: last_modified_date (date-time)
+  - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**loan_products (GET v1)**](https://support.mambu.com/docs/loan-products-api)
@@ -207,6 +210,14 @@ This tap:
   - Bookmark: last_paid_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
+[**audit_trail (GET V1)**](https://support.mambu.com/docs/audit-trail)
+- Endpoint: https://instance.sandbox.mambu.com/api/v1/events
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark query field: occurred_at
+  - Bookmark: occurred_at (date-time)
+  - Sort by: occurred_at:DESC
+- Transformations: Fields camelCase to snake_case
+
 ## Quick Start
 
 1. Install
@@ -244,7 +255,8 @@ This tap:
         "start_date": "2019-01-01T00:00:00Z",
         "lookback_window: 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
-        "page_size": "500"
+        "page_size": "500",
+        "apikey_audit": "AUDIT_TRAIL_APIKEY"
     }
     ```
     
@@ -254,6 +266,7 @@ This tap:
     {
         "currently_syncing": "tasks",
         "bookmarks": {
+            "audit_trail":"2021-05-20T09:59:09.780213Z", 
             "branches": "2019-06-11T13:37:51Z",
             "communications": "2019-06-19T19:48:42Z",
             "centres": "2019-06-18T18:23:53Z",
