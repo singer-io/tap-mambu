@@ -189,8 +189,13 @@ class MambuClient(object):
         if version == 'v2':
             kwargs['headers']['Accept'] = 'application/vnd.mambu.{}+json'.format(version)
 
-        if apikey_type == 'audit' and self.__apikey_audit:
-            kwargs['headers']['apikey'] = self.__apikey_audit
+        if apikey_type == 'audit':
+            if self.__apikey_audit is None:
+                raise Exception(
+                    'Error: Missing apikey_audit in config.json.'
+                )
+            else:
+                kwargs['headers']['apikey'] = self.__apikey_audit
 
         if self.__user_agent:
             kwargs['headers']['User-Agent'] = self.__user_agent
