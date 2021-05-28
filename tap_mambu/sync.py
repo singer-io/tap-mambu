@@ -1,10 +1,11 @@
-from _datetime import timedelta
 from datetime import datetime
 
 import singer
+from _datetime import timedelta
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strftime, strptime_to_utc
-from tap_mambu.transform import transform_json, transform_activities
+
+from tap_mambu.transform import transform_activities, transform_json
 
 LOGGER = singer.get_logger()
 LOOKBACK_DEFAULT = 14
@@ -384,6 +385,10 @@ def sync(client, config, catalog, state):
     saving_accounts_str = get_bookmark(state, 'saving_accounts', 'self', start_date)
     saving_accounts_dt_str = transform_datetime(saving_accounts_str)[:19].replace('T', ' ')
 
+    # TESTING
+    deposit_accounts_str = get_bookmark(state, 'deposit_accounts', 'self', start_date)
+    deposit_accounts_dt_str = transform_datetime(deposit_accounts_str)
+
     groups_dttm_str = get_bookmark(state, 'groups', 'self', start_date)
     groups_dt_str = transform_datetime(groups_dttm_str)
 
@@ -507,13 +512,51 @@ def sync(client, config, catalog, state):
             'params': {},
             'id_fields': ['id']
         },
+#        'deposit_accounts': {
+#            'path': 'deposits',
+#            'api_version': 'v2',
+#            'api_method': 'GET',
+#            'params': {
+#                'sortBy': 'lastModifiedDate:ASC',
+#                'detailsLevel': 'FULL'
+#            },
+#            'bookmark_field': 'last_modified_date',
+#            'bookmark_type': 'datetime',
+#            'id_fields': ['id'],
+#            'store_ids': True,
+#            'children': {
+#                'cards': {
+#                    'path': 'deposits/{}/cards',
+#                    'api_version': 'v2',
+#                    'api_method': 'GET',
+#                    'params': {
+#                        'detailsLevel': 'FULL'
+#                    },
+#                    'id_fields': ['deposit_id', 'reference_token'],
+#                    'parent': 'deposit'
+#                }
+#            }
+#        },
+
         'deposit_accounts': {
-            'path': 'deposits',
+            'path': 'deposits:search',
             'api_version': 'v2',
-            'api_method': 'GET',
+            'api_method': 'POST',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC',
                 'detailsLevel': 'FULL'
+            },
+            'body': {
+                "sortingCriteria": {
+                    "field": "lastModifiedDate",
+                    "order": "ASC"
+                },
+                "filterConstraints": [
+                    {
+                        "filterSelection": "last_modified_date",
+                        "filterElement": "AFTER",
+                        "value": deposit_accounts_dt_str
+                    }
+                ]
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -531,7 +574,7 @@ def sync(client, config, catalog, state):
                     'parent': 'deposit'
                 }
             }
-        },
+        },        
         # TEMP: pre fetch of deposit accounts using search
         'saving_accounts': {
             'path': 'savings/search',
