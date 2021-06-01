@@ -550,8 +550,8 @@ def sync(client, config, catalog, state):
                 "sortingCriteria": {"field": "lastModifiedDate", "order": "ASC"},
                 "filterCriteria": [
                     {
-                        "filterSelection": "last_modified_date",
-                        "filterElement": "AFTER",
+                        "field": "last_modified_date",
+                        "operator": "AFTER",
                         "value": deposit_accounts_dt_str,
                     }
                 ],
