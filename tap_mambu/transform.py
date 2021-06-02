@@ -42,25 +42,29 @@ def remove_custom_nodes(this_json):
         if not kk[:1] == '_'}
 
 
+def add_cust_field(key, record, cust_field_sets):
+    for cf_key, cf_value in record.items():
+        field = {
+            'field_set_id' : key,
+            'id' : cf_key,
+            'value' : cf_value,
+        }
+        cust_field_sets.append(field)
+
 # Convert custom fields and sets
 # Generalize/Abstract custom fields to key/value pairs
 def convert_custom_fields(this_json):
-    new_json = this_json
-    i = 0
     for record in this_json:
         cust_field_sets = []
-        for key in record:
-            if isinstance(record[key], dict):
-                if key[:1] == '_':
-                    for cf_key, cf_value in record[key].items():
-                        field = {}
-                        field['field_set_id'] = key
-                        field['id'] = cf_key
-                        field['value'] = cf_value
-                        cust_field_sets.append(field)
-        new_json[i]['custom_fields'] = cust_field_sets
-        i = i + 1
-    return new_json
+        for key, value in record.items():
+            if key[0] == '_':
+                if isinstance(value, dict):
+                    add_cust_field(key, value, cust_field_sets)
+                elif isinstance(value, list):
+                    for element in value:
+                        add_cust_field(key, element, cust_field_sets)
+        record['custom_fields'] = cust_field_sets
+    return this_json
 
 
 # Run all transforms: denests _embedded, removes _embedded/_links, and
