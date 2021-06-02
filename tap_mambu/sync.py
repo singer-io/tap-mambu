@@ -547,10 +547,10 @@ def sync(client, config, catalog, state):
             'api_method': 'POST',
             'params': {'detailsLevel': 'FULL'},
             'body': {
-                "sortingCriteria": {"field": "last_modified_date", "order": "ASC"},
+                "sortingCriteria": {"field": "lastModifiedDate", "order": "ASC"},
                 "filterCriteria": [
                     {
-                        "field": "last_modified_date",
+                        "field": "lastModifiedDate",
                         "operator": "AFTER",
                         "value": deposit_accounts_dt_str,
                     }
