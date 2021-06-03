@@ -1,4 +1,8 @@
 # Changelog
+
+## 2.0.1
+  * Fix convert_custom_fields to handle lists as well as dicts [#47](https://github.com/singer-io/tap-mambu/pull/47)
+
 ## 2.0.0
   * Update custom field transformations and schema for streams.
 
