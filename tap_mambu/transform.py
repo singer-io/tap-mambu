@@ -57,7 +57,7 @@ def convert_custom_fields(this_json):
     for record in this_json:
         cust_field_sets = []
         for key, value in record.items():
-            if key[0] == '_':
+            if key.startswith('_'):
                 if isinstance(value, dict):
                     add_cust_field(key, value, cust_field_sets)
                 elif isinstance(value, list):
