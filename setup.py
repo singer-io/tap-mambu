@@ -17,6 +17,7 @@ setup(name='tap-mambu',
           'dev': [
               'ipdb==0.11',
               'pylint==2.5.3',
+              'pytest==6.2.4'
           ]
       },
       entry_points='''
