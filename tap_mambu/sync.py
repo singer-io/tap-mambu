@@ -547,7 +547,7 @@ def sync(client, config, catalog, state):
             'api_method': 'POST',
             'params': {'detailsLevel': 'FULL'},
             'body': {
-                "sortingCriteria": {"field": "lastModifiedDate", "order": "ASC"},
+                "sortingCriteria": {"field": "lastModifiedDate", "order": "DESC"},
                 "filterCriteria": [
                     {
                         "field": "lastModifiedDate",
