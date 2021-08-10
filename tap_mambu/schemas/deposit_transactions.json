@@ -3,17 +3,29 @@
   "additionalProperties": false,
   "properties": {
     "migration_event_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "transaction_details": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "transaction_channel_id": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "transaction_channel_key": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         }
       }
     },
@@ -26,21 +38,30 @@
             "additionalProperties": false,
             "properties": {
               "name": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "amount": {
                 "type": ["null", "string"],
                 "format": "singer.decimal"
               },
               "trigger": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "tax_amount": {
                 "type": ["null", "string"],
                 "format": "singer.decimal"
               },
               "predefined_fee_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           }
@@ -51,10 +72,16 @@
       ]
     },
     "notes": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "affected_amounts": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "fees_amount": {
@@ -96,63 +123,110 @@
       }
     },
     "card_transaction": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "external_reference_id": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
         },
         "advice": {
-          "type": ["null", "boolean"]
+          "type": [
+            "null",
+            "boolean"
+          ]
         },
         "external_authorization_reference_id": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
-
         "card_acceptor": {
-          "type": ["null", "object"],
+          "type": [
+            "null",
+            "object"
+          ],
           "additionalProperties": false,
           "properties": {
             "zip": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             },
             "country": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             },
             "city": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             },
             "name": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             },
             "state": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             },
             "mcc": {
-              "type": ["null", "integer"]
+              "type": [
+                "null",
+                "integer"
+              ]
             }
           }
         },
         "encoded_key": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "user_transaction_time": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "currency_code": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "card_token": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         }
       }
     },
     "taxes": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "tax_rate": {
@@ -164,23 +238,41 @@
       }
     },
     "till_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "adjustment_transaction_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "type": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "branch_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "terms": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "interest_settings": {
-          "type": ["null", "object"],
+          "type": [
+            "null",
+            "object"
+          ],
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
@@ -192,7 +284,10 @@
           }
         },
         "overdraft_settings": {
-          "type": ["null", "object"],
+          "type": [
+            "null",
+            "object"
+          ],
           "additionalProperties": false,
           "properties": {
             "overdraft_limit": {
@@ -202,7 +297,10 @@
           }
         },
         "overdraft_interest_settings": {
-          "type": ["null", "object"],
+          "type": [
+            "null",
+            "object"
+          ],
           "additionalProperties": false,
           "properties": {
             "interest_rate": {
@@ -222,55 +320,97 @@
       }
     },
     "transfer_details": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "linked_loan_transaction_key": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "linked_deposit_transaction_key": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         }
       }
     },
     "encoded_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "original_transaction_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "amount": {
       "type": ["null", "string"],
       "format": "singer.decimal"
     },
     "centre_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "external_id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "value_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "creation_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "user_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "parent_account_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "linked_loan_transaction_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "account_balances": {
-      "type": ["null", "object"],
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
         "total_balance": {
@@ -280,13 +420,19 @@
       }
     },
     "booking_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "currency_code": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
-    "custom_field_sets": {
+    "custom_fields": {
       "anyOf": [
         {
           "type": "array",
@@ -294,29 +440,22 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "custom_field_set_id": {
-                "type": ["null", "string"]
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
-                          "type": ["null", "string"]
-                        },
-                        "custom_field_value": {
-                          "type": ["null", "string"]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               }
             }
