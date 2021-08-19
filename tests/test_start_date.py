@@ -99,7 +99,7 @@ class StartDateTest(MambuBaseTest):
                     3. Verify that all records in Sync B are included in Sync A.
                     """
                     # Criteria 1
-                    self.assertEqual(first_sync_count, second_sync_count)
+                    self.assertGreaterEqual(first_sync_count, second_sync_count)
 
                     # Criteria 2
                     self.assertNotIn(stream_name, first_sync_state['bookmarks'])
@@ -113,7 +113,8 @@ class StartDateTest(MambuBaseTest):
                                                                         first_sync_records)
                     second_sync_unique_records = self.get_unique_records(stream_name,
                                                                          second_sync_records)
-                    self.assertSetEqual(first_sync_unique_records, second_sync_unique_records)
+                    self.assertGreaterEqual(len(first_sync_unique_records),
+                                            len(second_sync_unique_records))
                 else:
                     """
                     Testing Criteria:
