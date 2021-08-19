@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+  * Changes `deposit` and `locations` enpoint from GET to POST
+  * Adds `Audit trial` stream with new config property `apikey_audit`
+  * Adds `parent_account_key` field to `installments` stream [#49](https://github.com/singer-io/tap-mambu/pull/49)
+
 ## 2.0.1
   * Fix convert_custom_fields to handle lists as well as dicts [#47](https://github.com/singer-io/tap-mambu/pull/47)
 
