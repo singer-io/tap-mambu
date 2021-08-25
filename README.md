@@ -372,7 +372,7 @@ This tap:
     | clients                 | 104     | 1       |
     | cards                   | 1       | 3       |
     | loan_accounts           | 7       | 1       |
-    | loan_accounts_appraisal | 7       | 1       |
+    | loan_accounts_get_all   | 7       | 1       |
     | deposit_transactions    | 32      | 1       |
     | centres                 | 2       | 1       |
     | gl_accounts             | 18      | 5       |
