@@ -147,6 +147,15 @@ class MambuBaseTest(unittest.TestCase):
                     "last_modified_date"
                 }
             },
+            "loan_accounts_get_all": {
+                self.PRIMARY_KEYS: {
+                    "id"
+                },
+                self.REPLICATION_METHOD: "INCREMENTAL",
+                self.REPLICATION_KEYS: {
+                    "last_modified_date"
+                }
+            },
             "loan_repayments": {
                 self.PRIMARY_KEYS: {
                     "encoded_key"

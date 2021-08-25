@@ -137,7 +137,7 @@ class MambuClient(object):
             else:
                 use_apikey = True
         if self.__subdomain is None:
-            raise Exception('Error: Missing subdomain in cofig.json.')
+            raise Exception('Error: Missing subdomain in config.json.')
         headers = {}
         # Endpoint: simple API call to return a single record (org settings) to test access
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings

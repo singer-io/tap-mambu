@@ -1,0 +1,4 @@
+
+          [console_scripts]
+          tap-mambu=tap_mambu:main
+      
