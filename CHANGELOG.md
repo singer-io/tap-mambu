@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.1
+  * Query `installments` endpoint correctly using the `start_date` instead of bookmarked value [#54](https://github.com/singer-io/tap-mambu/pull/54)
+
 ## 2.1.0
   * Changes `deposit` and `locations` enpoint from GET to POST
   * Adds `Audit trial` stream with new config property `apikey_audit`
