@@ -461,7 +461,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -484,7 +484,7 @@ def sync(client, config, catalog, state):
                     'value': communications_dt_str
                 }
             ],
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -497,7 +497,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -521,7 +521,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -534,7 +534,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -565,7 +565,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id'],
             'store_ids': True,
@@ -589,7 +589,7 @@ def sync(client, config, catalog, state):
             'params': {
                 "fullDetails": True
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -613,7 +613,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -637,7 +637,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -662,7 +662,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id'],
             'children': {
@@ -699,7 +699,7 @@ def sync(client, config, catalog, state):
             'params': {
                 "fullDetails": True
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -723,7 +723,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -736,7 +736,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -749,7 +749,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -761,7 +761,7 @@ def sync(client, config, catalog, state):
                 'type': '{sub_type}'
             },
             'id_fields': ['gl_code'],
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
         },
@@ -780,7 +780,7 @@ def sync(client, config, catalog, state):
                 ]
             },
             'id_fields': ['entry_id'],
-            'bookmark_field': 'booking_date',
+            'bookmark_field': ['booking_date'],
             'bookmark_type': 'datetime'
         },
         'activities': {
@@ -792,7 +792,7 @@ def sync(client, config, catalog, state):
                 'to': '{now_date_str}'
             },
             'id_fields': ['encoded_key'],
-            'bookmark_field': 'timestamp',
+            'bookmark_field': ['timestamp'],
             'bookmark_type': 'datetime'
         },
         'index_rate_sources': {
@@ -811,7 +811,7 @@ def sync(client, config, catalog, state):
                 'dueFrom': '{installments_from_dt_str}',
                 'dueTo': '{now_date_str}'
             },
-            'bookmark_field': 'last_paid_date',
+            'bookmark_field': ['last_paid_date'],
             'bookmark_type': 'datetime'
         },
         'audit_trail': {
@@ -825,7 +825,7 @@ def sync(client, config, catalog, state):
                 'occurred_at[gte]': '{audit_trail_from_dt_str}',
                 'occurred_at[lte]': '{audit_trail_to_dt_str}'
             },
-            'bookmark_field': 'occurred_at',
+            'bookmark_field': ['occurred_at'],
             'bookmark_type': 'datetime'
         }
     }

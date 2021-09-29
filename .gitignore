@@ -20,3 +20,4 @@ tap_mambu/.vscode/settings.json
 .DS_Store
 test_configuration.py
 tap_target_commands.sh
+.idea/
