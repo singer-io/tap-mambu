@@ -712,10 +712,10 @@ def sync(client, config, catalog, state):
             'api_version': 'v2',
             'api_method': 'POST',
             'body': {
-                "sortingCriteria": {"field": "bookingDate", "order": "ASC"},
+                "sortingCriteria": {"field": "creationDate", "order": "ASC"},
                 "filterCriteria": [
                     {
-                        "field": "bookingDate",
+                        "field": "creationDate",
                         "operator": "AFTER",
                         "value": gl_journal_entries_dt_str,
                     }
