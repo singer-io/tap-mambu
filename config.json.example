@@ -4,5 +4,6 @@
     "apikey": "YOUR_APIKEY",
     "subdomain": "YOUR_SUBDOMAIN",
     "start_date": "2019-01-01T00:00:00Z",
-    "user_agent": "tap-mambu <api_user_email@your_company.com>"
+    "user_agent": "tap-mambu <api_user_email@your_company.com>",
+    "apikey_audit": "AUDIT_TRAIL_APIKEY"
 }
