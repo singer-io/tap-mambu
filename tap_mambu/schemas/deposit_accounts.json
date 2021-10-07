@@ -251,9 +251,23 @@
         "available_balance": {
           "type": [
             "null",
-            "string"
+            "number"
           ],
-          "format": "singer.decimal"
+          "multipleOf": 1e-10
+        },
+        "blocked_balance": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
+        },
+        "forward_available_balance": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
         }
       }
     },
@@ -289,7 +303,7 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "allowed_overdraft": {
+        "allow_overdraft": {
           "type": [
             "null",
             "boolean"
@@ -533,6 +547,13 @@
             "string"
           ],
           "format": "singer.decimal"
+        },
+        "negative_interest_accrued": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "multipleOf": 1e-10
         }
       }
     },

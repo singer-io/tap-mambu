@@ -82,6 +82,10 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'transaction_channels': {
+        'key_properties': ['id'],
+        'replication_method': 'FULL_TABLE'
+    },
     'users': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
