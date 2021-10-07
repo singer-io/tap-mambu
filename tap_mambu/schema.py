@@ -114,6 +114,11 @@ STREAMS = {
         'key_properties': ['encoded_key'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_paid_date']
+    },
+    'audit_trail': {
+        'key_properties': [],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['occurred_at']
     }
 }
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.1.1
+  * Query `installments` endpoint correctly using the `start_date` instead of bookmarked value [#54](https://github.com/singer-io/tap-mambu/pull/54)
+
+## 2.1.0
+  * Changes `deposit` and `locations` enpoint from GET to POST
+  * Adds `Audit trial` stream with new config property `apikey_audit`
+  * Adds `parent_account_key` field to `installments` stream [#49](https://github.com/singer-io/tap-mambu/pull/49)
+
+## 2.0.1
+  * Fix convert_custom_fields to handle lists as well as dicts [#47](https://github.com/singer-io/tap-mambu/pull/47)
+
+## 2.0.0
+  * Update custom field transformations and schema for streams.
+
+## 1.3.3
+ * Updates singer-python version to 5.12.1  [#41](https://github.com/singer-io/tap-mambu/pull/41)
+
+## 1.3.2
+ * Changed `number` values to use `singer.decimal` in schemas  [#38](https://github.com/singer-io/tap-mambu/pull/38)
+
 ## 1.3.0
   * Added integration tests
   * Added api key auth

@@ -3,7 +3,10 @@
   "additionalProperties": false,
   "properties": {
     "email_address": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "addresses": {
       "anyOf": [
@@ -14,39 +17,72 @@
             "additionalProperties": false,
             "properties": {
               "country": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "parent_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "city": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "latitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
               },
               "postcode": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "index_in_list": {
-                "type": ["null", "integer"]
+                "type": [
+                  "null",
+                  "integer"
+                ]
               },
               "encoded_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "region": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line2": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line1": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "longitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
               }
             }
           }
@@ -57,29 +93,53 @@
       ]
     },
     "phone_number": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "notes": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "last_modified_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "name": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "encoded_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "state": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "creation_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "branch_holidays": {
@@ -91,20 +151,35 @@
             "additionalProperties": false,
             "properties": {
               "name": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "date": {
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "format": "date"
               },
               "encoded_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "is_anually_recurring": {
-                "type": ["null", "boolean"]
+                "type": [
+                  "null",
+                  "boolean"
+                ]
               },
               "creation_date": {
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "format": "date-time"
               }
             }
@@ -115,7 +190,7 @@
         }
       ]
     },
-    "custom_field_sets": {
+    "custom_fields": {
       "anyOf": [
         {
           "type": "array",
@@ -123,29 +198,22 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "custom_field_set_id": {
-                "type": ["null", "string"]
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
-                          "type": ["null", "string"]
-                        },
-                        "custom_field_value": {
-                          "type": ["null", "string"]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               }
             }

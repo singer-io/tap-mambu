@@ -132,27 +132,27 @@ def process_records(
 
 
 # Sync a specific parent or child endpoint.
-def sync_endpoint(
-    client,  # pylint: disable=too-many-branches
-    catalog,
-    state,
-    start_date,
-    stream_name,
-    path,
-    endpoint_config,
-    api_version,
-    api_method,
-    static_params,
-    sub_type,
-    bookmark_query_field=None,
-    bookmark_field=None,
-    bookmark_type=None,
-    data_key=None,
-    body=None,
-    id_fields=None,
-    parent=None,
-    parent_id=None,
-):
+def sync_endpoint(client, #pylint: disable=too-many-branches
+                  catalog,
+                  state,
+                  start_date,
+                  stream_name,
+                  path,
+                  endpoint_config,
+                  api_version,
+                  api_method,
+                  static_params,
+                  sub_type,
+                  bookmark_query_field=None,
+                  bookmark_field=None,
+                  bookmark_type=None,
+                  data_key=None,
+                  body=None,
+                  id_fields=None,
+                  parent=None,
+                  parent_id=None,
+                  apikey_type=None):
+
 
     # Get the latest bookmark for the stream and set the last_integer/datetime
     last_datetime = None
@@ -172,23 +172,34 @@ def sync_endpoint(
     # Each page has an offset (starting value) and a limit (batch size, number of records)
     # Increase the "offset" by the "limit" for each batch.
     # Continue until the "record_count" returned < "limit" is null/zero or
-    offset = 0  # Starting offset value for each batch API call
-    limit = client.page_size  # Batch size; Number of records per API call
-    total_records = 0  # Initialize total
-    record_count = limit  # Initialize, reset for each API call
+    offset = 0 # Starting offset value for each batch API call
+    limit = client.page_size # Batch size; Number of records per API call
+    total_records = 0 # Initialize total
+    record_count = limit # Initialize, reset for each API call
     paginate = endpoint_config.get('paginate', True)
 
-    while (
-        record_count == limit
-    ):  # break out of loop when record_count < limit (or not data returned)
+    # Initialize next_max_date and number_last_occurrence parameters used in the request for audit_trail
+    if stream_name == 'audit_trail':
+        next_max_date = static_params['occurred_at[lte]']
+        number_last_occurrence = 0
+
+    while record_count == limit: # break out of loop when record_count < limit (or not data returned)
         pagination_params = {}
         if paginate:
             pagination_params['offset'] = offset
             pagination_params['limit'] = limit
-        params = {
+        
+        params = {            
             **pagination_params,
             **static_params,  # adds in endpoint specific, sort, filter params
         }
+
+        if stream_name == 'audit_trail':
+            del params['offset']
+            del params['limit']
+            params['from'] = number_last_occurrence
+            params['size'] = limit
+            params['occurred_at[lte]'] = next_max_date
 
         if bookmark_query_field:
             if bookmark_type == 'datetime':
@@ -221,6 +232,7 @@ def sync_endpoint(
             method=api_method,
             path=path,
             version=api_version,
+            apikey_type=apikey_type,
             params=querystring,
             endpoint=stream_name,
             json=body,
@@ -232,6 +244,9 @@ def sync_endpoint(
             record_count = 0
             LOGGER.warning('Stream: {} - NO DATA RESULTS')
             break  # NO DATA
+
+        if stream_name == 'audit_trail':
+            data = data['events']
 
         # Transform data with transform_json from transform.py
         #  This function converts camelCase to snake_case for fieldname keys.
@@ -341,14 +356,30 @@ def sync_endpoint(
         if record_count < limit:
             to_rec = total_records
 
+        if stream_name == 'audit_trail':
+            next_max_date = transformed_data[-1]['occurred_at']
+            index = -2
+            number_last_occurrence = 1
+            while index >= -len(transformed_data) and transformed_data[index]['occurred_at'] == next_max_date:
+                number_last_occurrence += 1
+                index -= 1
+
         if paginate:
-            LOGGER.info(
-                '{} - Synced records: {} to {}'.format(stream_name, offset, to_rec)
-            )
+            LOGGER.info('{} - Synced records: {} to {}'.format(
+                stream_name,
+                offset,
+                to_rec))
         # Pagination: increment the offset by the limit (batch-size)
         offset = offset + limit
 
         # End: while record_count == limit
+
+    # Update the state with the max_bookmark_value for the stream
+    if bookmark_field:
+        write_bookmark(state,
+                        stream_name,
+                        sub_type,
+                        max_bookmark_value)
 
     # Return total_records across all batches
     return total_records
@@ -426,6 +457,12 @@ def sync(client, config, catalog, state):
         state, 'gl_journal_entries', 'self', start_date
     )
     gl_journal_entries_dt_str = transform_datetime(gl_journal_entries_dttm_str)
+
+    loan_accounts_dttm_str = get_bookmark(state, 'loan_accounts', 'self', start_date)
+    loan_accounts_dt_str = transform_datetime(loan_accounts_dttm_str)
+
+    deposit_accounts_dttm_str = get_bookmark(state, 'deposit_accounts', 'self', start_date)
+    deposit_accounts_dt_str = transform_datetime(deposit_accounts_dttm_str)
 
     lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
     lookback_date = utils.now() - timedelta(lookback_days)
@@ -548,6 +585,19 @@ def sync(client, config, catalog, state):
                     }
                 ],
             },
+            'body': {
+                "sortingCriteria": {
+                    "field": "lastModifiedDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
+                    {
+                        "field": "lastModifiedDate",
+                        "operator": "AFTER",
+                        "value": deposit_accounts_dt_str
+                    }
+                ]
+            },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
             'id_fields': ['id'],
@@ -611,13 +661,25 @@ def sync(client, config, catalog, state):
             'id_fields': ['id'],
         },
         'loan_accounts': {
-            'path': 'loans',
+            'path': 'loans:search',
             'api_version': 'v2',
-            'api_method': 'GET',
+            'api_method': 'POST',
             'params': {
-                'sortBy': 'lastModifiedDate:ASC',
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON',
+            },
+            'body': {
+                "sortingCriteria": {
+                    "field": "lastModifiedDate",
+                    "order": "ASC"
+                },
+                "filterCriteria": [
+                    {
+                        "field": "lastModifiedDate",
+                        "operator": "AFTER",
+                        "value": loan_accounts_dt_str
+                    }
+                ]
             },
             'bookmark_field': 'last_modified_date',
             'bookmark_type': 'datetime',
@@ -751,8 +813,22 @@ def sync(client, config, catalog, state):
                 'dueTo': '{now_date_str}',
             },
             'bookmark_field': 'last_paid_date',
-            'bookmark_type': 'datetime',
+            'bookmark_type': 'datetime'
         },
+        'audit_trail': {
+            'path': 'v1/events',
+            'api_version': 'v1',
+            'api_method': 'GET',
+            'id_fields': [],
+            'apikey_type': 'audit',
+            'params': {
+                'sort_order': 'desc',
+                'occurred_at[gte]': '{audit_trail_from_dt_str}',
+                'occurred_at[lte]': '{audit_trail_to_dt_str}'
+            },
+            'bookmark_field': 'occurred_at',
+            'bookmark_type': 'datetime'
+        }
     }
 
     selected_streams = get_selected_streams(catalog)
@@ -765,12 +841,20 @@ def sync(client, config, catalog, state):
     last_stream = singer.get_currently_syncing(state)
     LOGGER.info('last/currently syncing stream: {}'.format(last_stream))
 
+    # Start syncing from last/currently syncing stream
+    if last_stream in selected_streams:
+        selected_streams = selected_streams[selected_streams.index(last_stream):] + selected_streams[:selected_streams.index(last_stream)]
+
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
     for stream_name, endpoint_config in endpoints.items():
-        should_stream, last_stream = should_sync_stream(
-            selected_streams, last_stream, stream_name
-        )
+        if endpoint_config is None:
+            # null endpoint_config signifies that this is a child stream
+            continue
+        
+        should_stream, last_stream = should_sync_stream(selected_streams,
+                                                        last_stream,
+                                                        stream_name)
 
         if should_stream:
             # loop through each sub type
@@ -797,9 +881,7 @@ def sync(client, config, catalog, state):
 
                 if stream_name == 'installments':
                     now_date_str = strftime(utils.now())[:10]
-                    installments_from_dttm_str = get_bookmark(
-                        state, 'installments', sub_type, start_date
-                    )
+                    installments_from_dttm_str = start_date
                     installments_from_dt_str = transform_datetime(
                         installments_from_dttm_str
                     )[:10]
@@ -813,6 +895,20 @@ def sync(client, config, catalog, state):
                     )
                     if installments_to_param:
                         endpoint_config['params']['dueTo'] = now_date_str
+
+                if stream_name == 'audit_trail':
+                    now_date_str = strftime(utils.now())
+                    audit_trail_from_dttm_str = get_bookmark(
+                        state, 'audit_trail', sub_type, start_date)
+                    audit_trail_from_dt_str = transform_datetime(
+                        audit_trail_from_dttm_str)
+                    audit_trail_from_param = endpoint_config.get(
+                        'params', {}).get('occurred_at[gte]')
+                    if audit_trail_from_param:
+                        endpoint_config['params']['occurred_at[gte]'] = audit_trail_from_dt_str
+                    audit_trail_to_dt_str = endpoint_config.get('params', {}).get('occurred_at[lte]')
+                    if audit_trail_to_dt_str:
+                        endpoint_config['params']['occurred_at[lte]'] = now_date_str
 
                 update_currently_syncing(state, stream_name)
                 path = endpoint_config.get('path')
@@ -838,6 +934,7 @@ def sync(client, config, catalog, state):
                     data_key=endpoint_config.get('data_key', None),
                     body=endpoint_config.get('body', None),
                     id_fields=endpoint_config.get('id_fields'),
+                    apikey_type=endpoint_config.get('apikey_type', None)
                 )
 
                 update_currently_syncing(state, None)

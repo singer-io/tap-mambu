@@ -235,6 +235,12 @@
                     }
                 }
             }
+        },
+        "parent_account_key": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
     }
 }

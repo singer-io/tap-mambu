@@ -26,6 +26,7 @@ This tap:
   - [Users](https://api.mambu.com/?http#users-getAll)
   - [GL Accounts](https://support.mambu.com/docs/gl-accounts-api)
   - [GL Journal Entries](https://support.mambu.com/docs/gl-journal-entries-api)
+  - [Audit Trail (v1)](https://support.mambu.com/docs/audit-trail)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 
@@ -82,13 +83,14 @@ This tap:
 - Replication strategy: Full table
 - Transformations: Fields camelCase to snake_case
 
-[**deposit_accounts (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAll)
-- Endpoint: https://instance.sandbox.mambu.com/api/deposits
+[**deposit_accounts (POST v2)**](https://api.mambu.com/?http#deposit-accounts-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/deposits:search
 - Primary keys: id
 - Foreign keys: assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), assigned_user_key (users), assigned_centre_key (centres), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
 - Replication strategy: Incremental (query all, filter results)
   - Sort by: lastModifiedDate:ASC
   - Bookmark: last_modified_date (date-time)
+  - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**cards (GET v2)**](https://api.mambu.com/?http#DepositAccounts-getAllCards)
@@ -125,13 +127,14 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**loan_accounts (GET v2)**](https://api.mambu.com/?http#LoanAccounts-getAll)
-- Endpoint: https://instance.sandbox.mambu.com/api/loans
+[**loan_accounts (POST v2)**](https://api.mambu.com/?http#loan-accounts-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/loans:search
 - Primary keys: id
 - Foreign keys: deposit_account_key (deposits), target_deposit_account_key (deposits), assig, ned_user_key (users), assigned_centre_key (centres), assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
 - Replication strategy: Incremental (query all, filter results)
   - Sort by: lastModifiedDate:ASC
   - Bookmark: last_modified_date (date-time)
+  - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**loan_products (GET v1)**](https://support.mambu.com/docs/loan-products-api)
@@ -207,6 +210,14 @@ This tap:
   - Bookmark: last_paid_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
+[**audit_trail (GET V1)**](https://support.mambu.com/docs/audit-trail)
+- Endpoint: https://instance.sandbox.mambu.com/api/v1/events
+- Replication strategy: Incremental (query all, filter results)
+  - Bookmark query field: occurred_at
+  - Bookmark: occurred_at (date-time)
+  - Sort by: occurred_at:DESC
+- Transformations: Fields camelCase to snake_case
+
 ## Quick Start
 
 1. Install
@@ -214,20 +225,20 @@ This tap:
     Clone this repository, and then install using setup.py. We recommend using a virtualenv:
 
     ```bash
-    > virtualenv -p python3 venv
-    > source venv/bin/activate
-    > python setup.py install
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    python setup.py install
     OR
-    > cd .../tap-mambu
-    > pip install .
+    cd .../tap-mambu
+    pip install .
     ```
 2. Dependent libraries
     The following dependent libraries were installed.
     ```bash
-    > pip install singer-python
-    > pip install singer-tools
-    > pip install target-stitch
-    > pip install target-json
+    pip install singer-python
+    pip install singer-tools
+    pip install target-stitch
+    pip install target-json
     
     ```
     - [singer-tools](https://github.com/singer-io/singer-tools)
@@ -242,9 +253,10 @@ This tap:
         "apikey": "YOUR_APIKEY",
         "subdomain": "YOUR_SUBDOMAIN",
         "start_date": "2019-01-01T00:00:00Z",
-        "lookback_window: 30,
+        "lookback_window": 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
-        "page_size": "500"
+        "page_size": "500",
+        "apikey_audit": "AUDIT_TRAIL_APIKEY"
     }
     ```
     
@@ -254,6 +266,7 @@ This tap:
     {
         "currently_syncing": "tasks",
         "bookmarks": {
+            "audit_trail":"2021-05-20T09:59:09.780213Z", 
             "branches": "2019-06-11T13:37:51Z",
             "communications": "2019-06-19T19:48:42Z",
             "centres": "2019-06-18T18:23:53Z",
@@ -287,25 +300,46 @@ This tap:
     ```bash
     tap-mambu --config config.json --discover > catalog.json
     ```
-   See the Singer docs on discovery mode
-   [here](https://github.com/singer-io/getting-started/blob/master/docs/DISCOVERY_MODE.md#discovery-mode).
+   See the Singer docs on discovery mode [here](https://github.com/singer-io/getting-started/blob/master/docs/DISCOVERY_MODE.md#discovery-mode). The default `catalog.json` that gets generated does not have any **selected** streams. Therefore you must enable them manually in order to actually retrieve data. Each stream in the `catalog.json` that you want retrieved is expected to have a data field in the root metadata block:
+   ```json
+    "selected" : true
+    ```
+    For example the following configuration will retrieve the `branches` stream:
+    ```json
+    "stream": "branches",
+    "metadata": [
+      {
+        "breadcrumb": [],
+        "metadata": {
+          "selected" : true,
+          "table-key-properties": [
+            "id"
+          ],
+          "forced-replication-method": "INCREMENTAL",
+          "valid-replication-keys": [
+            "last_modified_date"
+          ],
+          "inclusion": "available"
+        }
+      }
+    ```
 
 5. Run the Tap in Sync Mode (with catalog) and [write out to state file](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#running-a-singer-tap-with-a-singer-target)
 
     For Sync mode:
     ```bash
-    > tap-mambu --config tap_config.json --catalog catalog.json > state.json
-    > tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
+    tap-mambu --config tap_config.json --catalog catalog.json > state.json
+    tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     To load to json files to verify outputs:
     ```bash
-    > tap-mambu --config tap_config.json --catalog catalog.json | target-json > state.json
-    > tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
+    tap-mambu --config tap_config.json --catalog catalog.json | target-json > state.json
+    tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     To pseudo-load to [Stitch Import API](https://github.com/singer-io/target-stitch) with dry run:
     ```bash
-    > tap-mambu --config tap_config.json --catalog catalog.json | target-stitch --config target_config.json --dry-run > state.json
-    > tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
+    tap-mambu --config tap_config.json --catalog catalog.json | target-stitch --config target_config.json --dry-run > state.json
+    tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
 
 6. Test the Tap
@@ -313,7 +347,7 @@ This tap:
     While developing the Mambu tap, the following utilities were run in accordance with Singer.io best practices:
     Pylint to improve [code quality](https://github.com/singer-io/getting-started/blob/master/docs/BEST_PRACTICES.md#code-quality):
     ```bash
-    > pylint tap_mambu -d missing-docstring -d logging-format-interpolation -d too-many-locals -d too-many-arguments
+    pylint tap_mambu -d missing-docstring -d logging-format-interpolation -d too-many-locals -d too-many-arguments
     ```
     Pylint test resulted in the following score:
     ```bash
@@ -322,8 +356,8 @@ This tap:
 
     To [check the tap](https://github.com/singer-io/singer-tools#singer-check-tap) and verify working:
     ```bash
-    > tap-mambu --config tap_config.json --catalog catalog.json | singer-check-tap > state.json
-    > tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
+    tap-mambu --config tap_config.json --catalog catalog.json | singer-check-tap > state.json
+    tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     Check tap resulted in the following:
     ```bash

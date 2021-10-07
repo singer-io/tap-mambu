@@ -3,59 +3,104 @@
   "additionalProperties": false,
   "properties": {
     "available_credit_amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "singer.decimal"
     },
     "amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "singer.decimal"
     },
     "notes": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "last_modified_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "holder_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "consumed_credit_amount": {
-      "type": ["null", "number"],
-      "multipleOf": 1e-10
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "singer.decimal"
     },
     "creation_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "approved_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "sub_state": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "encoded_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "expire_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "state": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "holder_type": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "start_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
-    "custom_field_sets": {
+    "custom_fields": {
       "anyOf": [
         {
           "type": "array",
@@ -63,29 +108,22 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "custom_field_set_id": {
-                "type": ["null", "string"]
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
-                          "type": ["null", "string"]
-                        },
-                        "custom_field_value": {
-                          "type": ["null", "string"]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               }
             }

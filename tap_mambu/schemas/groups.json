@@ -11,7 +11,10 @@
             "additionalProperties": false,
             "properties": {
               "client_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "roles": {
                 "anyOf": [
@@ -22,14 +25,23 @@
                       "additionalProperties": false,
                       "properties": {
                         "role_name": {
-                          "type": ["null", "string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "encoded_key": {
-                          "type": ["null", "string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "group_role_name_key": {
-                          "type": ["null", "string"]
-                        }                        
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        }
                       }
                     }
                   },
@@ -47,10 +59,16 @@
       ]
     },
     "migration_event_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "preferred_language": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "addresses": {
       "anyOf": [
@@ -61,39 +79,72 @@
             "additionalProperties": false,
             "properties": {
               "country": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "parent_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "city": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "latitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
               },
               "postcode": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "index_in_list": {
-                "type": ["null", "integer"]
+                "type": [
+                  "null",
+                  "integer"
+                ]
               },
               "encoded_key": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "region": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line2": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "line1": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "longitude": {
-                "type": ["null", "number"],
-                "multipleOf": 1e-10
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
               }
             }
           }
@@ -104,50 +155,92 @@
       ]
     },
     "notes": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "last_modified_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "home_phone": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "creation_date": {
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "string"
+      ],
       "format": "date-time"
     },
     "assigned_branch_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "loan_cycle": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "assigned_centre_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "group_name": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "email_address": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "mobile_phone": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "group_role_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "encoded_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "id": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "assigned_user_key": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
-    "custom_field_sets": {
+    "custom_fields": {
       "anyOf": [
         {
           "type": "array",
@@ -155,29 +248,22 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "custom_field_set_id": {
-                "type": ["null", "string"]
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
-              "custom_field_values": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "custom_field_id": {
-                          "type": ["null", "string"]
-                        },
-                        "custom_field_value": {
-                          "type": ["null", "string"]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               }
             }
