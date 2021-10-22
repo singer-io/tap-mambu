@@ -231,7 +231,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             transformed_data = transform_json(data, stream_name)
         elif data_key in data:
             transformed_data = transform_json(data, data_key)[data_key]
-      
+
         if stream_name == 'activities':
             transformed_data = transform_activities(transformed_data)
 
@@ -862,8 +862,7 @@ def sync(client, config, catalog, state):
 
                 if stream_name == 'installments':
                     now_date_str = strftime(utils.now())[:10]
-                    installments_from_dttm_str = get_bookmark(
-                        state, 'installments', sub_type, start_date)
+                    installments_from_dttm_str = start_date
                     installments_from_dt_str = transform_datetime(
                         installments_from_dttm_str)[:10]
                     installments_from_param = endpoint_config.get(
