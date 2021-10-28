@@ -457,6 +457,13 @@ def sync(client, config, catalog, state):
         state, "gl_journal_entries", "self", start_date
     )
     gl_journal_entries_dt_str = transform_datetime(gl_journal_entries_dttm_str)
+    # fix gl_journal_entries_dt:
+    #   if Mambu API is configured with tz different than UTC, 
+    #     it will return with a x hours shift equal to the time difference.
+    #   to trick it we need to compensate that sending the date with opposite timezone
+    timezone_config = config.get("timezone", "Z")
+    timezone_dt_str = timezone_config.replace('+', '-') if '+' in timezone_config else timezone_config.replace('-', '+')
+    gl_journal_entries_dt_str = gl_journal_entries_dt_str[:19] + timezone_dt_str
 
     loan_accounts_dttm_str = get_bookmark(state, "loan_accounts", "self", start_date)
     loan_accounts_dt_str = transform_datetime(loan_accounts_dttm_str)
