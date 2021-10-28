@@ -99,7 +99,7 @@ STREAMS = {
     'gl_journal_entries': {
         'key_properties': ['entry_id'],
         'replication_method': 'INCREMENTAL',
-        'replication_keys': ['booking_date']
+        'replication_keys': ['creation_date']
     },
     'activities': {
         'key_properties': ['encoded_key'],
