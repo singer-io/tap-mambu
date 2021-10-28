@@ -780,7 +780,7 @@ def sync(client, config, catalog, state):
                 ],
             },
             "id_fields": ["entry_id"],
-            "bookmark_field": "booking_date",
+            "bookmark_field": "creation_date",
             "bookmark_type": "datetime",
         },
         "activities": {
