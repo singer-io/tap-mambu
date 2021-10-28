@@ -2,6 +2,7 @@
     "username": "YOUR_USERNAME",
     "password": "YOUR_PASSWORD",
     "apikey": "YOUR_APIKEY",
+    "timezone": "YOUR_TIMEZONE_ISO <-03:00>",
     "subdomain": "YOUR_SUBDOMAIN",
     "start_date": "2019-01-01T00:00:00Z",
     "user_agent": "tap-mambu <api_user_email@your_company.com>",

@@ -252,6 +252,7 @@ This tap:
         "password": "YOUR_PASSWORD",
         "apikey": "YOUR_APIKEY",
         "subdomain": "YOUR_SUBDOMAIN",
+        "timezone": "YOUR_TIMEZONE_ISO <-03:00>",
         "start_date": "2019-01-01T00:00:00Z",
         "lookback_window": 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
