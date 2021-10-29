@@ -168,7 +168,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     record_count = limit # Initialize, reset for each API call
 
     # Initialize next_max_date and number_last_occurrence parameters used in the request for audit_trail
-
     next_max_date = static_params['occurred_at[gte]'] if stream_name == 'audit_trail' else None
 
     while record_count == limit: # break out of loop when record_count < limit (or not data returned)
