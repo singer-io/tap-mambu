@@ -143,10 +143,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     last_integer = None
     number_last_occurrence = 0
     if bookmark_type == 'integer':
-        if stream_name == 'audit_trail':
-            last_integer, number_last_occurrence = get_bookmark(state, stream_name, sub_type, (0, 0))
-        else:
-            last_integer = get_bookmark(state, stream_name, sub_type, 0)
+        last_integer = get_bookmark(state, stream_name, sub_type, 0)
         max_bookmark_value = last_integer
     else:
         if stream_name == 'audit_trail':
