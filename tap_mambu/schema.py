@@ -82,6 +82,10 @@ STREAMS = {
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['last_modified_date']
     },
+    'transaction_channels': {
+        'key_properties': ['id'],
+        'replication_method': 'FULL_TABLE'
+    },
     'users': {
         'key_properties': ['id'],
         'replication_method': 'INCREMENTAL',
@@ -95,7 +99,7 @@ STREAMS = {
     'gl_journal_entries': {
         'key_properties': ['entry_id'],
         'replication_method': 'INCREMENTAL',
-        'replication_keys': ['booking_date']
+        'replication_keys': ['creation_date']
     },
     'activities': {
         'key_properties': ['encoded_key'],
