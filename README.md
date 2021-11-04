@@ -197,7 +197,7 @@ This tap:
 - Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries/search
 - Primary keys: entry_id
 - Replication strategy: Incremental (query filtered based on date)
-  - Bookmark: booking_date (date-time)
+  - Bookmark: creation_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**activities (GET v1)**](https://support.mambu.com/docs/activities-api)
