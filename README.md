@@ -19,7 +19,8 @@ This tap:
   - [Deposit Products (v1)](https://support.mambu.com/docs/savings-products-api)
   - [Deposit Transactions](https://api.mambu.com/?http#DepositTransactions-getAll)
   - [Groups](https://api.mambu.com/?http#groups-getAll)
-  - [Loan Accounts](https://api.mambu.com/?http#LoanAccounts-getAll)
+  - [Loan Accounts POST:Search](https://api.mambu.com/?http#LoanAccounts-getAll)
+  - [Loan Accounts Get All](https://api.mambu.com/?http#LoanAccounts-getAll)
   - [Loan Products (v1)](https://support.mambu.com/docs/loan-products-api)
   - [Loan Transactions](https://api.mambu.com/?http#LoanTransactions-getAll)
   - [Tasks](https://api.mambu.com/?http#tasks-getAll)
@@ -136,6 +137,17 @@ This tap:
   - Bookmark: last_modified_date (date-time)
   - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
+
+[**loan_accounts (GET v2)**](https://api.mambu.com/?http#loan-accounts-getall)
+- Endpoint: https://instance.sandbox.mambu.com/api/loans
+- Primary keys: id
+- Foreign keys: deposit_account_key (deposits), target_deposit_account_key (deposits), assig, ned_user_key (users), assigned_centre_key (centres), assigned_branch_key (branches), credit_arrangement_key (credit_arrangements), custom_field_set_id, custom_field_id (custom_field_sets), account_holder_key (?), product_type_key (?)
+- Replication strategy: Incremental (query all, filter results)
+  - Sort by: lastModifiedDate:ASC
+  - Bookmark: last_modified_date (date-time) and last_appraisal_date (date-time)
+  - Bookmark query field: lastModifiedDate and lastAppraisalDate
+- Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
+- This endpoint filters data locally by the lastAppraisalDate and lastModifiedDate 
 
 [**loan_products (GET v1)**](https://support.mambu.com/docs/loan-products-api)
 - Endpoint: https://instance.sandbox.mambu.com/api/loanproducts
@@ -369,28 +381,29 @@ This tap:
         62 state messages
 
     Details by stream:
-    +----------------------+---------+---------+
-    | stream               | records | schemas |
-    +----------------------+---------+---------+
-    | loan_products        | 2       | 1       |
-    | users                | 3       | 1       |
-    | gl_journal_entries   | 281     | 1       |
-    | branches             | 2       | 1       |
-    | groups               | 3       | 1       |
-    | credit_arrangements  | 2       | 1       |
-    | clients              | 104     | 1       |
-    | cards                | 1       | 3       |
-    | loan_accounts        | 7       | 1       |
-    | deposit_transactions | 32      | 1       |
-    | centres              | 2       | 1       |
-    | gl_accounts          | 18      | 5       |
-    | communications       | 1       | 1       |
-    | deposit_accounts     | 3       | 1       |
-    | tasks                | 8       | 1       |
-    | loan_transactions    | 9       | 1       |
-    | custom_field_sets    | 21      | 1       |
-    | deposit_products     | 4       | 1       |
-    +----------------------+---------+---------+
+    +-------------------------+---------+---------+
+    | stream                  | records | schemas |
+    +-------------------------+---------+---------+
+    | loan_products           | 2       | 1       |
+    | users                   | 3       | 1       |
+    | gl_journal_entries      | 281     | 1       |
+    | branches                | 2       | 1       |
+    | groups                  | 3       | 1       |
+    | credit_arrangements     | 2       | 1       |
+    | clients                 | 104     | 1       |
+    | cards                   | 1       | 3       |
+    | loan_accounts           | 7       | 1       |
+    | loan_accounts_get_all   | 7       | 1       |
+    | deposit_transactions    | 32      | 1       |
+    | centres                 | 2       | 1       |
+    | gl_accounts             | 18      | 5       |
+    | communications          | 1       | 1       |
+    | deposit_accounts        | 3       | 1       |
+    | tasks                   | 8       | 1       |
+    | loan_transactions       | 9       | 1       |
+    | custom_field_sets       | 21      | 1       |
+    | deposit_products        | 4       | 1       |
+    +-------------------------+---------+---------+
     ```
 ---
 

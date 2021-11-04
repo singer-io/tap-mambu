@@ -58,7 +58,7 @@ def transform_datetime(this_dttm):
     return new_dttm
 
 
-def process_records(catalog, #pylint: disable=too-many-branches
+def process_records(catalog,  # pylint: disable=too-many-branches
                     stream_name,
                     records,
                     time_extracted,
@@ -73,6 +73,7 @@ def process_records(catalog, #pylint: disable=too-many-branches
     schema = stream.schema.to_dict()
     stream_metadata = metadata.to_map(stream.metadata)
 
+    count = 0
     with metrics.record_counter(stream_name) as counter:
         for record in records:
             # If child object, add parent_id to record
@@ -82,38 +83,56 @@ def process_records(catalog, #pylint: disable=too-many-branches
             # Transform record for Singer.io
             with Transformer() as transformer:
                 transformed_record = transformer.transform(record,
-                                               schema,
-                                               stream_metadata)
+                                                           schema,
+                                                           stream_metadata)
 
                 # Reset max_bookmark_value to new value if higher
-                if bookmark_field and (bookmark_field in transformed_record):
-                    bookmark_dttm = strptime_to_utc(transformed_record[bookmark_field])
-                    if max_bookmark_value:
-                        max_bookmark_value_dttm = strptime_to_utc(max_bookmark_value)
-                        if bookmark_dttm > max_bookmark_value_dttm:
-                            max_bookmark_value = transformed_record[bookmark_field]
-                    else:
-                        max_bookmark_value = transformed_record[bookmark_field]
+                if type(bookmark_field) is list:
+                    bookmark_found = False
+                    for bookmark in bookmark_field:
+                        if bookmark and (bookmark in transformed_record):
+                            bookmark_dttm = strptime_to_utc(transformed_record[bookmark])
+                            if max_bookmark_value:
+                                max_bookmark_value_dttm = strptime_to_utc(max_bookmark_value)
+                                if bookmark_dttm > max_bookmark_value_dttm:
+                                    max_bookmark_value = transformed_record[bookmark]
+                            else:
+                                max_bookmark_value = transformed_record[bookmark]
 
-                if bookmark_field and (bookmark_field in transformed_record):
-                    if bookmark_type == 'integer':
-                        # Keep only records whose bookmark is after the last_integer
-                        if transformed_record[bookmark_field] >= last_integer:
-                            write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                            counter.increment()
-                    elif bookmark_type == 'datetime':
-                        last_dttm = transform_datetime(last_datetime)
-                        bookmark_dttm = transform_datetime(transformed_record[bookmark_field])
-                        # Keep only records whose bookmark is after the last_datetime
-                        if bookmark_dttm >= last_dttm:
-                            write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                            counter.increment()
-                else:
-                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
-                    counter.increment()
+                        if bookmark and (bookmark in transformed_record):
+                            bookmark_found = True
+                            if bookmark_type == 'integer':
+                                # Keep only records whose bookmark is after the last_integer
+                                if transformed_record[bookmark] >= last_integer:
+                                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                                    counter.increment()
+                            elif bookmark_type == 'datetime':
+                                last_dttm = transform_datetime(last_datetime)
+                                bookmark_dttm = transform_datetime(transformed_record[bookmark])
+                                # Keep only records whose bookmark is after the last_datetime
+                                if bookmark_dttm >= last_dttm:
+                                    write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                                    counter.increment()
+                                    LOGGER.info("Bookmark: {} = {}, max {}".format(bookmark, bookmark_dttm, max_bookmark_value))
+                                    count += 1
+                                    index = (bookmark_field.index(bookmark)) + 1
+                                    LOGGER.info("{} value of the index".format(index))
+                                # Check if the rest of the bookmarks have a value higher than the current max_bookmark
+                                    for bookmark in bookmark_field[index:]:
+                                        if bookmark and (bookmark in transformed_record):
+                                            bookmark_dttm = strptime_to_utc(transformed_record[bookmark])
+                                            max_bookmark_value_dttm = strptime_to_utc(max_bookmark_value)
+                                            if bookmark_dttm > max_bookmark_value_dttm:
+                                                max_bookmark_value = transformed_record[bookmark]
+
+                                    break
+                    if not bookmark_found:
+                        write_record(stream_name, transformed_record, time_extracted=time_extracted)
+                        counter.increment()
+
+        LOGGER.info("Added records: {}".format(count))
 
         return max_bookmark_value, len(records)
-
 
 # Sync a specific parent or child endpoint.
 def sync_endpoint(client, #pylint: disable=too-many-branches
@@ -442,7 +461,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -465,7 +484,7 @@ def sync(client, config, catalog, state):
                     'value': communications_dt_str
                 }
             ],
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -478,7 +497,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -502,7 +521,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -515,7 +534,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -546,7 +565,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id'],
             'store_ids': True,
@@ -570,7 +589,7 @@ def sync(client, config, catalog, state):
             'params': {
                 "fullDetails": True
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -594,7 +613,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -618,7 +637,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -643,7 +662,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id'],
             'children': {
@@ -660,6 +679,19 @@ def sync(client, config, catalog, state):
                 }
             }
         },
+        'loan_accounts_get_all': {
+            'path': 'loans',
+            'api_version': 'v2',
+            'api_method': 'GET',
+            'params': {
+                'sortBy': 'lastModifiedDate:ASC',
+                'detailsLevel': 'FULL',
+                'paginationDetails': 'ON'
+            },
+            'bookmark_field': ['last_account_appraisal_date', 'last_modified_date'],
+            'bookmark_type': 'datetime',
+            'id_fields': ['id']
+        },
         'loan_products': {
             'path': 'loanproducts',
             'api_version': 'v1',
@@ -667,7 +699,7 @@ def sync(client, config, catalog, state):
             'params': {
                 "fullDetails": True
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -691,7 +723,7 @@ def sync(client, config, catalog, state):
                     }
                 ]
             },
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['encoded_key']
         },
@@ -704,7 +736,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -717,7 +749,7 @@ def sync(client, config, catalog, state):
                 'detailsLevel': 'FULL',
                 'paginationDetails': 'ON'
             },
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'id_fields': ['id']
         },
@@ -729,7 +761,7 @@ def sync(client, config, catalog, state):
                 'type': '{sub_type}'
             },
             'id_fields': ['gl_code'],
-            'bookmark_field': 'last_modified_date',
+            'bookmark_field': ['last_modified_date'],
             'bookmark_type': 'datetime',
             'sub_types': ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE']
         },
@@ -748,7 +780,7 @@ def sync(client, config, catalog, state):
                 ]
             },
             'id_fields': ['entry_id'],
-            'bookmark_field': 'creation_date',
+            'bookmark_field': ['creation_date'],
             'bookmark_type': 'datetime'
         },
         'activities': {
@@ -760,7 +792,7 @@ def sync(client, config, catalog, state):
                 'to': '{now_date_str}'
             },
             'id_fields': ['encoded_key'],
-            'bookmark_field': 'timestamp',
+            'bookmark_field': ['timestamp'],
             'bookmark_type': 'datetime'
         },
         'index_rate_sources': {
@@ -779,7 +811,7 @@ def sync(client, config, catalog, state):
                 'dueFrom': '{installments_from_dt_str}',
                 'dueTo': '{now_date_str}'
             },
-            'bookmark_field': 'last_paid_date',
+            'bookmark_field': ['last_paid_date'],
             'bookmark_type': 'datetime'
         },
         'audit_trail': {
@@ -793,7 +825,7 @@ def sync(client, config, catalog, state):
                 'occurred_at[gte]': '{audit_trail_from_dt_str}',
                 'occurred_at[lte]': '{audit_trail_to_dt_str}'
             },
-            'bookmark_field': 'occurred_at',
+            'bookmark_field': ['occurred_at'],
             'bookmark_type': 'datetime'
         }
     }
