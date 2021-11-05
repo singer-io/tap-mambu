@@ -204,7 +204,7 @@ class MambuBaseTest(unittest.TestCase):
                 },
                 self.REPLICATION_METHOD: "INCREMENTAL",
                 self.REPLICATION_KEYS: {
-                    "booking_date"
+                    "creation_date"
                 }
             },
             "activities": {

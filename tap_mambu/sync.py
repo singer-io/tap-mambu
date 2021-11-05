@@ -750,7 +750,7 @@ def sync(client, config, catalog, state):
                 ]
             },
             'id_fields': ['entry_id'],
-            'bookmark_field': 'booking_date',
+            'bookmark_field': 'creation_date',
             'bookmark_type': 'datetime'
         },
         'activities': {
@@ -864,8 +864,7 @@ def sync(client, config, catalog, state):
 
                 if stream_name == 'installments':
                     now_date_str = strftime(utils.now())[:10]
-                    installments_from_dttm_str = get_bookmark(
-                        state, 'installments', sub_type, start_date)
+                    installments_from_dttm_str = start_date
                     installments_from_dt_str = transform_datetime(
                         installments_from_dttm_str)[:10]
                     installments_from_param = endpoint_config.get(
