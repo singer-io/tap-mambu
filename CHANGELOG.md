@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0
+  * Updates `gl_journal_entries` replication key to `creation_date` to capture entries with reversed transactions [#56](https://github.com/singer-io/tap-mambu/pull/56)
+
 ## 2.1.1
   * Query `installments` endpoint correctly using the `start_date` instead of bookmarked value [#54](https://github.com/singer-io/tap-mambu/pull/54)
 
