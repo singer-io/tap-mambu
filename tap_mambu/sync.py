@@ -147,7 +147,9 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
         max_bookmark_value = last_integer
     else:
         if stream_name == 'audit_trail':
-            last_datetime, number_last_occurrence = get_bookmark(state, stream_name, sub_type, (start_date, 0))
+            audit_trail_bookmark = get_bookmark(state, stream_name, sub_type, [start_date, 0])
+            last_datetime, number_last_occurrence = audit_trail_bookmark if type(audit_trail_bookmark) == list \
+                else (audit_trail_bookmark, 0)
         else:
             last_datetime = get_bookmark(state, stream_name, sub_type, start_date)
         max_bookmark_value = last_datetime
@@ -878,8 +880,9 @@ def sync(client, config, catalog, state):
 
                 if stream_name == 'audit_trail':
                     now_date_str = strftime(utils.now())
-                    audit_trail_from_dttm_str = get_bookmark(
-                        state, 'audit_trail', sub_type, (start_date, 0))[0]
+                    audit_trail_bookmark = get_bookmark(state, 'audit_trail', sub_type, start_date)
+                    audit_trail_from_dttm_str = audit_trail_bookmark[0] if type(audit_trail_bookmark) == list \
+                        else audit_trail_bookmark
                     audit_trail_from_dt_str = transform_datetime(
                         audit_trail_from_dttm_str)
                     audit_trail_from_param = endpoint_config.get(
