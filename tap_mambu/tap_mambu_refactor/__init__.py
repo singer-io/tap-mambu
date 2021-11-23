@@ -3,7 +3,7 @@ from tap_mambu.tap_mambu_refactor.TapGenerators.loan_accounts_generator import L
 from tap_mambu.tap_mambu_refactor.TapProcessors.processor import TapProcessor
 
 stream_generator_processor_dict = {
-    "loan_accounts": (TapGenerator, TapProcessor)
+    "loan_accounts": (LoanAccountsGenerator, TapProcessor)
 }
 
 
@@ -16,7 +16,3 @@ def sync_endpoint_refactor(client, catalog, state, start_date, stream_name,
                            processor_class()
     for record in generator:
         processor.process(record)
-
-
-if __name__ == '__main__':
-    LoanAccountsGenerator(None, None, None, None)
