@@ -2,33 +2,41 @@ import time
 import requests
 
 from typing import List
-from singer import utils
+from singer import utils, get_bookmark
 
-from tap_mambu.transform import transform_json
+from ..Helpers import write_bookmark, transform_json
 
 
 class TapGenerator:
-    buffer: List
-
-    def __init__(self, stream_name, client, config, endpoint_config):
+    def __init__(self, stream_name, client, config, endpoint_config, state, sub_type):
         self.stream_name = stream_name
         self.client = client
         self.config = config
         self.endpoint_config = endpoint_config
+        self.state = state
+        self.sub_type = sub_type
+        self.__init_config()
         self.__init_buffers()
         self.__init_bookmarks()
         self.__init_params()
 
+    def __init_config(self):
+        self.start_date = self.config.get('start_date')
+
     def __init_buffers(self):
-        self.buffer = list()
+        self.buffer: List = list()
 
     def __init_bookmarks(self):
         self.bookmark_query_field = self.endpoint_config.get('bookmark_query_field')
         self.bookmark_type = self.endpoint_config.get('bookmark_type')
-        self.last_bookmark_value = 0 if self.bookmark_type == "integer" else self.start_date
+        self.bookmark_field = self.endpoint_config.get('bookmark_field')
+        if self.bookmark_type == "integer":
+            self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, 0)
+        else:
+            self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+        self.max_bookmark_value = self.last_bookmark_value
 
     def __init_params(self):
-        self.start_date = self.config.get('start_date')
         self.time_extracted = None
         self.static_params = self.endpoint_config.get('params', {})
         self.offset = 0
@@ -36,19 +44,46 @@ class TapGenerator:
         self.params = self.static_params
 
     def __iter__(self):
+        self.prepare_batch()
         raw_batch = self.fetch_batch()
         self.buffer = self.transform_batch(raw_batch)
+        self.last_batch_size = len(self.buffer)
         return self
 
     def __next__(self):
         if not self.buffer:
+            if self.last_batch_size < self.limit:
+                raise StopIteration()
+            self.offset += self.limit
+            self.write_bookmark()
+            self.prepare_batch()
             raw_batch = self.fetch_batch()
             self.buffer = self.transform_batch(raw_batch)
+            self.last_batch_size = len(self.buffer)
         if not self.buffer:
             raise StopIteration()
         return self.buffer.pop(0)
 
-    def fetch_batch(self):
+    def __del__(self):
+        self.write_bookmark()
+
+    def write_bookmark(self):
+        if self.bookmark_field:
+            write_bookmark(self.state,
+                           self.stream_name,
+                           self.sub_type,
+                           self.max_bookmark_value)
+
+    def prepare_batch(self):
+        self.params = {
+            "offset": self.offset,
+            "limit": self.limit,
+            **self.static_params
+        }
+
+    def fetch_batch(self):  # TODO: Take Bookmark into consideration
+        if self.bookmark_query_field:
+            self.params[self.bookmark_query_field] = self.last_bookmark_value
         response = self.client.request(
             method=self.endpoint_config.get('api_method', 'GET'),
             path=self.endpoint_config.get('path'),
