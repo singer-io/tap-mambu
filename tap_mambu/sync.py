@@ -906,11 +906,10 @@ def sync(client, config, catalog, state):
                         client=client,
                         catalog=catalog,
                         state=state,
-                        start_date=start_date,
                         stream_name=stream_name,
-                        path=path,
                         endpoint_config=endpoint_config,
-                        sub_type=sub_type
+                        sub_type=sub_type,
+                        config=config
                     )
                 else:
                     total_records = sync_endpoint(
