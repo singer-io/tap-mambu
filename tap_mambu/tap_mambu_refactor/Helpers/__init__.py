@@ -1,5 +1,11 @@
 import re
-from singer import write_state
+from singer import write_state, Transformer
+
+
+def transform_datetime(this_dttm):
+    with Transformer() as transformer:
+        new_dttm = transformer._transform_datetime(this_dttm)
+    return new_dttm
 
 
 def write_bookmark(state, stream, sub_type, value):

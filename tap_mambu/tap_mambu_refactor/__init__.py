@@ -1,30 +1,29 @@
 import singer
 
-from tap_mambu.tap_mambu_refactor.TapGenerators.generator import TapGenerator
-from tap_mambu.tap_mambu_refactor.TapGenerators.loan_accounts_generator import LoanAccountsGenerator
-from tap_mambu.tap_mambu_refactor.TapProcessors.processor import TapProcessor
+from .TapGenerators.generator import TapGenerator
+from .TapGenerators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
+from .TapProcessors.processor import TapProcessor
 
 
 LOGGER = singer.get_logger()
 
 
 stream_generator_processor_dict = {
-    "loan_accounts": (LoanAccountsGenerator, TapProcessor)
+    "loan_accounts": ((LoanAccountsADGenerator, LoanAccountsLMGenerator), TapProcessor)
 }
 
 
 def sync_endpoint_refactor(client, catalog, state, stream_name,
                            endpoint_config, sub_type, config):
-    generator_class, processor_class = stream_generator_processor_dict[stream_name]
-    generator = generator_class(stream_name=stream_name,
+    generator_classes, processor_class = stream_generator_processor_dict[stream_name]
+    generators = [generator_class(stream_name=stream_name,
                                            client=client,
-                                           endpoint_config=endpoint_config,
                                            config=config,
                                            state=state,
                                            sub_type=sub_type)
-    processor = processor_class(generator=generator,
+                  for generator_class in generator_classes]
+    processor = processor_class(generators=generators,
                                 catalog=catalog,
-                                stream_name=stream_name,
-                                endpoint_config=endpoint_config)
+                                stream_name=stream_name)
 
-    processor.process_stream_from_generator()
+    processor.process_streams_from_generators()

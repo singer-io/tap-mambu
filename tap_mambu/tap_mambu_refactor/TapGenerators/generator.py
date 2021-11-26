@@ -1,4 +1,6 @@
 import time
+from abc import ABC
+
 import requests
 
 from typing import List
@@ -7,26 +9,29 @@ from singer import utils, get_bookmark
 from ..Helpers import write_bookmark, transform_json
 
 
-class TapGenerator:
-    def __init__(self, stream_name, client, config, endpoint_config, state, sub_type):
+class TapGenerator(ABC):
+    def __init__(self, stream_name, client, config, state, sub_type):
         self.stream_name = stream_name
         self.client = client
         self.config = config
-        self.endpoint_config = endpoint_config
         self.state = state
         self.sub_type = sub_type
-        self.__init_config()
-        self.__init_buffers()
-        self.__init_bookmarks()
-        self.__init_params()
+        self._init_config()
+        self._init_endpoint_config()
+        self._init_buffers()
+        self._init_bookmarks()
+        self._init_params()
 
-    def __init_config(self):
+    def _init_config(self):
         self.start_date = self.config.get('start_date')
 
-    def __init_buffers(self):
+    def _init_endpoint_config(self):
+        self.endpoint_config = {}
+
+    def _init_buffers(self):
         self.buffer: List = list()
 
-    def __init_bookmarks(self):
+    def _init_bookmarks(self):
         self.bookmark_query_field = self.endpoint_config.get('bookmark_query_field')
         self.bookmark_type = self.endpoint_config.get('bookmark_type')
         self.bookmark_field = self.endpoint_config.get('bookmark_field')
@@ -36,7 +41,7 @@ class TapGenerator:
             self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
         self.max_bookmark_value = self.last_bookmark_value
 
-    def __init_params(self):
+    def _init_params(self):
         self.time_extracted = None
         self.static_params = self.endpoint_config.get('params', {})
         self.offset = 0
@@ -105,4 +110,3 @@ class TapGenerator:
         elif data_key in batch:
             transformed_batch = transform_json(batch, data_key)[data_key]
         return transformed_batch
-
