@@ -39,12 +39,19 @@ class TapProcessor:
             min_record_key: TapGenerator = None
             min_record_value = None
             for iterator in self.generator_values.keys():
+                new_bookmark_field = convert(iterator.bookmark_field)
                 if min_record_value is None \
-                        or min_record_value > self.generator_values[iterator][convert(iterator.bookmark_field)]:
+                        or transform_datetime(min_record_value) > transform_datetime(self.generator_values[iterator][new_bookmark_field]):
                     min_record_key = iterator
-                    min_record_value = self.generator_values[iterator][convert(iterator.bookmark_field)]
-            self.process_record(self.generator_values[min_record_key], min_record_key.time_extracted)
-            self.generator_values[min_record_key] = None
+                    min_record_value = self.generator_values[iterator][new_bookmark_field]
+
+            record = self.generator_values[min_record_key]
+            record["generator"] = list(self.generator_values.keys()).index(min_record_key)
+            self.process_record(record, min_record_key.time_extracted)
+
+            for iterator in self.generator_values.keys():
+                if self.generator_values[min_record_key] == self.generator_values[iterator]:
+                    self.generator_values[iterator] = None
 
     def __is_record_past_bookmark(self, transformed_record):
         is_record_past_bookmark = False
