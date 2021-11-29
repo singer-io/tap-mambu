@@ -215,7 +215,7 @@ This tap:
 - Replication strategy: Incremental (query all, filter results)
   - Bookmark query field: occurred_at
   - Bookmark: occurred_at (date-time)
-  - Sort by: occurred_at:DESC
+  - Sort by: occurred_at:ASC
 - Transformations: Fields camelCase to snake_case
 
 ## Quick Start
