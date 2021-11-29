@@ -141,12 +141,17 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Get the latest bookmark for the stream and set the last_integer/datetime
     last_datetime = None
     last_integer = None
-    max_bookmark_value = None
+    number_last_occurrence = 0
     if bookmark_type == 'integer':
         last_integer = get_bookmark(state, stream_name, sub_type, 0)
         max_bookmark_value = last_integer
     else:
-        last_datetime = get_bookmark(state, stream_name, sub_type, start_date)
+        if stream_name == 'audit_trail':
+            audit_trail_bookmark = get_bookmark(state, stream_name, sub_type, [start_date, 0])
+            last_datetime, number_last_occurrence = audit_trail_bookmark if type(audit_trail_bookmark) == list \
+                else (audit_trail_bookmark, 0)
+        else:
+            last_datetime = get_bookmark(state, stream_name, sub_type, start_date)
         max_bookmark_value = last_datetime
 
     write_schema(catalog, stream_name)
@@ -162,9 +167,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     record_count = limit # Initialize, reset for each API call
 
     # Initialize next_max_date and number_last_occurrence parameters used in the request for audit_trail
-    if stream_name == 'audit_trail':
-        next_max_date = static_params['occurred_at[lte]']
-        number_last_occurrence = 0
+    next_max_date = static_params['occurred_at[gte]'] if stream_name == 'audit_trail' else None
 
     while record_count == limit: # break out of loop when record_count < limit (or not data returned)
         params = {
@@ -178,7 +181,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             del params['limit']
             params['from'] = number_last_occurrence
             params['size'] = limit
-            params['occurred_at[lte]'] = next_max_date
+            params['occurred_at[gte]'] = next_max_date
 
         if bookmark_query_field:
             if bookmark_type == 'datetime':
@@ -334,9 +337,10 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
     # Update the state with the max_bookmark_value for the stream
     if bookmark_field:
         write_bookmark(state,
-                        stream_name,
-                        sub_type,
-                        max_bookmark_value)
+                       stream_name,
+                       sub_type,
+                       max_bookmark_value if stream_name != 'audit_trail'
+                       else (max_bookmark_value, number_last_occurrence))
 
     # Return total_records across all batches
     return total_records
@@ -789,7 +793,7 @@ def sync(client, config, catalog, state):
             'id_fields': [],
             'apikey_type': 'audit',
             'params': {
-                'sort_order': 'desc',
+                'sort_order': 'asc',
                 'occurred_at[gte]': '{audit_trail_from_dt_str}',
                 'occurred_at[lte]': '{audit_trail_to_dt_str}'
             },
@@ -876,8 +880,9 @@ def sync(client, config, catalog, state):
 
                 if stream_name == 'audit_trail':
                     now_date_str = strftime(utils.now())
-                    audit_trail_from_dttm_str = get_bookmark(
-                        state, 'audit_trail', sub_type, start_date)
+                    audit_trail_bookmark = get_bookmark(state, 'audit_trail', sub_type, start_date)
+                    audit_trail_from_dttm_str = audit_trail_bookmark[0] if type(audit_trail_bookmark) == list \
+                        else audit_trail_bookmark
                     audit_trail_from_dt_str = transform_datetime(
                         audit_trail_from_dttm_str)
                     audit_trail_from_param = endpoint_config.get(
