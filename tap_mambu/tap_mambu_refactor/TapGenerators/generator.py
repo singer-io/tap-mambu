@@ -60,7 +60,7 @@ class TapGenerator(ABC):
             if self.last_batch_size < self.limit:
                 raise StopIteration()
             self.offset += self.limit
-            self.write_bookmark()
+            # self.write_bookmark()
             self.prepare_batch()
             raw_batch = self.fetch_batch()
             self.buffer = self.transform_batch(raw_batch)
@@ -68,9 +68,6 @@ class TapGenerator(ABC):
         if not self.buffer:
             raise StopIteration()
         return self.buffer.pop(0)
-
-    def __del__(self):
-        self.write_bookmark()
 
     def write_bookmark(self):
         if self.bookmark_field:

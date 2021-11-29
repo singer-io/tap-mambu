@@ -23,7 +23,7 @@ class LoanAccountsGenerator(TapGenerator):
             },
             'body': {
                 "sortingCriteria": {
-                    "field": "lastModifiedDate",
+                    "field": "encodedKey",
                     "order": "ASC"
                 },
                 "filterCriteria": [
@@ -53,6 +53,7 @@ class LoanAccountsGenerator(TapGenerator):
             }
         }
 
+
 class LoanAccountsLMGenerator(LoanAccountsGenerator):
     def _init_endpoint_config(self):
         super()._init_endpoint_config()
@@ -65,7 +66,3 @@ class LoanAccountsADGenerator(LoanAccountsGenerator):
         super()._init_endpoint_config()
         self.endpoint_config["body"]["filterCriteria"][0]["field"] = "lastAccountAppraisalDate"
         self.endpoint_config["bookmark_field"] = "lastAccountAppraisalDate"
-
-    def transform_batch(self, batch):
-        transformed_batch = super().transform_batch(batch)
-        return sorted(transformed_batch, key=itemgetter("last_account_appraisal_date"))

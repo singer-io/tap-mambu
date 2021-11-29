@@ -2,6 +2,7 @@ import singer
 
 from .TapGenerators.generator import TapGenerator
 from .TapGenerators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
+from .TapProcessors.loan_accounts_processor import LoanAccountsProcessor
 from .TapProcessors.processor import TapProcessor
 
 
@@ -9,7 +10,7 @@ LOGGER = singer.get_logger()
 
 
 stream_generator_processor_dict = {
-    "loan_accounts": ((LoanAccountsADGenerator, LoanAccountsLMGenerator), TapProcessor)
+    "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor)
 }
 
 
