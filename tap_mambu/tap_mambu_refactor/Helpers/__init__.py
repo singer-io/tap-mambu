@@ -2,6 +2,16 @@ import re
 from singer import write_state, Transformer
 
 
+def get_bookmark(state, stream, sub_type, default):
+    if (state is None) or ('bookmarks' not in state):
+        return default
+
+    if sub_type == 'self':
+        return state.get('bookmarks', {}).get(stream, default)
+    else:
+        return state.get('bookmarks', {}).get(stream, {}).get(sub_type, default)
+
+
 def transform_datetime(this_dttm):
     with Transformer() as transformer:
         new_dttm = transformer._transform_datetime(this_dttm)

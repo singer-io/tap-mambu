@@ -4,9 +4,9 @@ from abc import ABC
 import requests
 
 from typing import List
-from singer import utils, get_bookmark
+from singer import utils
 
-from ..Helpers import write_bookmark, transform_json
+from ..Helpers import write_bookmark, transform_json, get_bookmark
 
 
 class TapGenerator(ABC):
