@@ -907,7 +907,6 @@ def sync(client, config, catalog, state):
                         catalog=catalog,
                         state=state,
                         stream_name=stream_name,
-                        endpoint_config=endpoint_config,
                         sub_type=sub_type,
                         config=config
                     )

@@ -1,8 +1,4 @@
-import time
 from abc import ABC
-
-import requests
-
 from typing import List
 from singer import utils
 
@@ -65,8 +61,8 @@ class TapGenerator(ABC):
             raw_batch = self.fetch_batch()
             self.buffer = self.transform_batch(raw_batch)
             self.last_batch_size = len(self.buffer)
-        if not self.buffer:
-            raise StopIteration()
+            if not self.buffer:
+                raise StopIteration()
         return self.buffer.pop(0)
 
     def write_bookmark(self):
@@ -83,7 +79,7 @@ class TapGenerator(ABC):
             **self.static_params
         }
 
-    def fetch_batch(self):  # TODO: Take Bookmark into consideration
+    def fetch_batch(self):
         if self.bookmark_query_field:
             self.params[self.bookmark_query_field] = self.last_bookmark_value
         response = self.client.request(

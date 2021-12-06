@@ -1,10 +1,5 @@
 import abc
-import time
-from operator import itemgetter
 
-import requests
-
-from typing import List
 from .. import TapGenerator
 from ..Helpers import transform_datetime, get_bookmark
 
