@@ -44,11 +44,14 @@ class TapGenerator(ABC):
         self.limit = self.client.page_size
         self.params = self.static_params
 
-    def __iter__(self):
+    def __all_fetch_batch_steps(self):
         self.prepare_batch()
         raw_batch = self.fetch_batch()
         self.buffer = self.transform_batch(raw_batch)
         self.last_batch_size = len(self.buffer)
+
+    def __iter__(self):
+        self.__all_fetch_batch_steps()
         return self
 
     def __next__(self):
@@ -57,10 +60,7 @@ class TapGenerator(ABC):
                 raise StopIteration()
             self.offset += self.limit
             # self.write_bookmark()
-            self.prepare_batch()
-            raw_batch = self.fetch_batch()
-            self.buffer = self.transform_batch(raw_batch)
-            self.last_batch_size = len(self.buffer)
+            self.__all_fetch_batch_steps()
             if not self.buffer:
                 raise StopIteration()
         return self.buffer.pop(0)
