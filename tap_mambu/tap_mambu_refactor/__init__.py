@@ -14,8 +14,8 @@ stream_generator_processor_dict = {
 }
 
 
-def sync_endpoint_refactor(client, catalog, state, stream_name,
-                           endpoint_config, sub_type, config):
+def sync_endpoint_refactor(client, catalog, state,
+                           stream_name, sub_type, config):
     generator_classes, processor_class = stream_generator_processor_dict[stream_name]
     generators = [generator_class(stream_name=stream_name,
                                            client=client,
@@ -23,8 +23,7 @@ def sync_endpoint_refactor(client, catalog, state, stream_name,
                                            state=state,
                                            sub_type=sub_type)
                   for generator_class in generator_classes]
-    processor = processor_class(generators=generators,
-                                catalog=catalog,
+    processor = processor_class(catalog=catalog,
                                 stream_name=stream_name)
 
-    processor.process_streams_from_generators()
+    processor.process_streams_from_generators(generators=generators)

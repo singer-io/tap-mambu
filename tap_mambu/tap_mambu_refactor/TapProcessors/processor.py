@@ -1,17 +1,15 @@
-import json
 from abc import ABC
-from typing import List
 
 from singer import write_record, Transformer, metadata, write_schema
 from singer.utils import strptime_to_utc
 
-from ..Helpers import transform_datetime, convert, write_bookmark
+from ..Helpers import transform_datetime, convert
 from ..TapGenerators.generator import TapGenerator
 
 
 class TapProcessor(ABC):
-    def __init__(self, generators: List[TapGenerator], catalog, stream_name):
-        self.generators = generators
+    def __init__(self, catalog, stream_name):
+        self.generators = list()
         self.generator_values = dict()
         self.catalog = catalog
         self.stream_name = stream_name
@@ -25,13 +23,14 @@ class TapProcessor(ABC):
         schema = stream.schema.to_dict()
         write_schema(self.stream_name, schema, stream.key_properties)
 
-    def process_streams_from_generators(self):
+    def process_streams_from_generators(self, generators):
+        self.generators = generators
         self.write_schema()
         for generator in self.generators:
             self.generator_values[iter(generator)] = None
         while True:
             # Populate list of values from generators (if any were removed)
-            for iterator in list(self.generator_values.keys()):
+            for iterator in list(self.generator_values):
                 if self.generator_values[iterator] is None:
                     self.generator_values[iterator] = next(iterator, None)
                 if self.generator_values[iterator] is None:
@@ -41,7 +40,7 @@ class TapProcessor(ABC):
             # Find lowest value in the list
             min_record_key: TapGenerator = None
             min_record_value = None
-            for iterator in self.generator_values.keys():
+            for iterator in self.generator_values:
                 if min_record_value is None \
                         or min_record_value > self.generator_values[iterator][self.deduplication_key]:
                     min_record_key = iterator
