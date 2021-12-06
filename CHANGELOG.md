@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.0
+  * Added `original_account_key` field to the `loan_accounts` stream [#60](https://github.com/singer-io/tap-mambu/pull/60)
+  * Fix audit trail duplicated records [#59](https://github.com/singer-io/tap-mambu/pull/59)
+
 ## 2.2.0
   * Updates `gl_journal_entries` replication key to `creation_date` to capture entries with reversed transactions [#56](https://github.com/singer-io/tap-mambu/pull/56)
 
