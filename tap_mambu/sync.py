@@ -639,7 +639,7 @@ def sync(client, config, catalog, state):
                 },
                 "filterCriteria": [
                     {
-                        "field": "lastAccountAppraisalDate",
+                        "field": "lastModifiedDate",
                         "operator": "AFTER",
                         "value": loan_accounts_dt_str
                     }

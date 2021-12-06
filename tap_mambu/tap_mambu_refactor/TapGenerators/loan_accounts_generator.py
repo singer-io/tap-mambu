@@ -6,8 +6,7 @@ import requests
 
 from typing import List
 from .. import TapGenerator
-from ..Helpers import transform_datetime
-from singer import get_bookmark
+from ..Helpers import transform_datetime, get_bookmark
 
 
 class LoanAccountsGenerator(TapGenerator):
@@ -31,7 +30,7 @@ class LoanAccountsGenerator(TapGenerator):
                         "field": "",
                         "operator": "AFTER",
                         "value": transform_datetime(
-                            get_bookmark(self.state, 'deposit_accounts', 'self', self.start_date))[:10]
+                            get_bookmark(self.state, 'loan_accounts', 'self', self.start_date))[:10]
                     }
                 ]
             },
