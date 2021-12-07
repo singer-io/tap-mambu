@@ -26,6 +26,7 @@ class TapProcessor(ABC):
     def process_streams_from_generators(self, generators):
         self.generators = generators
         self.write_schema()
+        record_count = 0
         for generator in self.generators:
             self.generator_values[iter(generator)] = None
         while True:
@@ -49,6 +50,7 @@ class TapProcessor(ABC):
             # Process the record
             record = self.generator_values[min_record_key]
             self.process_record(record, min_record_key.time_extracted)
+            record_count += 1
 
             # Remove any record with the same deduplication_key from the list
             # (so we don't process the same record twice)
@@ -57,6 +59,7 @@ class TapProcessor(ABC):
                     self.generator_values[iterator] = None
 
         self.generators[0].write_bookmark()
+        return record_count
 
     def __is_record_past_bookmark(self, transformed_record):
         is_record_past_bookmark = False
