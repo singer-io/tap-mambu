@@ -26,4 +26,4 @@ def sync_endpoint_refactor(client, catalog, state,
     processor = processor_class(catalog=catalog,
                                 stream_name=stream_name)
 
-    processor.process_streams_from_generators(generators=generators)
+    return processor.process_streams_from_generators(generators=generators)
