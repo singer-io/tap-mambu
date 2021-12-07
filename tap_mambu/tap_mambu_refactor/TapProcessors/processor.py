@@ -13,7 +13,7 @@ class TapProcessor(ABC):
         self.generator_values = dict()
         self.catalog = catalog
         self.stream_name = stream_name
-        self.deduplication_key = "encoded_key"
+        self.deduplication_key = "encoded_key"  # To be replaced with 'id_fields' from endpoint config
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
