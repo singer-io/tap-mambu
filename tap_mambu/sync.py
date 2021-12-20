@@ -1,13 +1,15 @@
+from _datetime import timedelta
+from datetime import datetime
+
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strftime, strptime_to_utc
 
 from tap_mambu.tap_mambu_refactor import sync_endpoint_refactor
-from tap_mambu.transform import transform_json, transform_activities, transform_datetime, check_loan_transaction_date
+from tap_mambu.transform import transform_json, transform_activities
 
 LOGGER = singer.get_logger()
 LOOKBACK_DEFAULT = 14
-
 
 def write_schema(catalog, stream_name):
     stream = catalog.get_stream(stream_name)
@@ -50,6 +52,12 @@ def write_bookmark(state, stream, sub_type, value):
             state['bookmarks'][stream][sub_type] = {}
         state['bookmarks'][stream][sub_type] = value
     singer.write_state(state)
+
+
+def transform_datetime(this_dttm):
+    with Transformer() as transformer:
+        new_dttm = transformer._transform_datetime(this_dttm)
+    return new_dttm
 
 
 def process_records(catalog, #pylint: disable=too-many-branches
@@ -129,8 +137,7 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
                   id_fields=None,
                   parent=None,
                   parent_id=None,
-                  apikey_type=None,
-                  **kwargs):
+                  apikey_type=None):
 
 
     # Get the latest bookmark for the stream and set the last_integer/datetime
@@ -145,9 +152,6 @@ def sync_endpoint(client, #pylint: disable=too-many-branches
             audit_trail_bookmark = get_bookmark(state, stream_name, sub_type, [start_date, 0])
             last_datetime, number_last_occurrence = audit_trail_bookmark if type(audit_trail_bookmark) == list \
                 else (audit_trail_bookmark, 0)
-        elif stream_name == 'loan_transactions':
-            last_datetime = check_loan_transaction_date(kwargs.get('lookback_window', LOOKBACK_DEFAULT) or LOOKBACK_DEFAULT,
-                                                        get_bookmark(state, stream_name, sub_type, start_date))
         else:
             last_datetime = get_bookmark(state, stream_name, sub_type, start_date)
         max_bookmark_value = last_datetime
@@ -396,8 +400,9 @@ def sync(client, config, catalog, state):
     # LOGGER.info('deposit_transactions bookmark_date = {}'.format(deposit_transactions_dt_str))
 
     loan_transactions_dttm_str = get_bookmark(state, 'loan_transactions', 'self', start_date)
-    loan_transactions_dt_str = check_loan_transaction_date(int(config.get('lookback_window', LOOKBACK_DEFAULT)),
-                                                           loan_transactions_dttm_str)[:10]
+    loan_transactions_dt_str = transform_datetime(loan_transactions_dttm_str)[:10]
+    loan_transactions_dttm = strptime_to_utc(loan_transactions_dt_str)
+
     clients_dttm_str = get_bookmark(state, 'clients', 'self', start_date)
     clients_dt_str = transform_datetime(clients_dttm_str)[:10]
 
@@ -410,6 +415,10 @@ def sync(client, config, catalog, state):
     deposit_accounts_dttm_str = get_bookmark(state, 'deposit_accounts', 'self', start_date)
     deposit_accounts_dt_str = transform_datetime(deposit_accounts_dttm_str)[:10]
 
+    lookback_days = int(config.get('lookback_window', LOOKBACK_DEFAULT))
+    lookback_date = utils.now() - timedelta(lookback_days)
+    if loan_transactions_dttm > lookback_date:
+        loan_transactions_dt_str = transform_datetime(strftime(lookback_date))[:10]
     # LOGGER.info('loan_transactions bookmark_date = {}'.format(loan_transactions_dt_str))
 
     # endpoints: API URL endpoints to be called
@@ -920,8 +929,7 @@ def sync(client, config, catalog, state):
                         data_key=endpoint_config.get('data_key', None),
                         body=endpoint_config.get('body', None),
                         id_fields=endpoint_config.get('id_fields'),
-                        apikey_type=endpoint_config.get('apikey_type', None),
-                        lookback_window=config.get('lookback_window', None)
+                        apikey_type=endpoint_config.get('apikey_type', None)
                     )
 
                 update_currently_syncing(state, None)
