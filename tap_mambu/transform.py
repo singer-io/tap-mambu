@@ -1,8 +1,4 @@
 import re
-from _datetime import timedelta
-from singer import Transformer
-from singer.utils import strftime, strptime_to_utc, now
-
 
 # Convert camelCase to snake_case
 def convert(name):
@@ -87,17 +83,3 @@ def transform_activities(this_json):
             record[key] = value
         del record['activity']
     return this_json
-
-
-def transform_datetime(this_dttm):
-    with Transformer() as transformer:
-        new_dttm = transformer._transform_datetime(this_dttm)
-    return new_dttm
-
-
-def check_loan_transaction_date(lookback_window, dttm_str):
-    dttm_str = transform_datetime(dttm_str)
-    lookback_dt = now() - timedelta(lookback_window)
-    if strptime_to_utc(dttm_str) > lookback_dt:
-        return transform_datetime(strftime(lookback_dt)[:10])
-    return dttm_str
