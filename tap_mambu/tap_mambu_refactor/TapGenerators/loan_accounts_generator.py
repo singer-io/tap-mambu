@@ -1,6 +1,6 @@
 import abc
 
-from .. import TapGenerator
+from .generator import TapGenerator
 from ..Helpers import transform_datetime, get_bookmark
 
 

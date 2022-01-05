@@ -1,11 +1,9 @@
 import singer
 
-from .TapGenerators.generator import TapGenerator
 from .TapGenerators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
 from .TapGenerators.loan_repayments_generator import LoanRepaymentsGenerator
 from .TapProcessors.loan_accounts_processor import LoanAccountsProcessor
 from .TapProcessors.loan_repayments_processor import LoanRepaymentsProcessor
-from .TapProcessors.processor import TapProcessor
 
 LOGGER = singer.get_logger()
 
