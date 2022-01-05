@@ -6,12 +6,13 @@ from ..Helpers import write_bookmark, transform_json, get_bookmark
 
 
 class TapGenerator(ABC):
-    def __init__(self, stream_name, client, config, state, sub_type):
+    def __init__(self, stream_name, client, config, state, sub_type, endpoint_config=None):
         self.stream_name = stream_name
         self.client = client
         self.config = config
         self.state = state
         self.sub_type = sub_type
+        self.endpoint_config = endpoint_config
         self._init_config()
         self._init_endpoint_config()
         self._init_buffers()
@@ -22,7 +23,8 @@ class TapGenerator(ABC):
         self.start_date = self.config.get('start_date')
 
     def _init_endpoint_config(self):
-        self.endpoint_config = {}
+        if self.endpoint_config is None:
+            self.endpoint_config = {}
 
     def _init_buffers(self):
         self.buffer: List = list()

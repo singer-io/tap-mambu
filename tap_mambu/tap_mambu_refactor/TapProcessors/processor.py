@@ -51,6 +51,7 @@ class TapProcessor(ABC):
             record = self.generator_values[min_record_key]
             self.process_record(record, min_record_key.time_extracted)
             record_count += 1
+            record_count += self.__process_child_records(record)
 
             # Remove any record with the same deduplication_key from the list
             # (so we don't process the same record twice)
@@ -60,6 +61,9 @@ class TapProcessor(ABC):
 
         self.generators[0].write_bookmark()
         return record_count
+
+    def __process_child_records(self, record):
+        return 0
 
     def __is_record_past_bookmark(self, transformed_record):
         is_record_past_bookmark = False
