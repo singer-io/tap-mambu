@@ -12,7 +12,6 @@ class TapProcessor(ABC):
         self.generator_values = dict()
         self.catalog = catalog
         self.stream_name = stream_name
-        self.deduplication_key = "encoded_key"  # To be replaced with 'id_fields' from endpoint config
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
@@ -25,6 +24,8 @@ class TapProcessor(ABC):
     def process_streams_from_generators(self, generators):
         self.generators = generators
         self.write_schema()
+        id_fields = self.generators[0].endpoint_config['id_fields']
+        deduplication_key = 'id' if 'id' in id_fields else id_fields[0]
         record_count = 0
         for generator in self.generators:
             self.generator_values[iter(generator)] = None
@@ -42,9 +43,9 @@ class TapProcessor(ABC):
             min_record_value = None
             for iterator in self.generator_values:
                 if min_record_value is None \
-                        or min_record_value > self.generator_values[iterator][self.deduplication_key]:
+                        or min_record_value > self.generator_values[iterator][deduplication_key]:
                     min_record_key = iterator
-                    min_record_value = self.generator_values[iterator][self.deduplication_key]
+                    min_record_value = self.generator_values[iterator][deduplication_key]
 
             # Process the record
             record = self.generator_values[min_record_key]
@@ -55,7 +56,7 @@ class TapProcessor(ABC):
             # Remove any record with the same deduplication_key from the list
             # (so we don't process the same record twice)
             for iterator in self.generator_values.keys():
-                if min_record_value == self.generator_values[iterator][self.deduplication_key]:
+                if min_record_value == self.generator_values[iterator][deduplication_key]:
                     self.generator_values[iterator] = None
 
         self.generators[0].write_bookmark()

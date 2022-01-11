@@ -15,7 +15,7 @@ class LoanAccountsProcessor(TapProcessor):
                                                     catalog=self.catalog,
                                                     state=self.generators[0].state,
                                                     stream_name=child_config_key,
-                                                    sub_type='',
+                                                    sub_type='self',
                                                     config=self.generators[0].config,
                                                     endpoint_config=child_config)
         return total_records
