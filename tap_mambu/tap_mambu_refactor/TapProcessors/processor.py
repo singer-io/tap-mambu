@@ -15,17 +15,22 @@ class TapProcessor(ABC):
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
+        self.deduplication_key = "id"
 
     def write_schema(self):
         stream = self.catalog.get_stream(self.stream_name)
         schema = stream.schema.to_dict()
         write_schema(self.stream_name, schema, stream.key_properties)
 
+    def configure_processor_for_generators(self):
+        id_fields = self.generators[0].endpoint_config['id_fields']
+        if "id" not in id_fields:
+            self.deduplication_key = id_fields[0]
+
     def process_streams_from_generators(self, generators):
         self.generators = generators
+        self.configure_processor_for_generators()
         self.write_schema()
-        id_fields = self.generators[0].endpoint_config['id_fields']
-        deduplication_key = 'id' if 'id' in id_fields else id_fields[0]
         record_count = 0
         for generator in self.generators:
             self.generator_values[iter(generator)] = None
@@ -43,20 +48,20 @@ class TapProcessor(ABC):
             min_record_value = None
             for iterator in self.generator_values:
                 if min_record_value is None \
-                        or min_record_value > self.generator_values[iterator][deduplication_key]:
+                        or min_record_value > self.generator_values[iterator][self.deduplication_key]:
                     min_record_key = iterator
-                    min_record_value = self.generator_values[iterator][deduplication_key]
+                    min_record_value = self.generator_values[iterator][self.deduplication_key]
 
             # Process the record
             record = self.generator_values[min_record_key]
-            self.process_record(record, min_record_key.time_extracted)
-            record_count += 1
-            record_count += self._process_child_records(record)
+            if self.process_record(record, min_record_key.time_extracted):
+                record_count += 1
+                record_count += self._process_child_records(record)
 
             # Remove any record with the same deduplication_key from the list
             # (so we don't process the same record twice)
             for iterator in self.generator_values.keys():
-                if min_record_value == self.generator_values[iterator][deduplication_key]:
+                if min_record_value == self.generator_values[iterator][self.deduplication_key]:
                     self.generator_values[iterator] = None
 
         self.generators[0].write_bookmark()
@@ -106,3 +111,5 @@ class TapProcessor(ABC):
             write_record(self.stream_name,
                          transformed_record,
                          time_extracted=time_extracted)
+            return True
+        return False

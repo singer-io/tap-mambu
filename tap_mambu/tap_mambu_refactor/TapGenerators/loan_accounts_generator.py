@@ -17,7 +17,7 @@ class LoanAccountsGenerator(TapGenerator):
             },
             'body': {
                 "sortingCriteria": {
-                    "field": "encodedKey",
+                    "field": "id",
                     "order": "ASC"
                 },
                 "filterCriteria": [
