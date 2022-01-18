@@ -1,5 +1,5 @@
 import re
-from singer import write_state, Transformer
+from singer import write_state, Transformer, metadata
 
 
 def get_bookmark(state, stream, sub_type, default):
@@ -115,3 +115,14 @@ def transform_activities(this_json):
             record[key] = value
         del record['activity']
     return this_json
+
+
+# Review catalog and make a list of selected streams
+def get_selected_streams(catalog):
+    selected_streams = set()
+    for stream in catalog.streams:
+        mdata = metadata.to_map(stream.metadata)
+        root_metadata = mdata.get(())
+        if root_metadata and root_metadata.get('selected') is True:
+            selected_streams.add(stream.tap_stream_id)
+    return list(selected_streams)

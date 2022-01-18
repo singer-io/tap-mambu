@@ -4,7 +4,6 @@ from singer import write_record, Transformer, metadata, write_schema
 from singer.utils import strptime_to_utc
 
 from ..Helpers import transform_datetime, convert
-from ..TapGenerators.generator import TapGenerator
 
 
 class TapProcessor(ABC):
@@ -13,18 +12,24 @@ class TapProcessor(ABC):
         self.generator_values = dict()
         self.catalog = catalog
         self.stream_name = stream_name
-        self.deduplication_key = "encoded_key"  # To be replaced with 'id_fields' from endpoint config
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
+        self.deduplication_key = "id"
 
     def write_schema(self):
         stream = self.catalog.get_stream(self.stream_name)
         schema = stream.schema.to_dict()
         write_schema(self.stream_name, schema, stream.key_properties)
 
+    def configure_processor_for_generators(self):
+        id_fields = self.generators[0].endpoint_config['id_fields']
+        if "id" not in id_fields:
+            self.deduplication_key = id_fields[0]
+
     def process_streams_from_generators(self, generators):
         self.generators = generators
+        self.configure_processor_for_generators()
         self.write_schema()
         record_count = 0
         for generator in self.generators:
@@ -39,7 +44,7 @@ class TapProcessor(ABC):
             if not self.generator_values:
                 break
             # Find lowest value in the list
-            min_record_key: TapGenerator = None
+            min_record_key = None
             min_record_value = None
             for iterator in self.generator_values:
                 if min_record_value is None \
@@ -49,8 +54,9 @@ class TapProcessor(ABC):
 
             # Process the record
             record = self.generator_values[min_record_key]
-            self.process_record(record, min_record_key.time_extracted)
-            record_count += 1
+            if self.process_record(record, min_record_key.time_extracted):
+                record_count += 1
+                record_count += self._process_child_records(record)
 
             # Remove any record with the same deduplication_key from the list
             # (so we don't process the same record twice)
@@ -61,10 +67,13 @@ class TapProcessor(ABC):
         self.generators[0].write_bookmark()
         return record_count
 
+    def _process_child_records(self, record):
+        return 0
+
     def __is_record_past_bookmark(self, transformed_record):
         is_record_past_bookmark = False
         bookmark_type = self.generators[0].endpoint_config.get('bookmark_type')
-        bookmark_field = convert(self.generators[0].endpoint_config.get('bookmark_field'))
+        bookmark_field = convert(self.generators[0].endpoint_config.get('bookmark_field', ''))
 
         # Reset max_bookmark_value to new value if higher
         if bookmark_field and (bookmark_field in transformed_record):
@@ -102,3 +111,5 @@ class TapProcessor(ABC):
             write_record(self.stream_name,
                          transformed_record,
                          time_extracted=time_extracted)
+            return True
+        return False
