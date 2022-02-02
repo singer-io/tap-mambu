@@ -54,7 +54,8 @@ class TapProcessor(ABC):
 
             # Process the record
             record = self.generator_values[min_record_key]
-            if self.process_record(record, min_record_key.time_extracted):
+            if self.process_record(record, min_record_key.time_extracted,
+                                   min_record_key.endpoint_config.get('bookmark_field', '')):
                 record_count += 1
                 record_count += self._process_child_records(record)
 
@@ -70,10 +71,10 @@ class TapProcessor(ABC):
     def _process_child_records(self, record):
         return 0
 
-    def __is_record_past_bookmark(self, transformed_record):
+    def __is_record_past_bookmark(self, transformed_record, bookmark_field):
         is_record_past_bookmark = False
         bookmark_type = self.generators[0].endpoint_config.get('bookmark_type')
-        bookmark_field = convert(self.generators[0].endpoint_config.get('bookmark_field', ''))
+        bookmark_field = convert(bookmark_field)
 
         # Reset max_bookmark_value to new value if higher
         if bookmark_field and (bookmark_field in transformed_record):
@@ -101,13 +102,13 @@ class TapProcessor(ABC):
 
         return is_record_past_bookmark
 
-    def process_record(self, record, time_extracted):
+    def process_record(self, record, time_extracted, bookmark_field):
         with Transformer() as transformer:
             transformed_record = transformer.transform(record,
                                                        self.schema,
                                                        self.stream_metadata)
 
-        if self.__is_record_past_bookmark(transformed_record):
+        if self.__is_record_past_bookmark(transformed_record, bookmark_field):
             write_record(self.stream_name,
                          transformed_record,
                          time_extracted=time_extracted)
