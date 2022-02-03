@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.2
+  * Fix issue with handling the `account_appraisal_date` for `loan_accounts` stream. [#64](https://github.com/singer-io/tap-mambu/pull/64)
+
 ## 2.3.1
   * Adjust bookmarking of `loan_accounts` to use `modified_date` *or* `account_appraisal_date` [#62](https://github.com/singer-io/tap-mambu/pull/62)
   * Stream `loan_accounts` and child stream `loan_repayments` refactored into new pattern
