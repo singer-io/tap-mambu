@@ -82,7 +82,7 @@ class BookmarksTest(MambuBaseTest):
                 second_sync_messages = second_sync_records.get(stream, {}).get('messages', [])
 
                 if replication_method == self.INCREMENTAL:
-                    replication_key = self.expected_replication_keys().get(stream).pop()
+                    replication_keys = self.expected_replication_keys().get(stream)
 
                     first_sync_bookmark_value = first_sync_bookmarks['bookmarks'][stream]
                     second_sync_bookmark_value = second_sync_bookmarks['bookmarks'][stream]
@@ -92,14 +92,19 @@ class BookmarksTest(MambuBaseTest):
                     self.assertEqual(first_sync_bookmark_value,
                                      second_sync_bookmark_value)
 
-                    # Verify that first sync records fall betwen the start date and the final
+                    # Verify that first sync records fall between the start date and the final
                     # bookmark value
                     for message in first_sync_messages:
                         lower_bound = strptime_to_utc(self.get_properties()['start_date'])
-                        actual_value = strptime_to_utc(message.get('data').get(replication_key))
                         upper_bound = strptime_to_utc(first_sync_bookmark_value)
+                        record = message.get('data')
+                        actual_values = [strptime_to_utc(record.get(replication_key))
+                                         for replication_key in replication_keys if replication_key in record]
+
+                        self.assertNotEqual(actual_values, [], msg="No replication key found in record")
+
                         self.assertTrue(
-                            lower_bound <= actual_value <= upper_bound,
+                            any([lower_bound <= actual_value <= upper_bound for actual_value in actual_values]),
                             msg="First sync records fall outside of expected sync window"
                         )
 
@@ -107,13 +112,17 @@ class BookmarksTest(MambuBaseTest):
                     # final bookmark value
                     for message in second_sync_messages:
                         lower_bound = strptime_to_utc(simulated_bookmark_value)
-                        actual_value = strptime_to_utc(message.get('data',{}).get(replication_key))
                         upper_bound = strptime_to_utc(second_sync_bookmark_value)
+                        record = message.get('data')
+                        actual_values = [strptime_to_utc(record.get(replication_key))
+                                         for replication_key in replication_keys if replication_key in record]
+
+                        self.assertNotEqual(actual_values, [], msg="No replication key found in record")
+
                         self.assertTrue(
-                            lower_bound <= actual_value <= upper_bound,
+                            any([lower_bound <= actual_value <= upper_bound for actual_value in actual_values]),
                             msg="Second sync records fall outside of expected sync window"
                         )
-
 
                     # Verify the number of records in the 2nd sync is less then the first
                     self.assertLess(second_sync_count, first_sync_count)

@@ -37,7 +37,7 @@ class StartDateTest(MambuBaseTest):
         for record in records:
             # Build the primary key for this record, maintaining the same order for the fields
             record_rep_key = [record[field]
-                              for field in sorted(self.expected_replication_keys()[stream])]
+                              for field in sorted(self.expected_replication_keys()[stream]) if field in record]
             # Cast to a tuple to make it hashable
             all_records.append(record_rep_key[0])
         return all_records

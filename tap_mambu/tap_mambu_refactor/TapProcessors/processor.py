@@ -43,18 +43,38 @@ class TapProcessor(ABC):
                     self.generator_values.pop(iterator)
             if not self.generator_values:
                 break
-            # Find lowest value in the list
+            # Find lowest value in the list, and if two or more are equal, find max bookmark
             min_record_key = None
             min_record_value = None
+            min_record_bookmark = None
             for iterator in self.generator_values:
-                if min_record_value is None \
+                bookmark_field = convert(iterator.endpoint_config.get('bookmark_field', ''))
+                # Different record
+                if min_record_key is None \
                         or min_record_value > self.generator_values[iterator][self.deduplication_key]:
                     min_record_key = iterator
                     min_record_value = self.generator_values[iterator][self.deduplication_key]
+                    if not bookmark_field:
+                        continue
+                    min_record_bookmark = self.generator_values[iterator][bookmark_field]
+                # Same record
+                elif min_record_value == self.generator_values[iterator][self.deduplication_key]:
+                    if not bookmark_field:
+                        continue
+
+                    # Check the new bookmark against the min_record_key's bookmark
+                    min_record_dttm = strptime_to_utc(min_record_bookmark)
+                    record_dttm = strptime_to_utc(self.generator_values[iterator][bookmark_field])
+                    # If min_record has bookmark smaller than record, then replace min_record (we want highest bookmark)
+                    if min_record_dttm < record_dttm:
+                        min_record_key = iterator
+                        min_record_value = self.generator_values[iterator][self.deduplication_key]
+                        min_record_bookmark = self.generator_values[iterator][bookmark_field]
 
             # Process the record
             record = self.generator_values[min_record_key]
-            if self.process_record(record, min_record_key.time_extracted):
+            if self.process_record(record, min_record_key.time_extracted,
+                                   min_record_key.endpoint_config.get('bookmark_field', '')):
                 record_count += 1
                 record_count += self._process_child_records(record)
 
@@ -70,10 +90,10 @@ class TapProcessor(ABC):
     def _process_child_records(self, record):
         return 0
 
-    def __is_record_past_bookmark(self, transformed_record):
+    def __is_record_past_bookmark(self, transformed_record, bookmark_field):
         is_record_past_bookmark = False
         bookmark_type = self.generators[0].endpoint_config.get('bookmark_type')
-        bookmark_field = convert(self.generators[0].endpoint_config.get('bookmark_field', ''))
+        bookmark_field = convert(bookmark_field)
 
         # Reset max_bookmark_value to new value if higher
         if bookmark_field and (bookmark_field in transformed_record):
@@ -101,13 +121,13 @@ class TapProcessor(ABC):
 
         return is_record_past_bookmark
 
-    def process_record(self, record, time_extracted):
+    def process_record(self, record, time_extracted, bookmark_field):
         with Transformer() as transformer:
             transformed_record = transformer.transform(record,
                                                        self.schema,
                                                        self.stream_metadata)
 
-        if self.__is_record_past_bookmark(transformed_record):
+        if self.__is_record_past_bookmark(transformed_record, bookmark_field):
             write_record(self.stream_name,
                          transformed_record,
                          time_extracted=time_extracted)
