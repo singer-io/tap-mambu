@@ -744,6 +744,10 @@ def sync(client, config, catalog, state):
             'api_version': 'v1',
             'api_method': 'POST',
             'body': {
+                "sortDetails": {
+                    "sortingColumn": "ENTRY_ID",
+                    "sortingOrder": "ASCENDING"
+                },
                 "filterConstraints": [
                     {
                         "filterSelection": "CREATION_DATE",
