@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.3
+  * Enable sorting of `gl_journal_entries` response to prevent missing records due to pagination [#66](https://github.com/singer-io/tap-mambu/pull/66)
+
 ## 2.3.2
   * Fix issue with handling the `account_appraisal_date` for `loan_accounts` stream. [#64](https://github.com/singer-io/tap-mambu/pull/64)
 
