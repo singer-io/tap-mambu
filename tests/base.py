@@ -144,7 +144,7 @@ class MambuBaseTest(unittest.TestCase):
                 },
                 self.REPLICATION_METHOD: "INCREMENTAL",
                 self.REPLICATION_KEYS: {
-                    "last_modified_date"
+                    "last_modified_date", "last_account_appraisal_date"
                 }
             },
             "loan_repayments": {

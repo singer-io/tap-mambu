@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.3.3
+  * Enable sorting of `gl_journal_entries` response to prevent missing records due to pagination [#66](https://github.com/singer-io/tap-mambu/pull/66)
+
+## 2.3.2
+  * Fix issue with handling the `account_appraisal_date` for `loan_accounts` stream. [#64](https://github.com/singer-io/tap-mambu/pull/64)
+
+## 2.3.1
+  * Adjust bookmarking of `loan_accounts` to use `modified_date` *or* `account_appraisal_date` [#62](https://github.com/singer-io/tap-mambu/pull/62)
+  * Stream `loan_accounts` and child stream `loan_repayments` refactored into new pattern
+
 ## 2.3.0
   * Added `original_account_key` field to the `loan_accounts` stream [#60](https://github.com/singer-io/tap-mambu/pull/60)
   * Fix audit trail duplicated records [#59](https://github.com/singer-io/tap-mambu/pull/59)

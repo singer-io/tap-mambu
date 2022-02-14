@@ -4,6 +4,8 @@ from datetime import datetime
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strftime, strptime_to_utc
+
+from tap_mambu.tap_mambu_refactor import sync_endpoint_refactor
 from tap_mambu.transform import transform_json, transform_activities
 
 LOGGER = singer.get_logger()
@@ -742,6 +744,10 @@ def sync(client, config, catalog, state):
             'api_version': 'v1',
             'api_method': 'POST',
             'body': {
+                "sortDetails": {
+                    "sortingColumn": "ENTRY_ID",
+                    "sortingOrder": "ASCENDING"
+                },
                 "filterConstraints": [
                     {
                         "filterSelection": "CREATION_DATE",
@@ -899,26 +905,36 @@ def sync(client, config, catalog, state):
                 if sub_type_param:
                     endpoint_config['params']['type'] = sub_type
 
-                total_records = sync_endpoint(
-                    client=client,
-                    catalog=catalog,
-                    state=state,
-                    start_date=start_date,
-                    stream_name=stream_name,
-                    path=path,
-                    endpoint_config=endpoint_config,
-                    api_version=endpoint_config.get('api_version', 'v2'),
-                    api_method=endpoint_config.get('api_method', 'GET'),
-                    static_params=endpoint_config.get('params', {}),
-                    sub_type=sub_type,
-                    bookmark_query_field=endpoint_config.get('bookmark_query_field'),
-                    bookmark_field=endpoint_config.get('bookmark_field'),
-                    bookmark_type=endpoint_config.get('bookmark_type'),
-                    data_key=endpoint_config.get('data_key', None),
-                    body=endpoint_config.get('body', None),
-                    id_fields=endpoint_config.get('id_fields'),
-                    apikey_type=endpoint_config.get('apikey_type', None)
-                )
+                if stream_name in ["loan_accounts"]:
+                    total_records = sync_endpoint_refactor(
+                        client=client,
+                        catalog=catalog,
+                        state=state,
+                        stream_name=stream_name,
+                        sub_type=sub_type,
+                        config=config
+                    )
+                else:
+                    total_records = sync_endpoint(
+                        client=client,
+                        catalog=catalog,
+                        state=state,
+                        start_date=start_date,
+                        stream_name=stream_name,
+                        path=path,
+                        endpoint_config=endpoint_config,
+                        api_version=endpoint_config.get('api_version', 'v2'),
+                        api_method=endpoint_config.get('api_method', 'GET'),
+                        static_params=endpoint_config.get('params', {}),
+                        sub_type=sub_type,
+                        bookmark_query_field=endpoint_config.get('bookmark_query_field'),
+                        bookmark_field=endpoint_config.get('bookmark_field'),
+                        bookmark_type=endpoint_config.get('bookmark_type'),
+                        data_key=endpoint_config.get('data_key', None),
+                        body=endpoint_config.get('body', None),
+                        id_fields=endpoint_config.get('id_fields'),
+                        apikey_type=endpoint_config.get('apikey_type', None)
+                    )
 
                 update_currently_syncing(state, None)
                 LOGGER.info('Synced: {}, total_records: {}'.format(
