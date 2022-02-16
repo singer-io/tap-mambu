@@ -8,12 +8,12 @@ def get_bookmark(state, stream, sub_type, default):
 
     if sub_type == 'self':
         return state.get('bookmarks', {}).get(stream, default)
-    else:
-        return state.get('bookmarks', {}).get(stream, {}).get(sub_type, default)
+    return state.get('bookmarks', {}).get(stream, {}).get(sub_type, default)
 
 
 def transform_datetime(this_dttm):
     with Transformer() as transformer:
+        # pylint: disable=W0212
         new_dttm = transformer._transform_datetime(this_dttm)
     return new_dttm
 
@@ -77,11 +77,12 @@ def remove_custom_nodes(this_json):
 def add_cust_field(key, record, cust_field_sets):
     for cf_key, cf_value in record.items():
         field = {
-            'field_set_id' : key,
-            'id' : cf_key,
-            'value' : cf_value,
+            'field_set_id': key,
+            'id': cf_key,
+            'value': cf_value,
         }
         cust_field_sets.append(field)
+
 
 # Convert custom fields and sets
 # Generalize/Abstract custom fields to key/value pairs
@@ -109,12 +110,12 @@ def transform_json(this_json, path):
     return transformed_json[path]
 
 
-def transform_activities(this_json):
-    for record in this_json:
-        for key, value in record['activity'].items():
-            record[key] = value
-        del record['activity']
-    return this_json
+# def transform_activities(this_json):
+#     for record in this_json:
+#         for key, value in record['activity'].items():
+#             record[key] = value
+#         del record['activity']
+#     return this_json
 
 
 # Review catalog and make a list of selected streams
