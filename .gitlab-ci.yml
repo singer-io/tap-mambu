@@ -9,8 +9,8 @@ stages:
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/[0-9]+/
 unit-test-job:
   stage: test
   before_script:
@@ -31,3 +31,12 @@ lint-test-job:
     - echo "Linting code..."
     - pylint tap_mambu/tap_mambu_refactor --exit-zero
     - pylint tap_mambu/tap_mambu_refactor -d C -d R -d W || true
+
+snyk-dependency-test-job:
+  stage: test
+  image:
+    snyk-cli:python-3.9
+    # registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/snyk/snyk-cli:python-3.9
+  script:
+    - snyk test --file=setup.py --package-manager=pip
+
