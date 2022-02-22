@@ -1,0 +1,10 @@
+config_json = {'username': 'unit',
+               'password': 'test',
+               'apikey': '',
+               'subdomain': 'unit.test',
+               'test_full_url': 'http://127.0.0.1:1080/test',
+               'start_date': '2021-06-01T00:00:00Z',
+               'lookback_window': 30,
+               'user_agent': '',
+               'page_size': '500',
+               'apikey_audit': 'apikey_audit_test'}
