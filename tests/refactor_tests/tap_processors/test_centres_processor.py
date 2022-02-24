@@ -9,7 +9,7 @@ from ..helpers import GeneratorMock
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/fixtures"
 
 
-def test_deposit_accounts_processor():
+def test_centres_processor():
     from singer.catalog import Catalog
     catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
     client_mock = MagicMock()

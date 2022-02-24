@@ -3,7 +3,7 @@ from mock import MagicMock
 from ..constants import config_json
 
 
-def test_deposit_accounts_generator():
+def test_clients_generator():
     from tap_mambu.tap_mambu_refactor.tap_generators.clients_generator import ClientsGenerator
     client_mock = MagicMock()
     client_mock.page_size = int(config_json.get("page_size", 500))
