@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from ..constants import config_json
 
 
-def test_deposit_cards_generator_endpoint_config_init():
+def test_centres_generator_endpoint_config_init():
     from tap_mambu.tap_mambu_refactor.tap_generators.centres_generator import CentresGenerator
     client_mock = MagicMock()
     client_mock.page_size = int(config_json.get("page_size", 500))
