@@ -1,9 +1,11 @@
 import singer
 
+from .tap_generators.clients_generator import ClientsGenerator
 from .tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from .tap_generators.deposit_cards_generator import DepositCardsGenerator
 from .tap_generators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
 from .tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
+from .tap_processors.clients_processor import ClientsProcessor
 from .tap_processors.deposit_accounts_processor import DepositAccountsProcessor
 from .tap_processors.deposit_cards_processor import DepositCardsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
@@ -18,7 +20,8 @@ def sync_endpoint_refactor(client, catalog, state,
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
-        "cards": ((DepositCardsGenerator,), DepositCardsProcessor)
+        "cards": ((DepositCardsGenerator,), DepositCardsProcessor),
+        "clients": ((ClientsGenerator,), ClientsProcessor),
     }
 
     generator_classes, processor_class = stream_generator_processor_dict[stream_name]
