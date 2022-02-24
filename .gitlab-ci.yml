@@ -62,7 +62,8 @@ snyk-dev-dependency-test-job:
     - pip install -e .[dev]
     - pip freeze > requirements.txt
   script:
-    - snyk test --severity-threshold=critical
+    - snyk test
+  allow_failure: true
 
 snyk-code-test-job:
   image:
