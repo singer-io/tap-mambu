@@ -328,17 +328,17 @@ This tap:
 
     For Sync mode:
     ```bash
-    tap-mambu --config tap_config.json --catalog catalog.json > state.json
+    tap-mambu --config config.json --catalog catalog.json > state.json
     tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     To load to json files to verify outputs:
     ```bash
-    tap-mambu --config tap_config.json --catalog catalog.json | target-json > state.json
+    tap-mambu --config config.json --catalog catalog.json | target-json > state.json
     tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     To pseudo-load to [Stitch Import API](https://github.com/singer-io/target-stitch) with dry run:
     ```bash
-    tap-mambu --config tap_config.json --catalog catalog.json | target-stitch --config target_config.json --dry-run > state.json
+    tap-mambu --config config.json --catalog catalog.json | target-stitch --config target_config.json --dry-run > state.json
     tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
 
@@ -356,7 +356,7 @@ This tap:
 
     To [check the tap](https://github.com/singer-io/singer-tools#singer-check-tap) and verify working:
     ```bash
-    tap-mambu --config tap_config.json --catalog catalog.json | singer-check-tap > state.json
+    tap-mambu --config config.json --catalog catalog.json | singer-check-tap > state.json
     tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
     Check tap resulted in the following:
