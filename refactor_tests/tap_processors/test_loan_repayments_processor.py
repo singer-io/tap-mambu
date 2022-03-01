@@ -6,7 +6,7 @@ from mock import MagicMock
 from ..constants import config_json
 from ..helpers import GeneratorMock
 
-FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/fixtures"
+FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
 
 
 def test_loan_repayments_processor_endpoint_config_init():

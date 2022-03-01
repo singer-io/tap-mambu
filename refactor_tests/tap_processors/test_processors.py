@@ -11,7 +11,7 @@ import inspect
 from ..constants import config_json
 from ..helpers import GeneratorMock, IsInstanceMatcher
 
-FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/fixtures"
+FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
 
 
 # @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_schema")
