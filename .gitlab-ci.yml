@@ -1,15 +1,20 @@
-include:
-  - template: Code-Quality.gitlab-ci.yml
+variables:  # global variables section
+  PIPELINE_VERSION: &pipeline-tag v2
 
-image:
-  python:3.10-bullseye
+include:
+  - project: 'mambucom/product/sre/release-engineering/templates/gitlab-ci-pipeline'
+    ref: *pipeline-tag
+    file: '/gitlab/code-quality.yml'
+
+image: registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/python:3.9-bullseye
 
 stages:
   - test
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/[0-9]+/
 
 unit-test-job:
   stage: test
