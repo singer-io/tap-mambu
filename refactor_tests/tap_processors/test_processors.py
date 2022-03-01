@@ -67,7 +67,7 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
-    catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
+    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
 
     generator_data = [
         {
@@ -127,7 +127,7 @@ def test_bookmarks(mock_write_state):
     from singer.catalog import Catalog
     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
 
-    catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
+    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
     client_mock = MagicMock()
     processor = TapProcessor(catalog=catalog,
                              stream_name="loan_accounts",
@@ -149,7 +149,7 @@ def test_write_schema(mock_write_schema):
     from singer.catalog import Catalog
     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
 
-    catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
+    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
     client_mock = MagicMock()
     processor = TapProcessor(catalog=catalog,
                              stream_name="loan_accounts",
@@ -162,7 +162,7 @@ def test_write_schema(mock_write_schema):
 
     schema = None
     stream_key_properties = None
-    with open(f"{FIXTURES_PATH}/catalog.json", "r") as fd:
+    with open(f"{FIXTURES_PATH}/processor_catalog.json", "r") as fd:
         schema_json = json.loads(fd.read())
         for stream in schema_json["streams"]:
             if stream["tap_stream_id"] == "loan_accounts":
@@ -178,7 +178,7 @@ def test_write_schema(mock_write_schema):
 def test_write_exceptions(mock_write_schema, mock_write_record):
     from singer.catalog import Catalog
     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
-    catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
+    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
 
     mock_write_record.side_effect = [None, OSError("Mock Record Exception")]
     mock_write_schema.side_effect = [None, OSError("Mock Schema Exception")]

@@ -11,7 +11,7 @@ FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/fixt
 
 def test_deposit_cards_processor_endpoint_config_init():
     from singer.catalog import Catalog
-    catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
+    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
     client_mock = MagicMock()
 
     from tap_mambu.tap_mambu_refactor.tap_processors.deposit_cards_processor import DepositCardsProcessor
