@@ -1,0 +1,23 @@
+#plugins:
+#  pylint:
+#    enabled: false
+#  pep8:
+#    enabled: true
+#  duplication:
+#    enabled: true
+#    config:
+#      languages:
+#      - python:
+#          python_version: 3
+#  radon:
+#    enabled: true
+#  sonar-python:
+#    enabled: true
+#    config:
+#      tests_patterns:
+#        - tests/**
+
+exclude_patterns:
+  - "tap_mambu/**"
+  - "!tap_mambu/tap_mambu_refactor/**"
+  - "tests/**"
