@@ -29,6 +29,297 @@
         }
       }
     },
+    "payment_details": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "payment_identification": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "end_to_end_identification": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "instruction_identification": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "transaction_identification": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        },
+        "payment_type_information": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "service_level": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "debtor": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        },
+        "debtor_agent": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "financial_institution_identification": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "bic": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "debtor_account": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "identification": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "iban": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "other": {
+                  "type": [
+                    "null",
+                    "object"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "identification": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "scheme": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "creditor": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        },
+        "creditor_agent": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "financial_institution_identification": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "bic": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "creditor_account": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "identification": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "iban": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "other": {
+                  "type": [
+                    "null",
+                    "object"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "identification": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "scheme": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "remittance_information": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "structured": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "creditor_reference_information": {
+                  "type": [
+                    "null",
+                    "object"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "reference": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "reference_issuer": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "reference_type": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "unstructured": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    },
     "fees": {
       "anyOf": [
         {

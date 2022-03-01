@@ -8,6 +8,21 @@
         "string"
       ]
     },
+    "currency": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
     "prepayment_settings": {
       "type": [
         "null",
