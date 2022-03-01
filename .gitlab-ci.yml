@@ -18,7 +18,7 @@ unit-test-job:
     - python3 -m pip install --upgrade -r requirements_ci.txt
   script:
     - echo "Running unit tests..."
-    - coverage run --source=tap_mambu/tap_mambu_refactor -m pytest tests/refactor_tests
+    - coverage run --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
     - coverage json
     - python3 -c "import json; coverage_json = json.loads(open('coverage.json', 'r').read()); print('Coverage is', round(coverage_json['totals']['percent_covered'], 2))"
 
