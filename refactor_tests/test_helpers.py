@@ -7,7 +7,6 @@ from mock import MagicMock
 
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
 
-
 def test_get_selected_streams():
     from singer.catalog import Catalog
     from tap_mambu.tap_mambu_refactor.helpers import get_selected_streams
