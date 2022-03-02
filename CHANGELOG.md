@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.4.0
+  * Misc bug fixes and features [#68](https://github.com/singer-io/tap-mambu/pull/68)
+    * added `currency` field to `loan_accounts`
+    * added `payment_details` field to `deposit_transactions`
+    * added `status` field to `tasks` stream
+    * added sorting to `gl_journal_entries` stream to fix missing record at large extractions (very big offset)
+    * fixed loan accounts being skipped if updated while the extraction is running
+    * replaced `endpoint_config` dict with class properties
+    * created unit tests for auxiliary functions
+    * added logging to refactored code
+    * implemented unit tests and functional tests for `loan_accounts` and `loan_repayments` streams
+    * refactored `deposit_accounts` and `cards` streams (including unit tests)
+
 ## 2.3.3
   * Enable sorting of `gl_journal_entries` response to prevent missing records due to pagination [#66](https://github.com/singer-io/tap-mambu/pull/66)
 
