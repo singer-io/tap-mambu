@@ -905,7 +905,14 @@ def sync(client, config, catalog, state):
                 if sub_type_param:
                     endpoint_config['params']['type'] = sub_type
 
-                if stream_name in ["branches", "centres", "clients", "deposit_accounts", "loan_accounts"]:
+                if stream_name in [
+                    "branches",
+                    "centres",
+                    "clients",
+                    "deposit_accounts",
+                    "deposit_transactions",
+                    "loan_accounts",
+                ]:
                     total_records = sync_endpoint_refactor(
                         client=client,
                         catalog=catalog,
