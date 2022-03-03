@@ -16,6 +16,7 @@ class TapGenerator(ABC):
         self.sub_type = sub_type
         self._init_config()
         self._init_endpoint_config()
+        self._init_endpoint_body()
         self._init_buffers()
         self._init_params()
 
@@ -37,6 +38,8 @@ class TapGenerator(ABC):
         self.endpoint_filter_criteria = []
         self.endpoint_api_key_type = None
         self.endpoint_bookmark_field = ""
+
+    def _init_endpoint_body(self):
         self.endpoint_body = {"sortingCriteria": self.endpoint_sorting_criteria,
                               "filterCriteria": self.endpoint_filter_criteria}
 

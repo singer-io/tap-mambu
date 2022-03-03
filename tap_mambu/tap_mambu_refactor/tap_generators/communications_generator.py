@@ -24,4 +24,6 @@ class CommunicationsGenerator(TapGenerator):
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
             }
         ]
+
+    def _init_endpoint_body(self):
         self.endpoint_body = self.endpoint_filter_criteria
