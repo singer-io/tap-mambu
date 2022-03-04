@@ -1,15 +1,20 @@
-include:
-  - template: Code-Quality.gitlab-ci.yml
+variables:  # global variables section
+  PIPELINE_VERSION: &pipeline-tag v2
 
-image:
-  python:3.10-bullseye
+include:
+  - project: 'mambucom/product/sre/release-engineering/templates/gitlab-ci-pipeline'
+    ref: *pipeline-tag
+    file: '/gitlab/code-quality.yml'
+
+image: registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/python:3.9-bullseye
 
 stages:
   - test
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'web'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/[0-9]+/
 
 unit-test-job:
   stage: test
@@ -31,3 +36,44 @@ lint-test-job:
     - echo "Linting code..."
     - pylint tap_mambu/tap_mambu_refactor --exit-zero
     - pylint tap_mambu/tap_mambu_refactor -d C -d R -d W || true
+
+snyk-dependency-test-job:
+  image:
+    snyk/snyk-cli:python-3.9
+    # registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/snyk/snyk-cli:python-3.9
+  stage: test
+  before_script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install --upgrade "setuptools<58"
+    - pip install wheel
+    - pip install -e .
+    - pip freeze > requirements.txt
+  script:
+    - snyk test --severity-threshold=high
+
+snyk-dev-dependency-test-job:
+  image:
+    snyk/snyk-cli:python-3.9
+    # registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/snyk/snyk-cli:python-3.9
+  stage: test
+  before_script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install --upgrade "setuptools<58"
+    - pip install wheel
+    - pip install -e .[dev]
+    - pip freeze > requirements.txt
+  script:
+    - snyk test
+  allow_failure: true
+
+snyk-code-test-job:
+  image:
+    snyk/snyk-cli:python-3.9
+    # registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/snyk/snyk-cli:python-3.9
+  stage: test
+  script:
+    - snyk code test

@@ -2,6 +2,12 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "assigned_branch_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "last_name": {
       "type": [
         "null",
