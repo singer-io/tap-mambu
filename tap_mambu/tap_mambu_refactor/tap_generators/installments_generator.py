@@ -12,7 +12,7 @@ class InstallmentsGenerator(TapGenerator):
         self.endpoint_params = {
             "dueFrom": transform_datetime(
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10],
-            "dueTo": strftime(utils.now())[:10],
+            "dueTo": utils.now().strftime("%Y-%m-%d")[:10],
             "detailsLevel": "FULL",
             "paginationDetails": "OFF"
         }
