@@ -6,6 +6,7 @@ from .tap_generators.clients_generator import ClientsGenerator
 from .tap_generators.communications_generator import CommunicationsGenerator
 from .tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from .tap_generators.deposit_cards_generator import DepositCardsGenerator
+from .tap_generators.installments_generator import InstallmentsGenerator
 from .tap_generators.groups_generator import GroupsGenerator
 from .tap_generators.index_rate_sources_generator import IndexRateSourcesGenerator
 from .tap_generators.deposit_transactions_generator import DepositTransactionsGenerator
@@ -24,6 +25,7 @@ from .tap_processors.index_rate_sources_processor import IndexRateSourcesProcess
 from .tap_processors.deposit_transactions_processor import DepositTransactionsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from .tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
+from .tap_processors.processor import TapProcessor
 from .tap_processors.loan_transactions_processor import LoanTransactionsProcessor
 from .tap_processors.processor import TapProcessor
 
@@ -42,6 +44,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "groups": ((GroupsGenerator,), GroupsProcessor),
         "index_rate_sources": ((IndexRateSourcesGenerator,), IndexRateSourcesProcessor),
         "deposit_transactions": ((DepositTransactionsGenerator,), DepositTransactionsProcessor),
+        "installments": ((InstallmentsGenerator,), TapProcessor),
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), LoanTransactionsProcessor),
