@@ -13,9 +13,9 @@ from .tap_processors.centres_processor import CentresProcessor
 from .tap_processors.clients_processor import ClientsProcessor
 from .tap_processors.deposit_accounts_processor import DepositAccountsProcessor
 from .tap_processors.deposit_cards_processor import DepositCardsProcessor
-from .tap_processors.installments_processor import InstallmentsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from .tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
+from .tap_processors.processor import TapProcessor
 
 LOGGER = singer.get_logger()
 
@@ -28,7 +28,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "centres": ((CentresGenerator,), CentresProcessor),
         "clients": ((ClientsGenerator,), ClientsProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
-        "installments": ((InstallmentsGenerator,), InstallmentsProcessor),
+        "installments": ((InstallmentsGenerator,), TapProcessor),
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
     }
