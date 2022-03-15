@@ -16,6 +16,7 @@ class TapGenerator(ABC):
         self.sub_type = sub_type
         self._init_config()
         self._init_endpoint_config()
+        self._init_endpoint_body()
         self._init_buffers()
         self._init_params()
 
@@ -37,6 +38,10 @@ class TapGenerator(ABC):
         self.endpoint_filter_criteria = []
         self.endpoint_api_key_type = None
         self.endpoint_bookmark_field = ""
+
+    def _init_endpoint_body(self):
+        self.endpoint_body = {"sortingCriteria": self.endpoint_sorting_criteria,
+                              "filterCriteria": self.endpoint_filter_criteria}
 
     def _init_buffers(self):
         self.buffer: List = list()
@@ -79,12 +84,10 @@ class TapGenerator(ABC):
         }
 
     def fetch_batch(self):
-        endpoint_body = {"sortingCriteria": self.endpoint_sorting_criteria,
-                         "filterCriteria": self.endpoint_filter_criteria}
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in self.params.items()])
 
         LOGGER.info(f'(generator) Stream {self.stream_name} - URL for {self.stream_name} ({self.endpoint_api_method}, {self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
-        LOGGER.info(f'(generator) Stream {self.stream_name} - body = {endpoint_body}')
+        LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
 
         response = self.client.request(
             method=self.endpoint_api_method,
@@ -93,7 +96,7 @@ class TapGenerator(ABC):
             apikey_type=self.endpoint_api_key_type,
             params=endpoint_querystring,
             endpoint=self.stream_name,
-            json=endpoint_body
+            json=self.endpoint_body
         )
 
         self.time_extracted = utils.now()
