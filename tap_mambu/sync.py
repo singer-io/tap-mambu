@@ -908,6 +908,7 @@ def sync(client, config, catalog, state):
                 if stream_name in ["branches",
                                    "centres",
                                    "clients",
+                                   "communications",
                                    "deposit_accounts",
                                    "loan_accounts",
                                    "loan_transactions"]:

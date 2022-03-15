@@ -3,6 +3,7 @@ import singer
 from .tap_generators.branches_generator import BranchesGenerator
 from .tap_generators.centres_generator import CentresGenerator
 from .tap_generators.clients_generator import ClientsGenerator
+from .tap_generators.communications_generator import CommunicationsGenerator
 from .tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from .tap_generators.deposit_cards_generator import DepositCardsGenerator
 from .tap_generators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
@@ -11,6 +12,7 @@ from .tap_generators.loan_transactions_generator import LoanTransactionsGenerato
 from .tap_processors.branches_processor import BranchesProcessor
 from .tap_processors.centres_processor import CentresProcessor
 from .tap_processors.clients_processor import ClientsProcessor
+from .tap_processors.communications_processor import CommunicationsProcessor
 from .tap_processors.deposit_accounts_processor import DepositAccountsProcessor
 from .tap_processors.deposit_cards_processor import DepositCardsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
@@ -27,6 +29,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "cards": ((DepositCardsGenerator,), DepositCardsProcessor),
         "centres": ((CentresGenerator,), CentresProcessor),
         "clients": ((ClientsGenerator,), ClientsProcessor),
+        "communications": ((CommunicationsGenerator,), CommunicationsProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
