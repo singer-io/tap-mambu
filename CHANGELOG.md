@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.1
+  * Continued refactor and added field [#70](https://github.com/singer-io/tap-mambu/pull/70)
+    * Added `assigned_branch_key` field to `clients` stream
+    * Moved `branches`, `centres`, and `clients` to refactored sync pattern
+    * Added structural tests for refactored streams
+
 ## 2.4.0
   * Misc bug fixes and features [#68](https://github.com/singer-io/tap-mambu/pull/68)
     * added `currency` field to `loan_accounts`
