@@ -12,6 +12,7 @@ from .tap_generators.deposit_transactions_generator import DepositTransactionsGe
 from .tap_generators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
 from .tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
 from .tap_generators.loan_transactions_generator import LoanTransactionsGenerator
+from .tap_generators.tasks_generator import TasksGenerator
 from .tap_processors.branches_processor import BranchesProcessor
 from .tap_processors.centres_processor import CentresProcessor
 from .tap_processors.clients_processor import ClientsProcessor
@@ -24,6 +25,7 @@ from .tap_processors.deposit_transactions_processor import DepositTransactionsPr
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from .tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
 from .tap_processors.loan_transactions_processor import LoanTransactionsProcessor
+from .tap_processors.processor import TapProcessor
 
 LOGGER = singer.get_logger()
 
@@ -43,6 +45,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), LoanTransactionsProcessor),
+        "tasks": ((TasksGenerator,), TapProcessor),
     }
 
     generator_classes, processor_class = stream_generator_processor_dict[stream_name]

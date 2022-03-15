@@ -914,7 +914,8 @@ def sync(client, config, catalog, state):
                                    "groups",
                                    "index_rate_sources",
                                    "loan_accounts",
-                                   "loan_transactions"]:
+                                   "loan_transactions",
+                                   "tasks"]:
                     total_records = sync_endpoint_refactor(
                         client=client,
                         catalog=catalog,
