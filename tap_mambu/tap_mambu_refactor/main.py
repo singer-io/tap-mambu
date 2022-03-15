@@ -5,6 +5,7 @@ from .tap_generators.centres_generator import CentresGenerator
 from .tap_generators.clients_generator import ClientsGenerator
 from .tap_generators.communications_generator import CommunicationsGenerator
 from .tap_generators.deposit_accounts_generator import DepositAccountsGenerator
+from .tap_generators.deposit_cards_generator import DepositCardsGenerator
 from .tap_generators.groups_generator import GroupsGenerator
 from .tap_generators.index_rate_sources_generator import IndexRateSourcesGenerator
 from .tap_generators.deposit_transactions_generator import DepositTransactionsGenerator
