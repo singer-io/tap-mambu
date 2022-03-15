@@ -1,7 +1,7 @@
 from .processor import TapProcessor
 
 
-class ClientsProcessor(TapProcessor):
+class GroupsProcessor(TapProcessor):
     def _init_endpoint_config(self):
-        super(ClientsProcessor, self)._init_endpoint_config()
+        super(GroupsProcessor, self)._init_endpoint_config()
         self.endpoint_deduplication_key = "id"

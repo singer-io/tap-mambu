@@ -909,9 +909,14 @@ def sync(client, config, catalog, state):
                     "branches",
                     "centres",
                     "clients",
+                    "communications",
                     "deposit_accounts",
+                    "deposit_transactions",
+                    "groups",
+                    "index_rate_sources",
                     "installments",
-                    "loan_accounts"
+                    "loan_accounts",
+                    "loan_transactions",
                 ]:
                     total_records = sync_endpoint_refactor(
                         client=client,
