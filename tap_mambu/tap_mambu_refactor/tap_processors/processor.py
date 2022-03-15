@@ -80,12 +80,12 @@ class TapProcessor(ABC):
                             or min_record_value > self.generator_values[iterator][self.endpoint_deduplication_key]:
                         min_record_key = iterator
                         min_record_value = self.generator_values[iterator][self.endpoint_deduplication_key]
-                        if not bookmark_field:
+                        if not bookmark_field or bookmark_field not in self.generator_values[iterator]:
                             continue
                         min_record_bookmark = self.generator_values[iterator][bookmark_field]
                     # Same record
                     elif min_record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
-                        if not bookmark_field:
+                        if not bookmark_field or bookmark_field not in self.generator_values[iterator]:
                             continue
 
                         # Check the new bookmark against the min_record_key's bookmark
