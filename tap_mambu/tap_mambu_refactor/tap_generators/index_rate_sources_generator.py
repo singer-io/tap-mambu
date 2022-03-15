@@ -1,7 +1,7 @@
-from .generator import TapGenerator
+from .no_pagination_generator import NoPaginationGenerator
 
 
-class IndexRateSourcesGenerator(TapGenerator):
+class IndexRateSourcesGenerator(NoPaginationGenerator):
     def _init_endpoint_config(self):
         super(IndexRateSourcesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "indexratesources"
