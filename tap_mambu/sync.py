@@ -910,6 +910,7 @@ def sync(client, config, catalog, state):
                                    "clients",
                                    "communications",
                                    "deposit_accounts",
+                                   "deposit_transactions",
                                    "loan_accounts",
                                    "loan_transactions"]:
                     total_records = sync_endpoint_refactor(
