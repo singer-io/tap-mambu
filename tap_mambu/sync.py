@@ -910,6 +910,7 @@ def sync(client, config, catalog, state):
                                    "clients",
                                    "communications",
                                    "deposit_accounts",
+                                   "deposit_transactions",
                                    "groups",
                                    "loan_accounts",
                                    "loan_transactions"]:
