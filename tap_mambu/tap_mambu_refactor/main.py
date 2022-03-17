@@ -14,6 +14,7 @@ from .tap_generators.loan_accounts_generator import LoanAccountsADGenerator, Loa
 from .tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
 from .tap_generators.loan_transactions_generator import LoanTransactionsGenerator
 from .tap_generators.tasks_generator import TasksGenerator
+from .tap_generators.users_generator import UsersGenerator
 from .tap_processors.branches_processor import BranchesProcessor
 from .tap_processors.centres_processor import CentresProcessor
 from .tap_processors.clients_processor import ClientsProcessor
@@ -25,7 +26,6 @@ from .tap_processors.index_rate_sources_processor import IndexRateSourcesProcess
 from .tap_processors.deposit_transactions_processor import DepositTransactionsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from .tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
-from .tap_processors.processor import TapProcessor
 from .tap_processors.loan_transactions_processor import LoanTransactionsProcessor
 from .tap_processors.processor import TapProcessor
 
@@ -49,6 +49,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), LoanTransactionsProcessor),
         "tasks": ((TasksGenerator,), TapProcessor),
+        "users": ((UsersGenerator,), TapProcessor),
     }
 
     generator_classes, processor_class = stream_generator_processor_dict[stream_name]
