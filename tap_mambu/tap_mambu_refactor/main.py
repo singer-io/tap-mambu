@@ -25,8 +25,8 @@ from .tap_processors.index_rate_sources_processor import IndexRateSourcesProcess
 from .tap_processors.deposit_transactions_processor import DepositTransactionsProcessor
 from .tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from .tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
-from .tap_processors.processor import TapProcessor
 from .tap_processors.loan_transactions_processor import LoanTransactionsProcessor
+from .tap_processors.tasks_processor import TasksProcessor
 from .tap_processors.processor import TapProcessor
 
 LOGGER = singer.get_logger()
@@ -48,7 +48,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), LoanTransactionsProcessor),
-        "tasks": ((TasksGenerator,), TapProcessor),
+        "tasks": ((TasksGenerator,), TasksProcessor),
     }
 
     generator_classes, processor_class = stream_generator_processor_dict[stream_name]
