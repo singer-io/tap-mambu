@@ -27,8 +27,7 @@ unit-test-job:
     paths:
       - coverage.xml
   before_script:
-    - python3 -m pip install --upgrade -r requirements.txt
-    - python3 -m pip install --upgrade -r requirements_ci.txt
+    - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Running unit tests..."
     - coverage run --branch --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
@@ -41,8 +40,7 @@ unit-test-job:
 lint-test-job:
   stage: test
   before_script:
-    - python3 -m pip install --upgrade -r requirements.txt
-    - python3 -m pip install --upgrade -r requirements_ci.txt
+    - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Linting code..."
     - pylint tap_mambu/tap_mambu_refactor --exit-zero
@@ -59,7 +57,7 @@ snyk-dependency-test-job:
     - pip install --upgrade pip
     - pip install --upgrade "setuptools<58"
     - pip install wheel
-    - pip install -e .
+    - pip install --upgrade -e .
     - pip freeze > requirements.txt
   script:
     - snyk test --severity-threshold=high
@@ -75,7 +73,7 @@ snyk-dev-dependency-test-job:
     - pip install --upgrade pip
     - pip install --upgrade "setuptools<58"
     - pip install wheel
-    - pip install -e .[dev]
+    - pip install --upgrade -e ".[mambu-tests]"
     - pip freeze > requirements.txt
   script:
     - snyk test
