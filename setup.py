@@ -18,6 +18,12 @@ setup(name='tap-mambu',
               'ipdb==0.11',
               'pylint==2.5.3',
               'pytest==6.2.4'
+          ],
+          'mambu-tests': [
+              'coverage==6.3.1',
+              'pylint==2.12.2',
+              'pytest==6.2.5',
+              'mock==4.0.3'
           ]
       },
       entry_points='''
