@@ -4,6 +4,7 @@ from .tap_generators.branches_generator import BranchesGenerator
 from .tap_generators.centres_generator import CentresGenerator
 from .tap_generators.clients_generator import ClientsGenerator
 from .tap_generators.communications_generator import CommunicationsGenerator
+from .tap_generators.credit_arrangements_generator import CreditArrangementsGenerator
 from .tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from .tap_generators.deposit_cards_generator import DepositCardsGenerator
 from .tap_generators.installments_generator import InstallmentsGenerator
@@ -19,6 +20,7 @@ from .tap_processors.branches_processor import BranchesProcessor
 from .tap_processors.centres_processor import CentresProcessor
 from .tap_processors.clients_processor import ClientsProcessor
 from .tap_processors.communications_processor import CommunicationsProcessor
+from .tap_processors.credit_arrangements_processor import CreditArrangementsProcessor
 from .tap_processors.deposit_accounts_processor import DepositAccountsProcessor
 from .tap_processors.deposit_cards_processor import DepositCardsProcessor
 from .tap_processors.groups_processor import GroupsProcessor
@@ -40,6 +42,7 @@ def sync_endpoint_refactor(client, catalog, state,
         "centres": ((CentresGenerator,), CentresProcessor),
         "clients": ((ClientsGenerator,), ClientsProcessor),
         "communications": ((CommunicationsGenerator,), CommunicationsProcessor),
+        "credit_arrangements": ((CreditArrangementsGenerator,), CreditArrangementsProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
         "groups": ((GroupsGenerator,), GroupsProcessor),
         "index_rate_sources": ((IndexRateSourcesGenerator,), IndexRateSourcesProcessor),
