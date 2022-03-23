@@ -1,4 +1,4 @@
-from .parent_processor import TapProcessor
+from .processor import TapProcessor
 
 
 class CreditArrangementsProcessor(TapProcessor):
