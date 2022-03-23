@@ -41,6 +41,9 @@
     "task_link_type": {
       "type": ["null", "string"]
     },
+    "task_link_key": {
+      "type": ["null", "string"]
+    },
     "state": {
       "type": ["null", "string"]
     },
