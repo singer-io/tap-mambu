@@ -146,24 +146,22 @@ sonarqube_enterprise_nocompile_pr_decoration_poc:
       fi
     - export CI_MERGE_REQUEST_SOURCE_BRANCH_NAME="$CI_COMMIT_REF_NAME"
     - export CI_MERGE_REQUEST_TARGET_BRANCH_NAME="$(mrepo gitlab get-mr-for-branch --project-id $CI_PROJECT_ID --branch $CI_COMMIT_REF_NAME --format=target_branch --fatal)"
-    # run the job on the merge result of current branch and target branch (usually 'master')
-    - git config --global user.email "$GITLAB_CI_USER_EMAIL"
-    - git config --global user.name "$GITLAB_CI_USER"
-    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - git checkout origin/"$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - git merge "$CI_COMMIT_SHA" --no-commit --no-ff
     - export SONAR_SCANNER_OPTS="-Xmx3072m"
     - sonar-scanner -X
       -Dsonar.host.url='https://sonarqube-enterprise.infra.mambucloud.com'
       -Dsonar.login="$SONAR_ENTERPRISE_LOGIN"
-      -Dsonar.sonar.qualitygate.wait=true
-      -Dsonar.projectKey="${CI_PROJECT_PATH//\//.}"
-      -Dsonar.projectName="$CI_PROJECT_NAME"
-      -Dsonar.gitlab.project_id="$CI_PROJECT_ID"
-      -Dsonar.gitlab.commit_sha=$(git log --pretty=format:%H origin/"$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"..$CI_COMMIT_SHA | tr '\n' ',')
+      -Dsonar.gitlab.project_id="$CI_PROJECT_PATH"
+      -Dsonar.gitlab.commit_sha="$CI_COMMIT_SHA"
       -Dsonar.gitlab.ref_name="$CI_COMMIT_REF_NAME"
-      -Dsonar.gitlab.unique_issue_per_inline=true
+      -Dsonar.gitlab.max_blocker_issues_gate=-1
+      -Dsonar.gitlab.max_critical_issues_gate=-1
+      -Dsonar.gitlab.failure_notification_mode=exit-code
+      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}"
+      -Dsonar.projectKey="${CI_PROJECT_PATH//\//.}"
+      -Dsonar.projectName="${CI_PROJECT_PATH//\//.}"
       -Dsonar.exclusions="$SONAR_EXCLUSIONS"
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.gitlab.unique_issue_per_inline=true
       $SONAR_EXTRA_PARAMETERS
   except:
     refs:
