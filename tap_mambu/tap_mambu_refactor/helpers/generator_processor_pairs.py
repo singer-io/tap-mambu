@@ -8,6 +8,7 @@ from ..tap_generators.deposit_cards_generator import DepositCardsGenerator
 from ..tap_generators.installments_generator import InstallmentsGenerator
 from ..tap_generators.groups_generator import GroupsGenerator
 from ..tap_generators.index_rate_sources_generator import IndexRateSourcesGenerator
+from ..tap_generators.interest_accrual_breakdown_generator import InterestAccrualBreakdownGenerator
 from ..tap_generators.deposit_transactions_generator import DepositTransactionsGenerator
 from ..tap_generators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
 from ..tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
@@ -23,6 +24,7 @@ from ..tap_processors.deposit_accounts_processor import DepositAccountsProcessor
 from ..tap_processors.deposit_cards_processor import DepositCardsProcessor
 from ..tap_processors.groups_processor import GroupsProcessor
 from ..tap_processors.index_rate_sources_processor import IndexRateSourcesProcessor
+from ..tap_processors.interest_accrual_breakdown import InterestAccrualBreakdownProcessor
 from ..tap_processors.deposit_transactions_processor import DepositTransactionsProcessor
 from ..tap_processors.loan_accounts_processor import LoanAccountsProcessor
 from ..tap_processors.loan_repayments_processor import LoanRepaymentsProcessor
@@ -44,6 +46,7 @@ def get_generator_processor_pairs():
         "index_rate_sources": ((IndexRateSourcesGenerator,), IndexRateSourcesProcessor),
         "deposit_transactions": ((DepositTransactionsGenerator,), DepositTransactionsProcessor),
         "installments": ((InstallmentsGenerator,), TapProcessor),
+        "interest_accrual_breakdown": ((InterestAccrualBreakdownGenerator,), InterestAccrualBreakdownProcessor),
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), LoanTransactionsProcessor),
