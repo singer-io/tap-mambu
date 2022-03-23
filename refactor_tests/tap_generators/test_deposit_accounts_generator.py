@@ -1,18 +1,13 @@
-from mock import MagicMock
-
-from ..constants import config_json
+from . import setup_generator_base_test
 
 
 def test_deposit_accounts_generator():
-    from tap_mambu.tap_mambu_refactor.tap_generators.deposit_accounts_generator import DepositAccountsGenerator
-    client_mock = MagicMock()
-    client_mock.page_size = int(config_json.get("page_size", 500))
-    client_mock.request = MagicMock()
-    generator = DepositAccountsGenerator(stream_name="deposit_accounts",
-                                            client=client_mock,
-                                            config=config_json,
-                                            state={'currently_syncing': 'deposit_accounts'},
-                                            sub_type="self")
+    generators = setup_generator_base_test("deposit_accounts")
+
+    assert 1 == len(generators)
+
+    generator = generators[0]
+
     assert generator.endpoint_path == "deposits:search"
     assert generator.endpoint_bookmark_field == "lastModifiedDate"
     assert generator.endpoint_sorting_criteria == {

@@ -1,18 +1,12 @@
-from unittest.mock import MagicMock
-
-from ..constants import config_json
+from . import setup_generator_base_test
 
 
 def test_users_generator_endpoint_config_init():
-    from tap_mambu.tap_mambu_refactor.tap_generators.users_generator import UsersGenerator
-    client_mock = MagicMock()
-    client_mock.page_size = int(config_json.get("page_size", 500))
-    client_mock.request = MagicMock()
-    generator = UsersGenerator(stream_name="users",
-                               client=client_mock,
-                               config=config_json,
-                               state={'currently_syncing': 'users'},
-                               sub_type="self")
+    generators = setup_generator_base_test("users")
+
+    assert 1 == len(generators)
+
+    generator = generators[0]
 
     assert generator.endpoint_path == 'users'
     assert generator.endpoint_api_method == "GET"
