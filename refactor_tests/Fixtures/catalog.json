@@ -4253,6 +4253,395 @@
           }
         }
       ]
+    },
+    {
+      "tap_stream_id": "interest_accrual_breakdown",
+      "key_properties": [
+        "entry_id"
+      ],
+      "schema": {
+        "properties": {
+          "account_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "account_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "amount": {
+            "format": "singer.decimal",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "booking_date": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "branch_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "branch_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "creation_date": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "entry_id": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "entry_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "foreign_amount": {
+            "properties": {
+              "accounting_rate": {
+                "properties": {
+                  "encoded_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "end_date": {
+                    "format": "date-time",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "from_currency_code": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "rate": {
+                    "format": "singer.decimal",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "start_date": {
+                    "format": "date-time",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "to_currency_code": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  }
+                },
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "additionalProperties": false
+              },
+              "amount": {
+                "format": "singer.decimal",
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "currency": {
+                "properties": {
+                  "code": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  }
+                },
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": false
+          },
+          "gl_account_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "gl_account_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "gl_account_name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "gl_account_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "parent_entry_id": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "product_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "product_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "product_type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "transaction_id": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "stream": "interest_accrual_breakdown",
+      "metadata": [
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "table-key-properties": [
+              "entry_id"
+            ],
+            "forced-replication-method": "INCREMENTAL",
+            "valid-replication-keys": [
+              "creation_date"
+            ],
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "account_id"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "account_key"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "amount"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "booking_date"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "branch_key"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "branch_name"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "creation_date"
+          ],
+          "metadata": {
+            "inclusion": "automatic"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "entry_id"
+          ],
+          "metadata": {
+            "inclusion": "automatic"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "entry_type"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "foreign_amount"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "gl_account_id"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "gl_account_key"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "gl_account_name"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "gl_account_type"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "parent_entry_id"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "product_id"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "product_key"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "product_type"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "transaction_id"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        }
+      ]
     }
   ]
 }
