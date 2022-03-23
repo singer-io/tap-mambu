@@ -911,6 +911,7 @@ def sync(client, config, catalog, state):
                     "centres",
                     "clients",
                     "communications",
+                    "credit_arrangements",
                     "deposit_accounts",
                     "deposit_transactions",
                     "groups",

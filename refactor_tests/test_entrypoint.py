@@ -5,9 +5,9 @@ from tap_mambu.tap_mambu_refactor import sync_endpoint_refactor
 from .helpers import IsInstanceMockMatcher
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.main.LoanAccountsLMGenerator")
-@mock.patch("tap_mambu.tap_mambu_refactor.main.LoanAccountsADGenerator")
-@mock.patch("tap_mambu.tap_mambu_refactor.main.LoanAccountsProcessor")
+@mock.patch("tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs.LoanAccountsLMGenerator")
+@mock.patch("tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs.LoanAccountsADGenerator")
+@mock.patch("tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs.LoanAccountsProcessor")
 def test_sync_endpoint_refactor(mock_loan_accounts_processor, mock_loan_accounts_ad_generator,
                                 mock_loan_accounts_lm_generator):
     type(mock_loan_accounts_lm_generator.return_value).type = PropertyMock(return_value="LoanAccountsLMGenerator")
