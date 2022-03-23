@@ -8,8 +8,6 @@ import mock
 import os.path
 import inspect
 
-from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_generator_processor_for_stream, \
-    get_available_streams
 from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
 from tap_mambu.tap_mambu_refactor.tap_processors.child_processor import ChildProcessor
 from tap_mambu.transform import convert
