@@ -3,7 +3,6 @@ import json
 import os
 from copy import deepcopy
 
-import mock
 from unittest.mock import MagicMock
 
 from tap_mambu.tap_mambu_refactor.helpers import transform_json

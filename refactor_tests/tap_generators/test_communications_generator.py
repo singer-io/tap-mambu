@@ -1,18 +1,12 @@
-from unittest.mock import MagicMock
-
-from ..constants import config_json
+from . import setup_generator_base_test
 
 
 def test_communications_generator_endpoint_config_init():
-    from tap_mambu.tap_mambu_refactor.tap_generators.communications_generator import CommunicationsGenerator
-    client_mock = MagicMock()
-    client_mock.page_size = int(config_json.get("page_size", 500))
-    client_mock.request = MagicMock()
-    generator = CommunicationsGenerator(stream_name="communications",
-                                        client=client_mock,
-                                        config=config_json,
-                                        state={'currently_syncing': 'communications'},
-                                        sub_type="self")
+    generators = setup_generator_base_test("communications")
+
+    assert 1 == len(generators)
+
+    generator = generators[0]
 
     assert generator.endpoint_path == 'communications/messages:search'
     assert generator.endpoint_params == {
