@@ -115,7 +115,12 @@ STREAMS = {
         'key_properties': [],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['occurred_at']
-    }
+    },
+    'interest_accrual_breakdown': {
+        'key_properties': ['entry_id'],
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['creation_date']
+    },
 }
 
 

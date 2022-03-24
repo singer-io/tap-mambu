@@ -805,7 +805,8 @@ def sync(client, config, catalog, state):
             },
             'bookmark_field': 'occurred_at',
             'bookmark_type': 'datetime'
-        }
+        },
+        'interest_accrual_breakdown': {}
     }
 
     selected_streams = get_selected_streams(catalog)
@@ -916,6 +917,7 @@ def sync(client, config, catalog, state):
                     "groups",
                     "index_rate_sources",
                     "installments",
+                    "interest_accrual_breakdown",
                     "loan_accounts",
                     "loan_transactions",
                     "tasks",
