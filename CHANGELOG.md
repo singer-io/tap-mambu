@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.2
+  * Refactor `communications`, `deposit_transactions`, `groups`, `index_rate_sources`, `installments`, `loan_transactions`, and `tasks` to the new sync pattern [#72](https://github.com/singer-io/tap-mambu/pull/72)
+
 ## 2.4.1
   * Continued refactor and added field [#70](https://github.com/singer-io/tap-mambu/pull/70)
     * Added `assigned_branch_key` field to `clients` stream
