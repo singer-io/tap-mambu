@@ -76,8 +76,7 @@ snyk-dev-dependency-test-job:
     - pip install --upgrade -e ".[mambu-tests]"
     - pip freeze > requirements.txt
   script:
-    - snyk test
-  allow_failure: true
+    - snyk test --severity-threshold=critical
 
 snyk-code-test-job:
   image:
