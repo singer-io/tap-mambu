@@ -169,8 +169,9 @@ sonarqube_enterprise_nocompile_pr_decoration_poc:
 
 
 tap-tester-job:
-  image: registry.gitlab.com/mambucom/product/ecosystem/mambu-marketplace/connectors/singer/taptester/tap-tester:latest
+  image: registry.gitlab.com/mambucom/product/ecosystem/mambu-marketplace/connectors/singer/taptester/tap-tester:dev-6
   before_script:
-    - pip3 install --upgrade -e .
+    - pip install --upgrade -e .
   script:
-    - /tap_tester/tap_tester/bin/run-test --target_path=/tap_tester/target_stitch/bin/target-stitch
+    - source /tap_tester/tap_tester_venv/bin/activate
+    - /tap_tester/tap_tester_raw/bin/run-test --target_path=/tap_tester/target_stitch_venv/bin/target-stitch
