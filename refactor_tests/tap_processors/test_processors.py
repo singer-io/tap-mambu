@@ -8,6 +8,8 @@ import mock
 import os.path
 import inspect
 
+from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_generator_processor_for_stream, \
+    get_available_streams
 from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
 from tap_mambu.tap_mambu_refactor.tap_processors.child_processor import ChildProcessor
 from tap_mambu.transform import convert
@@ -179,3 +181,46 @@ def test_write_exceptions(mock_write_schema, mock_write_record):
         call("loan_accounts", IsInstanceMatcher(dict), IsInstanceMatcher(list)),
         call("loan_accounts", IsInstanceMatcher(dict), IsInstanceMatcher(list))
     ])
+
+
+def test_catalog_automatic_fields():
+    from tap_mambu import discover
+
+    client_mock = MagicMock()
+    client_mock.page_size = 5
+    client_mock.request = MagicMock()
+    catalog = discover()
+
+    for stream in get_available_streams():
+        catalog_stream = catalog.get_stream(stream)
+        generator_classes, processor_class = get_generator_processor_for_stream(stream)
+
+        automatic_fields = [mdata["breadcrumb"][1] for mdata in catalog_stream.metadata if mdata["breadcrumb"] and mdata["metadata"]["inclusion"] == "automatic"]
+
+        generator = None
+        for generator_class in generator_classes:
+            generator = generator_class(stream_name=stream,
+                                        client=client_mock,
+                                        config=config_json,
+                                        state={"currently_syncing": stream},
+                                        sub_type="self",
+                                        **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
+            if generator.endpoint_bookmark_field != "":
+                assert convert(generator.endpoint_bookmark_field) != generator.endpoint_bookmark_field,\
+                    f"Generator bookmark field for '{stream}' stream should be in camelCase!"
+                assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
+                    f"Generator bookmark field for '{stream}' stream should be set to automatic in catalog!"
+
+        processor = processor_class(catalog=catalog,
+                                    stream_name="loan_accounts",
+                                    client=client_mock,
+                                    config=config_json,
+                                    state={'currently_syncing': 'loan_accounts'},
+                                    sub_type="self",
+                                    generators=[generator],
+                                    **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+
+        assert convert(processor.endpoint_deduplication_key) == processor.endpoint_deduplication_key,\
+                    f"Processor deduplication key for '{stream}' stream should be in snake_case!"
+        assert processor.endpoint_deduplication_key in automatic_fields,\
+                    f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"
