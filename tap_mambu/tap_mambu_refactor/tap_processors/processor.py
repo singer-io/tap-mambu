@@ -56,6 +56,43 @@ class TapProcessor(ABC):
             LOGGER.info(f'OS Error writing schema for: {self.stream_name}')
             raise err
 
+    def _choose_next_record(self, generator_values):
+        # If endpoint_deduplication_key doesn't exist, there can only be one generator,
+        # otherwise we can't decide how to merge records
+        if len(generator_values) == 1 and not self.endpoint_deduplication_key:
+            # We won't merge records, as there is only one generator and no deduplication key
+            return list(generator_values.generator_values.items())[0]
+
+        # Find lowest value in the list, and if two or more are equal, find max bookmark
+        min_record_key = None
+        min_record_value = None
+        min_record_bookmark = None
+        for iterator in generator_values:
+            bookmark_field = convert(iterator.endpoint_bookmark_field)
+            # Different record
+            if min_record_key is None \
+                    or min_record_value > generator_values[iterator][self.endpoint_deduplication_key]:
+                min_record_key = iterator
+                min_record_value = generator_values[iterator][self.endpoint_deduplication_key]
+                if not bookmark_field or bookmark_field not in generator_values[iterator]:
+                    continue
+                min_record_bookmark = generator_values[iterator][bookmark_field]
+            # Same record
+            elif min_record_value == generator_values[iterator][self.endpoint_deduplication_key]:
+                if not bookmark_field or bookmark_field not in generator_values[iterator]:
+                    continue
+
+                # Check the new bookmark against the min_record_key's bookmark
+                min_record_dttm = strptime_to_utc(min_record_bookmark)
+                record_dttm = strptime_to_utc(generator_values[iterator][bookmark_field])
+                # If min_record has bookmark smaller than record, then replace min_record (we want highest bookmark)
+                if min_record_dttm < record_dttm:
+                    min_record_key = iterator
+                    min_record_value = generator_values[iterator][self.endpoint_deduplication_key]
+                    min_record_bookmark = generator_values[iterator][bookmark_field]
+
+        return min_record_key, min_record_value
+
     def process_streams_from_generators(self):
         self.write_schema()
         record_count = 0
@@ -69,38 +106,13 @@ class TapProcessor(ABC):
                         self.generator_values.pop(iterator)
                 if not self.generator_values:
                     break
-                # Find lowest value in the list, and if two or more are equal, find max bookmark
-                min_record_key = None
-                min_record_value = None
-                min_record_bookmark = None
-                for iterator in self.generator_values:
-                    bookmark_field = convert(iterator.endpoint_bookmark_field)
-                    # Different record
-                    if min_record_key is None \
-                            or min_record_value > self.generator_values[iterator][self.endpoint_deduplication_key]:
-                        min_record_key = iterator
-                        min_record_value = self.generator_values[iterator][self.endpoint_deduplication_key]
-                        if not bookmark_field or bookmark_field not in self.generator_values[iterator]:
-                            continue
-                        min_record_bookmark = self.generator_values[iterator][bookmark_field]
-                    # Same record
-                    elif min_record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
-                        if not bookmark_field or bookmark_field not in self.generator_values[iterator]:
-                            continue
 
-                        # Check the new bookmark against the min_record_key's bookmark
-                        min_record_dttm = strptime_to_utc(min_record_bookmark)
-                        record_dttm = strptime_to_utc(self.generator_values[iterator][bookmark_field])
-                        # If min_record has bookmark smaller than record, then replace min_record (we want highest bookmark)
-                        if min_record_dttm < record_dttm:
-                            min_record_key = iterator
-                            min_record_value = self.generator_values[iterator][self.endpoint_deduplication_key]
-                            min_record_bookmark = self.generator_values[iterator][bookmark_field]
+                record_key, record_value = self._choose_next_record(self.generator_values)
 
                 # Process the record
-                record = self.generator_values[min_record_key]
-                if self.process_record(record, min_record_key.time_extracted,
-                                       min_record_key.endpoint_bookmark_field):
+                record = self.generator_values[record_key]
+                if self.process_record(record, record_key.time_extracted,
+                                       record_key.endpoint_bookmark_field):
                     record_count += 1
                     record_count += self._process_child_records(record)
                     counter.increment()
@@ -108,7 +120,7 @@ class TapProcessor(ABC):
                 # Remove any record with the same deduplication_key from the list
                 # (so we don't process the same record twice)
                 for iterator in self.generator_values.keys():
-                    if min_record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
+                    if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
                         self.generator_values[iterator] = None
 
         self.write_bookmark()
