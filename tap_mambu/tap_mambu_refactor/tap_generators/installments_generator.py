@@ -1,4 +1,3 @@
-from time import strftime
 from singer import utils
 from .generator import TapGenerator
 from ..helpers import transform_datetime, get_bookmark
