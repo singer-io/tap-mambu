@@ -1,3 +1,4 @@
+from ..tap_generators.audit_trail_generator import AuditTrailGenerator
 from ..tap_generators.branches_generator import BranchesGenerator
 from ..tap_generators.centres_generator import CentresGenerator
 from ..tap_generators.clients_generator import ClientsGenerator
@@ -15,6 +16,7 @@ from ..tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
 from ..tap_generators.loan_transactions_generator import LoanTransactionsGenerator
 from ..tap_generators.tasks_generator import TasksGenerator
 from ..tap_generators.users_generator import UsersGenerator
+from ..tap_processors.audit_trail_processor import AuditTrailProcessor
 from ..tap_processors.branches_processor import BranchesProcessor
 from ..tap_processors.centres_processor import CentresProcessor
 from ..tap_processors.clients_processor import ClientsProcessor
@@ -36,6 +38,7 @@ from ..tap_processors.processor import TapProcessor
 
 def get_generator_processor_pairs():
     return {
+        "audit_trail": ((AuditTrailGenerator,), AuditTrailProcessor),
         "branches": ((BranchesGenerator,), BranchesProcessor),
         "cards": ((DepositCardsGenerator,), DepositCardsProcessor),
         "centres": ((CentresGenerator,), CentresProcessor),

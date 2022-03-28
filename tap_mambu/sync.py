@@ -907,6 +907,7 @@ def sync(client, config, catalog, state):
                     endpoint_config['params']['type'] = sub_type
 
                 if stream_name in [
+                    "audit_trail",
                     "branches",
                     "centres",
                     "clients",
