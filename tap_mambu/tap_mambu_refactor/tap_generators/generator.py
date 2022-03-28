@@ -65,7 +65,7 @@ class TapGenerator(ABC):
         self.__all_fetch_batch_steps()
         return self
 
-    def __next__(self):
+    def next(self):
         if not self.buffer:
             if self.last_batch_size < self.limit:
                 raise StopIteration()
@@ -75,6 +75,9 @@ class TapGenerator(ABC):
             if not self.buffer:
                 raise StopIteration()
         return self.buffer.pop(0)
+
+    def __next__(self):
+        return self.next()
 
     def prepare_batch(self):
         self.params = {
