@@ -174,4 +174,4 @@ tap-tester-job:
     - pip install --upgrade -e .
   script:
     - source /tap_tester/tap_tester_venv/bin/activate
-    - /tap_tester/tap_tester_raw/bin/run-test --tap=/usr/local/bin/tap-mambu --target_path=/tap_tester/target_stitch_venv/bin/target-stitch
+    - /tap_tester/tap_tester_raw/bin/run-test --tap=/usr/local/bin/tap-mambu /tap_tester/target_stitch_venv/bin/target-stitch
