@@ -206,7 +206,7 @@ def test_catalog_automatic_fields():
                                         sub_type="self",
                                         **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
             if generator.endpoint_bookmark_field != "":
-                if generator.stream_name not in ["audit_trail"]:  # Those streams are badly formatted in the API
+                if generator.stream_name not in ["audit_trail"]:  # Those streams do not respect the camelCase convention for field names
                     assert convert(generator.endpoint_bookmark_field) != generator.endpoint_bookmark_field,\
                         f"Generator bookmark field for '{stream}' stream should be in camelCase!"
                 assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
@@ -220,7 +220,7 @@ def test_catalog_automatic_fields():
                                     sub_type="self",
                                     generators=[generator],
                                     **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
-        if generator.stream_name not in ["audit_trail"]:  # Streams without unique fields
+        if generator.stream_name not in ["audit_trail"]:  # Those streams have no unique fields after which we could generate a primary_key
             assert convert(processor.endpoint_deduplication_key) == processor.endpoint_deduplication_key,\
                         f"Processor deduplication key for '{stream}' stream should be in snake_case!"
             assert processor.endpoint_deduplication_key in automatic_fields,\
