@@ -17,8 +17,10 @@ class AuditTrailGenerator(TapGenerator):
 
         # Backwards compatibility check, such that it doesn't fail when we use a bookmark from an older Tap version
         if type(audit_trail_bookmark) is list:
+            if len(audit_trail_bookmark) != 2:
+                raise ValueError("Cannot parse audit trail bookmark because the length of the list is wrong!")
+            self.audit_trail_offset = audit_trail_bookmark[1]
             audit_trail_bookmark = audit_trail_bookmark[0]
-            self.audit_trail_offset = 1
 
         self.endpoint_params = {
             "sort_order": "asc",
