@@ -157,7 +157,7 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "tax_interest_from_arrears_amount": {
+        "tax_on_interest_from_arrears_amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
         },
