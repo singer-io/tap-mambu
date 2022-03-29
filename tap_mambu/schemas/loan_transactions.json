@@ -119,6 +119,34 @@
         "funds_amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
+        },
+        "principal_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "interest_from_arrears_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "deferred_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "penalty_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "funders_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "organization_commission_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "payment_holidays_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
