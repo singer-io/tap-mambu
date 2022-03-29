@@ -70,7 +70,6 @@ class TapGenerator(ABC):
             if self.last_batch_size < self.limit:
                 raise StopIteration()
             self.offset += self.limit
-            # self.write_bookmark()
             self._all_fetch_batch_steps()
             if not self.buffer:
                 raise StopIteration()
