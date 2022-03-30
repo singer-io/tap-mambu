@@ -206,8 +206,9 @@ def test_catalog_automatic_fields():
                                         sub_type="self",
                                         **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
             if generator.endpoint_bookmark_field != "":
-                assert "_" not in generator.endpoint_bookmark_field,\
-                    f"Generator bookmark field for '{stream}' stream should be in camelCase!"
+                if generator.stream_name not in ["audit_trail"]:  # Those streams do not respect the camelCase convention for field names
+                    assert "_" not in generator.endpoint_bookmark_field,\
+                        f"Generator bookmark field for '{stream}' stream should be in camelCase!"
                 assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
                     f"Generator bookmark field for '{stream}' stream should be set to automatic in catalog!"
 
@@ -219,8 +220,9 @@ def test_catalog_automatic_fields():
                                     sub_type="self",
                                     generators=[generator],
                                     **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
-
-        assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
-                    f"Processor deduplication key for '{stream}' stream should be in snake_case!"
-        assert processor.endpoint_deduplication_key in automatic_fields,\
-                    f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"
+        
+        if generator.stream_name not in ["audit_trail"]:  # Those streams have no unique fields after which we could generate a primary_key
+            assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
+                        f"Processor deduplication key for '{stream}' stream should be in snake_case!"
+            assert processor.endpoint_deduplication_key in automatic_fields,\
+                        f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"

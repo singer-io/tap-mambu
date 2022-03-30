@@ -908,6 +908,7 @@ def sync(client, config, catalog, state):
 
                 if stream_name in [
                     "activities",
+                    "audit_trail",
                     "branches",
                     "centres",
                     "clients",

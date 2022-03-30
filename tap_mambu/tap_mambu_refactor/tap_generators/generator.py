@@ -53,7 +53,7 @@ class TapGenerator(ABC):
         self.limit = self.client.page_size
         self.params = self.static_params
 
-    def __all_fetch_batch_steps(self):
+    def _all_fetch_batch_steps(self):
         self.prepare_batch()
         raw_batch = self.fetch_batch()
         self.buffer = transform_json(raw_batch, self.stream_name)
@@ -62,18 +62,21 @@ class TapGenerator(ABC):
         self.last_batch_size = len(self.buffer)
 
     def __iter__(self):
-        self.__all_fetch_batch_steps()
+        self._all_fetch_batch_steps()
         return self
 
-    def __next__(self):
+    def next(self):
         if not self.buffer:
             if self.last_batch_size < self.limit:
                 raise StopIteration()
             self.offset += self.limit
-            self.__all_fetch_batch_steps()
+            self._all_fetch_batch_steps()
             if not self.buffer:
                 raise StopIteration()
         return self.buffer.pop(0)
+
+    def __next__(self):
+        return self.next()
 
     def prepare_batch(self):
         self.params = {
