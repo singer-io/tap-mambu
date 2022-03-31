@@ -29,19 +29,16 @@ class TapProcessor(ABC):
         self._init_bookmarks()
         LOGGER.info(f'(processor) Stream {self.stream_name} - bookmark value used: {self.last_bookmark_value}')
 
-        if len(self.generators) > 1:
-            for generator in self.generators:
-                if generator.endpoint_sorting_criteria.get("field") != self.endpoint_deduplication_key:
-                    LOGGER.warning(f"(processor) Stream {self.stream_name} - Deduplication key should "
-                                   "be the same as the sorting key in order for deduplication to work!")
-
     def _init_config(self):
         self.start_date = self.config.get('start_date')
 
     def _init_endpoint_config(self):
-        self.endpoint_deduplication_key = "encoded_key"
         self.endpoint_child_streams = []
         self.endpoint_id_field = "id"
+
+        if len(self.generators) > 1:
+            raise RuntimeError("In order to merge streams in the processor, "
+                               "you need to use the deduplication processor")
 
     def _init_bookmarks(self):
         self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
@@ -56,73 +53,22 @@ class TapProcessor(ABC):
             LOGGER.info(f'OS Error writing schema for: {self.stream_name}')
             raise err
 
-    def _choose_next_record(self, generator_values):
-        # If endpoint_deduplication_key doesn't exist, there can only be one generator,
-        # otherwise we can't decide how to merge records
-        if len(generator_values) == 1 and not self.endpoint_deduplication_key:
-            # We won't merge records, as there is only one generator and no deduplication key
-            return list(generator_values.generator_values.items())[0]
-
-        # Find lowest value in the list, and if two or more are equal, find max bookmark
-        min_record_key = None
-        min_record_value = None
-        min_record_bookmark = None
-        for iterator in generator_values:
-            bookmark_field = convert(iterator.endpoint_bookmark_field)
-            # Different record
-            if min_record_key is None \
-                    or min_record_value > generator_values[iterator][self.endpoint_deduplication_key]:
-                min_record_key = iterator
-                min_record_value = generator_values[iterator][self.endpoint_deduplication_key]
-                if not bookmark_field or bookmark_field not in generator_values[iterator]:
-                    continue
-                min_record_bookmark = generator_values[iterator][bookmark_field]
-            # Same record
-            elif min_record_value == generator_values[iterator][self.endpoint_deduplication_key]:
-                if not bookmark_field or bookmark_field not in generator_values[iterator]:
-                    continue
-
-                # Check the new bookmark against the min_record_key's bookmark
-                min_record_dttm = strptime_to_utc(min_record_bookmark)
-                record_dttm = strptime_to_utc(generator_values[iterator][bookmark_field])
-                # If min_record has bookmark smaller than record, then replace min_record (we want highest bookmark)
-                if min_record_dttm < record_dttm:
-                    min_record_key = iterator
-                    min_record_value = generator_values[iterator][self.endpoint_deduplication_key]
-                    min_record_bookmark = generator_values[iterator][bookmark_field]
-
-        return min_record_key, min_record_value
-
-    def process_streams_from_generators(self):
-        self.write_schema()
+    def process_records(self):
         record_count = 0
         with metrics.record_counter(self.stream_name) as counter:
-            while True:
-                # Populate list of values from generators (if any were removed)
-                for iterator in list(self.generator_values):
-                    if self.generator_values[iterator] is None:
-                        self.generator_values[iterator] = next(iterator, None)
-                    if self.generator_values[iterator] is None:
-                        self.generator_values.pop(iterator)
-                if not self.generator_values:
-                    break
-
-                record_key, record_value = self._choose_next_record(self.generator_values)
-
+            for record in self.generators[0]:
                 # Process the record
-                record = self.generator_values[record_key]
-                if self.process_record(record, record_key.time_extracted,
-                                       record_key.endpoint_bookmark_field):
+                if self.process_record(record, self.generators[0].time_extracted,
+                                       self.generators[0].endpoint_bookmark_field):
                     record_count += 1
                     record_count += self._process_child_records(record)
                     counter.increment()
+        return record_count
 
-                # Remove any record with the same deduplication_key from the list
-                # (so we don't process the same record twice)
-                for iterator in self.generator_values.keys():
-                    if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
-                        self.generator_values[iterator] = None
+    def process_streams_from_generators(self):
+        self.write_schema()
 
+        record_count = self.process_records()
         self.write_bookmark()
         return record_count
 

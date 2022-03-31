@@ -8,7 +8,6 @@ from ..constants import config_json
 def test_audit_trail_processor():
     processor = setup_processor_base_test("audit_trail")
 
-    assert processor.endpoint_deduplication_key is None
     assert processor.bookmark_offset == 1
 
 
