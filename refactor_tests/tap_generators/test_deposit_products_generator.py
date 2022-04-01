@@ -10,5 +10,4 @@ def test_deposit_products_generator_endpoint_config_init():
 
     assert generator.endpoint_path == "savingsproducts"
     assert generator.endpoint_api_method == "GET"
-    assert generator.endpoint_params.get("sortBy") == "id:ASC"
     assert generator.endpoint_bookmark_field == "lastModifiedDate"
