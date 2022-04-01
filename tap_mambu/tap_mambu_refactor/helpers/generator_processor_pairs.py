@@ -5,6 +5,7 @@ from ..tap_generators.centres_generator import CentresGenerator
 from ..tap_generators.clients_generator import ClientsGenerator
 from ..tap_generators.communications_generator import CommunicationsGenerator
 from ..tap_generators.credit_arrangements_generator import CreditArrangementsGenerator
+from ..tap_generators.custom_field_sets_generator import CustomFieldSetsGenerator
 from ..tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from ..tap_generators.deposit_cards_generator import DepositCardsGenerator
 from ..tap_generators.installments_generator import InstallmentsGenerator
@@ -47,6 +48,7 @@ def get_generator_processor_pairs():
         "clients": ((ClientsGenerator,), ClientsProcessor),
         "communications": ((CommunicationsGenerator,), CommunicationsProcessor),
         "credit_arrangements": ((CreditArrangementsGenerator,), CreditArrangementsProcessor),
+        "custom_field_sets": ((CustomFieldSetsGenerator,), TapProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
         "groups": ((GroupsGenerator,), GroupsProcessor),
         "index_rate_sources": ((IndexRateSourcesGenerator,), IndexRateSourcesProcessor),
