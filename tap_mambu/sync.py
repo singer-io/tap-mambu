@@ -921,6 +921,7 @@ def sync(client, config, catalog, state):
                     "installments",
                     "interest_accrual_breakdown",
                     "loan_accounts",
+                    "loan_products",
                     "loan_transactions",
                     "tasks",
                     "users",
