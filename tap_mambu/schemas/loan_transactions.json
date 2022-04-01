@@ -161,6 +161,10 @@
           "type": ["null", "string"],
           "format": "singer.decimal"
         },
+        "tax_interest_from_arrears_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
         "tax_on_fees_amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
