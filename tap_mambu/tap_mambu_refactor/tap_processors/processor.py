@@ -4,6 +4,7 @@ from singer import write_record, Transformer, metadata, write_schema, get_logger
 from singer.utils import strptime_to_utc, now as singer_now
 
 from ..helpers import transform_datetime, convert, get_bookmark, write_bookmark
+from ..helpers.exceptions import NoDeduplicationCapabilityException
 
 LOGGER = get_logger()
 
@@ -37,8 +38,8 @@ class TapProcessor(ABC):
         self.endpoint_id_field = "id"
 
         if len(self.generators) > 1:
-            raise RuntimeError("In order to merge streams in the processor, "
-                               "you need to use the deduplication processor")
+            raise NoDeduplicationCapabilityException("In order to merge streams in the processor, "
+                                                     "you need to use the deduplication processor")
 
     def _init_bookmarks(self):
         self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)

@@ -5,6 +5,7 @@ from singer.utils import strptime_to_utc, now as singer_now
 
 from .processor import TapProcessor
 from ..helpers import transform_datetime, convert, get_bookmark, write_bookmark
+from ..helpers.exceptions import NoDeduplicationCapabilityException, NoDeduplicationKeyException
 
 LOGGER = get_logger()
 
@@ -13,9 +14,8 @@ class DeduplicationProcessor(TapProcessor):
     def _init_endpoint_config(self):
         try:
             super(DeduplicationProcessor, self)._init_endpoint_config()
-        except RuntimeError as e:
-            if str(e) != "In order to merge streams in the processor, you need to use the deduplication processor":
-                raise
+        except NoDeduplicationCapabilityException:
+            pass
         self.endpoint_deduplication_key = "encoded_key"
 
         if len(self.generators) > 1:
@@ -26,7 +26,7 @@ class DeduplicationProcessor(TapProcessor):
 
     def _choose_next_record(self, generator_values):
         if not self.endpoint_deduplication_key:
-            raise RuntimeError("Cannot continue deduplicating because the deduplication key is not set!")
+            raise NoDeduplicationKeyException("Cannot continue deduplicating because the deduplication key is not set!")
         # Find lowest value in the list, and if two or more are equal, find max bookmark
         min_record_key = None
         min_record_value = None
