@@ -12,12 +12,61 @@ from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_g
     get_available_streams
 from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
 from tap_mambu.tap_mambu_refactor.tap_processors.child_processor import ChildProcessor
+from tap_mambu.tap_mambu_refactor.tap_processors.deduplication_processor import DeduplicationProcessor
 from tap_mambu.transform import convert
 
 from ..constants import config_json
 from ..helpers import GeneratorMock, IsInstanceMatcher
 
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
+
+
+@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_schema")
+@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_bookmark")
+def test_tap_processor_deduplication(mock_write_bookmark,
+                                     mock_write_schema,  # Mock write_schema so we don't pollute the output
+                                     capsys):
+    from tap_mambu import discover
+    catalog = discover()
+
+    expected_output = [
+        {"encoded_key": "1", "last_modified_date": '2022-01-01T01:00:00.000000Z'},
+        {"encoded_key": "2", "last_modified_date": '2022-01-02T00:00:00.000000Z'},
+        {"encoded_key": "3", "last_modified_date": '2022-01-03T00:00:00.000000Z'},
+        {"encoded_key": "4", "last_modified_date": '2022-01-04T04:00:00.000000Z'},
+        {"encoded_key": "5", "last_modified_date": '2022-01-05T05:00:00.000000Z'},
+        {"encoded_key": "6", "last_modified_date": '2022-01-06T00:00:00.000000Z'}
+    ]
+    generators_data = [
+        [{"encoded_key": "1", "last_modified_date": '2022-01-01T03:00:00+03:00'},
+         {"encoded_key": "4", "last_modified_date": '2022-01-04T07:00:00+03:00'},
+         {"encoded_key": "5", "last_modified_date": '2022-01-05T03:00:00+03:00'}],
+        [{"encoded_key": "2", "last_modified_date": '2022-01-02T03:00:00+03:00'},
+         {"encoded_key": "3", "last_modified_date": '2022-01-03T03:00:00+03:00'},
+         {"encoded_key": "4", "last_modified_date": '2022-01-04T03:00:00+03:00'}],
+        [{"encoded_key": "1", "last_modified_date": '2022-01-01T04:00:00+03:00'},
+         {"encoded_key": "5", "last_modified_date": '2022-01-05T08:00:00+03:00'},
+         {"encoded_key": "6", "last_modified_date": '2022-01-06T03:00:00+03:00'}],
+    ]
+    generators = [GeneratorMock(list(generator_data)) for generator_data in generators_data]
+    for generator in generators:
+        generator.time_extracted = 0
+
+    client_mock = MagicMock()
+    processor = DeduplicationProcessor(catalog=catalog,
+                                       stream_name="loan_accounts",
+                                       client=client_mock,
+                                       config=config_json,
+                                       state={'currently_syncing': 'loan_accounts'},
+                                       sub_type="self",
+                                       generators=generators)
+    processor.process_streams_from_generators()
+    captured = capsys.readouterr()
+    stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
+    # noinspection PyTypeChecker
+    assert stdout_list == [
+        {"type": "RECORD", "stream": "loan_accounts", "record": record} for record in expected_output
+    ], "Output should contain mocked records"
 
 
 @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.parent_processor.get_selected_streams")
@@ -220,8 +269,8 @@ def test_catalog_automatic_fields():
                                     sub_type="self",
                                     generators=[generator],
                                     **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
-        
-        if generator.stream_name not in ["audit_trail"]:  # Those streams have no unique fields after which we could generate a primary_key
+
+        if isinstance(processor, DeduplicationProcessor):
             assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
                         f"Processor deduplication key for '{stream}' stream should be in snake_case!"
             assert processor.endpoint_deduplication_key in automatic_fields,\
