@@ -48,6 +48,7 @@ def get_generator_processor_pairs():
         "communications": ((CommunicationsGenerator,), CommunicationsProcessor),
         "credit_arrangements": ((CreditArrangementsGenerator,), CreditArrangementsProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
+        "gl_accounts": ((GlAccountsGenerator,), TapProcessor),
         "groups": ((GroupsGenerator,), GroupsProcessor),
         "index_rate_sources": ((IndexRateSourcesGenerator,), IndexRateSourcesProcessor),
         "deposit_transactions": ((DepositTransactionsGenerator,), DepositTransactionsProcessor),
