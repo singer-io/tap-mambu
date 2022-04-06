@@ -7,6 +7,7 @@ from ..tap_generators.communications_generator import CommunicationsGenerator
 from ..tap_generators.credit_arrangements_generator import CreditArrangementsGenerator
 from ..tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from ..tap_generators.deposit_cards_generator import DepositCardsGenerator
+from ..tap_generators.gl_accounts_generator import GlAccountsGenerator
 from ..tap_generators.installments_generator import InstallmentsGenerator
 from ..tap_generators.groups_generator import GroupsGenerator
 from ..tap_generators.index_rate_sources_generator import IndexRateSourcesGenerator
