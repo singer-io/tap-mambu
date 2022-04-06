@@ -39,7 +39,6 @@ class Streams:
         self.__tap_streams_singular_form = {
             'branches': 'branch',
             'communications': 'communication',
-            'cards': 'card',
             'centres': 'centre',
             'clients': 'client',
             'credit_arrangements': 'credit_arrangement',
