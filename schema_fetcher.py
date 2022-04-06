@@ -14,10 +14,18 @@ OUTPUT_DIR_PATH = None
 if not OUTPUT_DIR_PATH:
     OUTPUT_DIR_PATH = os.path.join(os.path.join(WORKING_DIR_PATH, 'tap_mambu'), 'generated_schemas')
 
-# create dir, remove if it exists then recreate it
+# create dir or remove it if it exists -> then recreate it
 if os.path.exists(OUTPUT_DIR_PATH):
     shutil.rmtree(OUTPUT_DIR_PATH)
 os.mkdir(OUTPUT_DIR_PATH)
+
+
+class ResourceFileNotFound(Exception):
+    pass
+
+
+class StreamJsonObjectNotFound(Exception):
+    pass
 
 
 class Streams:
@@ -31,6 +39,7 @@ class Streams:
         self.__tap_streams_singular_form = {
             'branches': 'branch',
             'communications': 'communication',
+            'cards': 'card',
             'centres': 'centre',
             'clients': 'client',
             'credit_arrangements': 'credit_arrangement',
@@ -154,9 +163,9 @@ def get_stream_resource_file_paths():
             file_paths.append(file_data['jsonPath'])
 
     if len(found_streams_swagger_format) != len(streams.get_stream_names_swaggered()):
-        raise ValueError(f'Resource file not found for the following streams: '
-                         f'{", ".join([stream for stream in streams.get_stream_names_swaggered() if stream not in found_streams_swagger_format])}\n'
-                         f'Available swagger streams: {", ".join(swagger_format_streams)}')
+        raise ResourceFileNotFound(f'Resource file not found for the following streams: '
+                                   f'{", ".join([stream for stream in streams.get_stream_names_swaggered() if stream not in found_streams_swagger_format])}\n'
+                                   f'Available swagger streams: {", ".join(swagger_format_streams)}')
 
     return zip(found_streams_swagger_format, file_paths)
 
@@ -200,7 +209,13 @@ def generate_json_schema(stream_name, file_path):
                                  version='remove_accept_header')
 
     stream_fields_w_refs = stream_data['definitions']
-    stream_fields = stream_fields_w_refs[convert_snake_to_pascal(streams.get_stream_json_obj_form(stream_name))]
+    json_stream_name_form = convert_snake_to_pascal(streams.get_stream_json_obj_form(stream_name))
+
+    if json_stream_name_form not in stream_fields_w_refs:
+        raise StreamJsonObjectNotFound(f'Json object for "{stream_name}" stream not found. '
+                                       f'Available objects: {", ".join(stream_fields_w_refs.keys())}')
+
+    stream_fields = stream_fields_w_refs[json_stream_name_form]
     return generate_json_objs(stream_fields, stream_fields_w_refs, False)
 
 
