@@ -1,8 +1,8 @@
 from . import setup_generator_base_test
 
 
-def test_deposit_products_generator_endpoint_config_init():
-    generators = setup_generator_base_test("deposit_products")
+def test_custom_field_sets_generator_endpoint_config_init():
+    generators = setup_generator_base_test("custom_field_sets")
 
     assert 1 == len(generators)
 
