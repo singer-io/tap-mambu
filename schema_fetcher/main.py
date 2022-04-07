@@ -1,69 +1,10 @@
 import os
 import shutil
 import json
-from singer.utils import load_json
-from tap_mambu.client import MambuClient
-
-WORKING_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-CLIENT_CONFIG_FILE_NAME = 'config.json'
-CLIENT_CONFIG_FILE_PATH = os.path.join(WORKING_DIR_PATH, f'{CLIENT_CONFIG_FILE_NAME}')
-RESOURCES_LINK = r'swagger/resources/'
-OUTPUT_DIR_PATH = None
-
-# default dir to output the json files
-if not OUTPUT_DIR_PATH:
-    OUTPUT_DIR_PATH = os.path.join(os.path.join(WORKING_DIR_PATH, 'tap_mambu'), 'generated_schemas')
-
-# create dir or remove it if it exists -> then recreate it
-if os.path.exists(OUTPUT_DIR_PATH):
-    shutil.rmtree(OUTPUT_DIR_PATH)
-os.mkdir(OUTPUT_DIR_PATH)
-
-STREAMS_W_CUSTOM_FIELDS = ['clients', 'groups', 'loan_accounts', 'loan_transactions', 'deposit_accounts',
-                           'deposit_products', 'credit_arrangements', 'branches', 'centres', 'users']
-CUSTOM_FIELDS_FIELD = {
-    "custom_fields": {
-        "anyOf": [
-            {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {
-                        "field_set_id": {
-                            "type": [
-                                "null",
-                                "string"
-                            ]
-                        },
-                        "id": {
-                            "type": [
-                                "null",
-                                "string"
-                            ]
-                        },
-                        "value": {
-                            "type": [
-                                "null",
-                                "string"
-                            ]
-                        }
-                    }
-                }
-            },
-            {
-                "type": "null"
-            }
-        ]
-    }}
-
-
-class ResourceFileNotFound(Exception):
-    pass
-
-
-class StreamJsonObjectNotFound(Exception):
-    pass
+from schema_fetcher.constants import OUTPUT_DIR_PATH, RESOURCES_LINK, STREAMS_W_CUSTOM_FIELDS, CUSTOM_FIELDS_FIELD
+from schema_fetcher.converters import convert_pascal_to_snake, convert_snake_to_pascal
+from schema_fetcher.helpers import get_mambu_client, get_data_type_and_format
+from schema_fetcher.custom_exceptions import ResourceFileNotFound, StreamJsonObjectNotFound
 
 
 class Streams:
@@ -131,56 +72,8 @@ class Streams:
         return self.__tap_streams_singular_form.keys()
 
 
-def get_mambu_client():
-    config = load_json(CLIENT_CONFIG_FILE_PATH)
-    return MambuClient(username=config.get('username'),
-                       password=config.get('password'),
-                       apikey='',
-                       subdomain=config.get('subdomain'),
-                       apikey_audit='',
-                       page_size='',
-                       user_agent='')
-
-
-def convert_snake_to_pascal(snake_case):
-    return ''.join(word.capitalize() if len(word) > 2 else word.upper() for word in snake_case.split('_'))
-
-
-def convert_pascal_to_snake(pascal_case):
-    return ''.join(f'_{c.lower()}' if c.isupper() else c for c in pascal_case).lstrip('_')
-
-
 streams = Streams()
 client = get_mambu_client()
-
-TAP_TYPES_AND_FORMATS = {
-    'integer': ['null', 'integer'],
-    'number': ['null', 'string'],
-    'string': ['null', 'string'],
-    'boolean': ['null', 'boolean'],
-    'object': ['null', 'object'],
-    'array': 'array',
-}
-
-TAP_FORMATS = {
-    'int32': None,
-    'int64': None,
-    'date': 'date',
-    'date-time': 'date-time',
-}
-
-
-def get_data_type_and_format(field_type, field_format=None, obj_type_nullable=True):
-    tap_field_type = TAP_TYPES_AND_FORMATS[field_type]
-    if not obj_type_nullable and isinstance(tap_field_type, list):
-        tap_field_type = tap_field_type[1]
-
-    type_and_format = {'type': tap_field_type}
-    if field_format and TAP_FORMATS[field_format]:
-        type_and_format['format'] = TAP_FORMATS[field_format]
-    if field_type == 'number':
-        type_and_format['format'] = 'singer.decimal'
-    return type_and_format
 
 
 def get_stream_resource_file_paths():
@@ -261,14 +154,18 @@ def generate_json_schema(stream_name, file_path):
 
 
 def main():
+    if os.path.exists(OUTPUT_DIR_PATH):
+        shutil.rmtree(OUTPUT_DIR_PATH)
+    os.mkdir(OUTPUT_DIR_PATH)
+
     for stream_name, file_path in get_stream_resource_file_paths():
         file_dir_path = os.path.join(OUTPUT_DIR_PATH, f'{streams.convert_swaggered_to_tap_stream(stream_name)}.json')
         with open(file_dir_path, 'w') as f:
-            json.dump(generate_json_schema(stream_name, file_path),
-                      f,
-                      indent=2)
+            json.dump(generate_json_schema(stream_name, file_path), f, indent=2)
 
-    created_files = [file_name for file_name in os.listdir(OUTPUT_DIR_PATH) if os.path.isfile(file_name)]
+    created_files = [file_name for file_name in os.listdir(OUTPUT_DIR_PATH) if
+                     os.path.isfile(os.path.join(OUTPUT_DIR_PATH, file_name))]
+
     if len(created_files) != streams.get_tap_streams_count():
         created_files_name_only = [created_file.replace('.json', '') for created_file in created_files]
         for tap_stream in streams.get_tap_streams_name():
