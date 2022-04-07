@@ -19,6 +19,44 @@ if os.path.exists(OUTPUT_DIR_PATH):
     shutil.rmtree(OUTPUT_DIR_PATH)
 os.mkdir(OUTPUT_DIR_PATH)
 
+STREAMS_W_CUSTOM_FIELDS = ['clients', 'groups', 'loan_accounts', 'loan_transactions', 'deposit_accounts',
+                           'deposit_products', 'credit_arrangements', 'branches', 'centres', 'users']
+CUSTOM_FIELDS_FIELD = {
+    "custom_fields": {
+        "anyOf": [
+            {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "field_set_id": {
+                            "type": [
+                                "null",
+                                "string"
+                            ]
+                        },
+                        "id": {
+                            "type": [
+                                "null",
+                                "string"
+                            ]
+                        },
+                        "value": {
+                            "type": [
+                                "null",
+                                "string"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "type": "null"
+            }
+        ]
+    }}
+
 
 class ResourceFileNotFound(Exception):
     pass
@@ -199,6 +237,7 @@ def generate_json_objs(field_properties, all_schema_obj, type_object_nullable=Tr
             else:
                 full_schema['properties'][field_name] = get_data_type_and_format(field_prop['type'],
                                                                                  field_prop.get('format', None))
+    full_schema['properties'] = {k: v for k, v in sorted(full_schema['properties'].items())}
     return full_schema
 
 
@@ -214,8 +253,11 @@ def generate_json_schema(stream_name, file_path):
         raise StreamJsonObjectNotFound(f'Json object for "{stream_name}" stream not found. '
                                        f'Available objects: {", ".join(stream_fields_w_refs.keys())}')
 
-    stream_fields = stream_fields_w_refs[json_stream_name_form]
-    return generate_json_objs(stream_fields, stream_fields_w_refs, False)
+    stream_schema = generate_json_objs(stream_fields_w_refs[json_stream_name_form], stream_fields_w_refs, False)
+
+    if streams.convert_swaggered_to_tap_stream(stream_name) in STREAMS_W_CUSTOM_FIELDS:
+        stream_schema.update(CUSTOM_FIELDS_FIELD)
+    return stream_schema
 
 
 def main():
