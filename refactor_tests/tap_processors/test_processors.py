@@ -8,49 +8,16 @@ import mock
 import os.path
 import inspect
 
+from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_generator_processor_for_stream, \
+    get_available_streams
+from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
+from tap_mambu.tap_mambu_refactor.tap_processors.child_processor import ChildProcessor
+from tap_mambu.transform import convert
+
 from ..constants import config_json
 from ..helpers import GeneratorMock, IsInstanceMatcher
 
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
-
-
-# @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_schema")
-# @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_bookmark")
-# def test_tap_processor(mock_write_bookmark, mock_write_schema, capsys):
-#     from singer.catalog import Catalog
-#     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
-#     catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
-#
-#     with open(f"{FIXTURES_PATH}/data_LoanAccountsLMGenerator.json", "r") as fd:
-#         loan_accounts_lm_generator = GeneratorMock(json.loads(fd.read()))
-#         loan_accounts_lm_generator.time_extracted = 0
-#
-#     with open(f"{FIXTURES_PATH}/data_LoanAccountsADGenerator.json", "r") as fd:
-#         loan_accounts_ad_generator = GeneratorMock(json.loads(fd.read()))
-#         loan_accounts_ad_generator.time_extracted = 0
-#
-#     client_mock = MagicMock()
-#     processor = TapProcessor(catalog=catalog,
-#                              stream_name="loan_accounts",
-#                              client=client_mock,
-#                              config=config_json,
-#                              state={'currently_syncing': 'loan_accounts'},
-#                              sub_type="self",
-#                              generators=[loan_accounts_lm_generator, loan_accounts_ad_generator])
-#     processor.endpoint_deduplication_key = "id"
-#     processor.process_streams_from_generators()
-#
-#     captured = capsys.readouterr()
-#
-#     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
-#     with open(f"{FIXTURES_PATH}/expected_LoanAccountsProcessor.json", "r") as fd:
-#         expected_list = [dict(type="RECORD", stream="loan_accounts", record=record) for record in json.loads(fd.read())]
-#
-#     for record in stdout_list:
-#         assert record in expected_list
-#
-#     for expected_record in expected_list:
-#         assert expected_record in stdout_list
 
 
 @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.parent_processor.get_selected_streams")
@@ -62,12 +29,12 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                              mock_write_schema,  # Mock write_schema so we don't pollute the output
                                              mock_get_selected_streams,
                                              capsys):
-    from singer.catalog import Catalog
+    from tap_mambu import discover
     from tap_mambu.tap_mambu_refactor.tap_processors.parent_processor import ParentProcessor
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
-    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
+    catalog = discover()
 
     generator_data = [
         {
@@ -124,10 +91,10 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
 
 @mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
 def test_bookmarks(mock_write_state):
-    from singer.catalog import Catalog
+    from tap_mambu import discover
     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
 
-    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
+    catalog = discover()
     client_mock = MagicMock()
     processor = TapProcessor(catalog=catalog,
                              stream_name="loan_accounts",
@@ -176,9 +143,9 @@ def test_write_schema(mock_write_schema):
 @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.write_record")
 @mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.write_schema")
 def test_write_exceptions(mock_write_schema, mock_write_record):
-    from singer.catalog import Catalog
+    from tap_mambu import discover
     from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
-    catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
+    catalog = discover()
 
     mock_write_record.side_effect = [None, OSError("Mock Record Exception")]
     mock_write_schema.side_effect = [None, OSError("Mock Schema Exception")]
@@ -214,3 +181,48 @@ def test_write_exceptions(mock_write_schema, mock_write_record):
         call("loan_accounts", IsInstanceMatcher(dict), IsInstanceMatcher(list)),
         call("loan_accounts", IsInstanceMatcher(dict), IsInstanceMatcher(list))
     ])
+
+
+def test_catalog_automatic_fields():
+    from tap_mambu import discover
+
+    client_mock = MagicMock()
+    client_mock.page_size = 5
+    client_mock.request = MagicMock()
+    catalog = discover()
+
+    for stream in get_available_streams():
+        catalog_stream = catalog.get_stream(stream)
+        generator_classes, processor_class = get_generator_processor_for_stream(stream)
+
+        automatic_fields = [mdata["breadcrumb"][1] for mdata in catalog_stream.metadata if mdata["breadcrumb"] and mdata["metadata"]["inclusion"] == "automatic"]
+
+        generator = None
+        for generator_class in generator_classes:
+            generator = generator_class(stream_name=stream,
+                                        client=client_mock,
+                                        config=config_json,
+                                        state={"currently_syncing": stream},
+                                        sub_type="self",
+                                        **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
+            if generator.endpoint_bookmark_field != "":
+                if generator.stream_name not in ["audit_trail"]:  # Those streams do not respect the camelCase convention for field names
+                    assert "_" not in generator.endpoint_bookmark_field,\
+                        f"Generator bookmark field for '{stream}' stream should be in camelCase!"
+                assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
+                    f"Generator bookmark field for '{stream}' stream should be set to automatic in catalog!"
+
+        processor = processor_class(catalog=catalog,
+                                    stream_name="loan_accounts",
+                                    client=client_mock,
+                                    config=config_json,
+                                    state={'currently_syncing': 'loan_accounts'},
+                                    sub_type="self",
+                                    generators=[generator],
+                                    **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+        
+        if generator.stream_name not in ["audit_trail"]:  # Those streams have no unique fields after which we could generate a primary_key
+            assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
+                        f"Processor deduplication key for '{stream}' stream should be in snake_case!"
+            assert processor.endpoint_deduplication_key in automatic_fields,\
+                        f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"

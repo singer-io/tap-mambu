@@ -1,4 +1,0 @@
-backoff
-mock
-requests
-singer_python

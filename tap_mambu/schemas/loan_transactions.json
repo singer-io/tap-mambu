@@ -119,6 +119,34 @@
         "funds_amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
+        },
+        "principal_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "interest_from_arrears_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "deferred_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "penalty_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "funders_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "organization_commission_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "payment_holidays_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         }
       }
     },
@@ -129,6 +157,10 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "tax_on_interest_from_arrears_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
         "tax_interest_from_arrears_amount": {
           "type": ["null", "string"],
           "format": "singer.decimal"
@@ -144,6 +176,10 @@
           "maximum": 1000000000000000
         },
         "tax_on_interest_amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "tax_on_payment_holidays_interest": {
           "type": ["null", "string"],
           "format": "singer.decimal"
         },
@@ -181,6 +217,70 @@
         "string"
       ]
     },
+    "card_transaction": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "advice": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "amount": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
+        },
+        "card_acceptor": {
+          "type": ["null", "object"],
+          "additionalProperties": false,
+          "properties": {
+            "city": {
+              "type": ["null", "string"]
+            },
+            "country": {
+              "type": ["null", "string"]
+            },
+            "mcc": {
+              "type": ["null", "integer"]
+            },
+            "name": {
+              "type": ["null", "string"]
+            },
+            "state": {
+              "type": ["null", "string"]
+            },
+            "street": {
+              "type": ["null", "string"]
+            },
+            "zip": {
+              "type": ["null", "string"]
+            }
+          }
+        },
+        "card_token": {
+          "type": ["null", "string"]
+        },
+        "currency_code": {
+          "type": ["null", "string"]
+        },
+        "encoded_key": {
+          "type": ["null", "string"]
+        },
+        "external_authorization_reference_id": {
+          "type": ["null", "string"]
+        },
+        "external_reference_id": {
+          "type": ["null", "string"]
+        },
+        "user_transaction_time": {
+          "type": ["null", "string"]
+        }
+      }
+    },
     "terms": {
       "type": [
         "null",
@@ -208,6 +308,10 @@
               "maximum": 1000000000000000
             }
           }
+        },
+        "periodic_payment": {
+          "type": ["null", "string"],
+          "format": "singer.decimal"
         },
         "principal_payment_amount": {
           "type": ["null", "string"],
@@ -248,6 +352,12 @@
         "string"
       ]
     },
+    "prepayment_recalculation_method": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "custom_payment_amounts": {
       "anyOf": [
         {
@@ -269,6 +379,12 @@
                   "null",
                   "string"
                 ]
+              },
+              "predefined_fee_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           }
@@ -285,6 +401,12 @@
       ]
     },
     "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "installment_encoded_key": {
       "type": [
         "null",
         "string"
@@ -331,6 +453,21 @@
         "string"
       ],
       "format": "date-time"
+    },
+    "currency": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
     "user_key": {
       "type": [

@@ -1,37 +1,46 @@
-variables:  # global variables section
-  PIPELINE_VERSION: &pipeline-tag v2
+#variables:  # global variables section
+#  PIPELINE_VERSION: &pipeline-tag adrian.marza/CI-1172_add_extra_git_fetch_to_sonar_merge_jobs
+#
+#include:
+#  - project: 'mambucom/product/sre/release-engineering/templates/gitlab-ci-pipeline'
+#    ref: *pipeline-tag
+#    file: '/sonarqube/sonarqube-enterprise-no-compilation.yml'
 
-include:
-  - project: 'mambucom/product/sre/release-engineering/templates/gitlab-ci-pipeline'
-    ref: *pipeline-tag
-    file: '/gitlab/code-quality.yml'
 
 image: registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/docker/python:3.9-bullseye
 
+
 stages:
   - test
+
 
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_PIPELINE_SOURCE == 'web'
     - if: $CI_COMMIT_BRANCH =~ /^release\/[0-9]+/
 
+
 unit-test-job:
   stage: test
+  artifacts:
+    expire_in: 20 minutes
+    paths:
+      - coverage.xml
   before_script:
-    - python3 -m pip install --upgrade -r requirements.txt
-    - python3 -m pip install --upgrade -r requirements_ci.txt
+    - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Running unit tests..."
-    - coverage run --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
+    - coverage run --branch --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
     - coverage json
+    - coverage xml -i
+    - mkdir coverage-reports
     - python3 -c "import json; coverage_json = json.loads(open('coverage.json', 'r').read()); print('Coverage is', round(coverage_json['totals']['percent_covered'], 2))"
+
 
 lint-test-job:
   stage: test
   before_script:
-    - python3 -m pip install --upgrade -r requirements.txt
-    - python3 -m pip install --upgrade -r requirements_ci.txt
+    - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Linting code..."
     - pylint tap_mambu/tap_mambu_refactor --exit-zero
@@ -48,7 +57,7 @@ snyk-dependency-test-job:
     - pip install --upgrade pip
     - pip install --upgrade "setuptools<58"
     - pip install wheel
-    - pip install -e .
+    - pip install --upgrade -e .
     - pip freeze > requirements.txt
   script:
     - snyk test --severity-threshold=high
@@ -64,11 +73,10 @@ snyk-dev-dependency-test-job:
     - pip install --upgrade pip
     - pip install --upgrade "setuptools<58"
     - pip install wheel
-    - pip install -e .[dev]
+    - pip install --upgrade -e ".[mambu-tests]"
     - pip freeze > requirements.txt
   script:
-    - snyk test
-  allow_failure: true
+    - snyk test --severity-threshold=critical
 
 snyk-code-test-job:
   image:
@@ -77,3 +85,84 @@ snyk-code-test-job:
   stage: test
   script:
     - snyk code test
+
+
+sonarqube_enterprise_nocompile_branch_analysis_poc:
+  image: registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/sonar-scanner-cli:1.4.0-ef55044f
+  stage: test
+  needs: ["unit-test-job"]
+  allow_failure: true
+  variables:
+    SONAR_EXCLUSIONS: '**/*.xml'
+    # this variable can be overridden in the job or the project
+    # space-separated values, e.g."-Dsonar.foo.bar=baz -Dsonar.cheese.ham=eggs"
+    SONAR_EXTRA_PARAMETERS: ''
+  script:
+    - set -euo pipefail
+    - export SONAR_SCANNER_OPTS="-Xmx3072m"
+    - sonar-scanner -X
+      -Dsonar.host.url='https://sonarqube-enterprise.infra.mambucloud.com'
+      -Dsonar.login="$SONAR_ENTERPRISE_LOGIN"
+      -Dsonar.gitlab.project_id="$CI_PROJECT_PATH"
+      -Dsonar.gitlab.commit_sha="$CI_COMMIT_SHA"
+      -Dsonar.gitlab.ref_name="$CI_COMMIT_REF_NAME"
+      -Dsonar.gitlab.max_blocker_issues_gate=-1
+      -Dsonar.gitlab.max_critical_issues_gate=-1
+      -Dsonar.gitlab.failure_notification_mode=exit-code
+      -Dsonar.sonar.qualitygate.wait=true
+      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}"
+      -Dsonar.branch.name="$CI_COMMIT_REF_NAME"
+      -Dsonar.projectKey="${CI_PROJECT_PATH//\//.}"
+      -Dsonar.projectName="$CI_PROJECT_NAME"
+      -Dsonar.exclusions="$SONAR_EXCLUSIONS"
+      $SONAR_EXTRA_PARAMETERS
+  except:
+    refs:
+      - tags
+
+
+sonarqube_enterprise_nocompile_pr_decoration_poc:
+  image: registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/sonar-scanner-cli:1.4.0-ef55044f
+  stage: test
+  needs: ["unit-test-job"]
+  allow_failure: true
+  variables:
+    SONAR_EXCLUSIONS: '**/*.xml'
+    # this variable can be overridden in the job or the project
+    # space-separated values, e.g."-Dsonar.foo.bar=baz -Dsonar.cheese.ham=eggs"
+    SONAR_EXTRA_PARAMETERS: ''
+  script:
+    - set -euo pipefail
+    - set -x
+    # needing the variable: GITLAB_READ_API_TOKEN to be present
+    # exporting MR-based variables because sonar-scanner needs them for pr decoration
+    - export CI_MERGE_REQUEST_IID="$(mrepo gitlab get-mr-for-branch --project-id $CI_PROJECT_ID --branch $CI_COMMIT_REF_NAME --format=iid)"
+    - >
+      if [ -z "$CI_MERGE_REQUEST_IID" ];
+      then
+      echo "Can't find a merge request for this branch: $CI_COMMIT_REF_NAME Exiting...";
+      exit 0;
+      fi
+    - export CI_MERGE_REQUEST_SOURCE_BRANCH_NAME="$CI_COMMIT_REF_NAME"
+    - export CI_MERGE_REQUEST_TARGET_BRANCH_NAME="$(mrepo gitlab get-mr-for-branch --project-id $CI_PROJECT_ID --branch $CI_COMMIT_REF_NAME --format=target_branch --fatal)"
+    - export SONAR_SCANNER_OPTS="-Xmx3072m"
+    - sonar-scanner -X
+      -Dsonar.host.url='https://sonarqube-enterprise.infra.mambucloud.com'
+      -Dsonar.login="$SONAR_ENTERPRISE_LOGIN"
+      -Dsonar.gitlab.project_id="$CI_PROJECT_PATH"
+      -Dsonar.gitlab.commit_sha="$CI_COMMIT_SHA"
+      -Dsonar.gitlab.ref_name="$CI_COMMIT_REF_NAME"
+      -Dsonar.gitlab.max_blocker_issues_gate=-1
+      -Dsonar.gitlab.max_critical_issues_gate=-1
+      -Dsonar.gitlab.failure_notification_mode=exit-code
+      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}"
+      -Dsonar.projectKey="${CI_PROJECT_PATH//\//.}"
+      -Dsonar.projectName="${CI_PROJECT_PATH//\//.}"
+      -Dsonar.exclusions="$SONAR_EXCLUSIONS"
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.gitlab.unique_issue_per_inline=true
+      $SONAR_EXTRA_PARAMETERS
+  except:
+    refs:
+      - master
+      - tags

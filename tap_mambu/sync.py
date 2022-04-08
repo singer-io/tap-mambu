@@ -805,7 +805,8 @@ def sync(client, config, catalog, state):
             },
             'bookmark_field': 'occurred_at',
             'bookmark_type': 'datetime'
-        }
+        },
+        'interest_accrual_breakdown': {}
     }
 
     selected_streams = get_selected_streams(catalog)
@@ -906,18 +907,23 @@ def sync(client, config, catalog, state):
                     endpoint_config['params']['type'] = sub_type
 
                 if stream_name in [
+                    "activities",
+                    "audit_trail",
                     "branches",
                     "centres",
                     "clients",
                     "communications",
+                    "credit_arrangements",
                     "deposit_accounts",
                     "deposit_transactions",
                     "groups",
                     "index_rate_sources",
                     "installments",
+                    "interest_accrual_breakdown",
                     "loan_accounts",
                     "loan_transactions",
-                    "tasks"
+                    "tasks",
+                    "users",
                 ]:
                     total_records = sync_endpoint_refactor(
                         client=client,
