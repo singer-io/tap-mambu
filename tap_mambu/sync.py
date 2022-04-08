@@ -52,8 +52,8 @@ def sync_all_streams(client, config, catalog, state):
     for stream_name in selected_streams:
         # Check if stream is child stream (and ignore it)
         generators, processor = get_generator_processor_for_stream(stream_name)
-        if any([isinstance(generator, ChildGenerator) for generator in generators]) or \
-                isinstance(processor, ChildProcessor):
+        if any([issubclass(generator, ChildGenerator) for generator in generators]) or \
+                issubclass(processor, ChildProcessor):
             continue
 
         should_stream, last_stream = should_sync_stream(selected_streams,
