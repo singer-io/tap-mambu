@@ -1,6 +1,4 @@
-from abc import abstractmethod
-
-from tap_mambu.tap_mambu_refactor.tap_generators.generator import TapGenerator
+from .generator import TapGenerator
 
 
 class GlAccountsGenerator(TapGenerator):
