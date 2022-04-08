@@ -1,6 +1,7 @@
 from singer import metadata
 from singer.catalog import Catalog, CatalogEntry, Schema
-from tap_mambu.schema import get_schemas, STREAMS
+from tap_mambu.helpers.schema import get_schemas, STREAMS
+
 
 def discover():
     schemas, field_metadata = get_schemas()

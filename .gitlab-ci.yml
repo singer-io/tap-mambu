@@ -30,7 +30,7 @@ unit-test-job:
     - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Running unit tests..."
-    - coverage run --branch --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
+    - coverage run --branch --source=tap_mambu -m pytest refactor_tests
     - coverage json
     - coverage xml -i
     - mkdir coverage-reports
@@ -43,8 +43,8 @@ lint-test-job:
     - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Linting code..."
-    - pylint tap_mambu/tap_mambu_refactor --exit-zero
-    - pylint tap_mambu/tap_mambu_refactor -d C -d R -d W || true
+    - pylint tap_mambu --exit-zero
+    - pylint tap_mambu -d C -d R -d W || true
 
 snyk-dependency-test-job:
   image:

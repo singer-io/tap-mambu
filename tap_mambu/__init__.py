@@ -2,12 +2,10 @@
 
 import sys
 import json
-import argparse
 import singer
-from singer import metadata, utils
-from tap_mambu.client import MambuClient
-from tap_mambu.discover import discover
-from tap_mambu.sync import sync
+from tap_mambu.helpers.client import MambuClient
+from tap_mambu.helpers.discover import discover
+from tap_mambu.sync import sync_all_streams
 
 LOGGER = singer.get_logger()
 
@@ -18,6 +16,7 @@ REQUIRED_CONFIG_KEYS = [
 ]
 
 DEFAULT_PAGE_SIZE = 500
+
 
 def do_discover():
 
@@ -47,10 +46,11 @@ def main():
         if parsed_args.discover:
             do_discover()
         elif parsed_args.catalog:
-            sync(client=client,
-                 config=parsed_args.config,
-                 catalog=parsed_args.catalog,
-                 state=state)
+            sync_all_streams(client=client,
+                             config=parsed_args.config,
+                             catalog=parsed_args.catalog,
+                             state=state)
+
 
 if __name__ == '__main__':
     main()

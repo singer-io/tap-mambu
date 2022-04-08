@@ -1,8 +1,8 @@
 from mock import MagicMock
 
-from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
+from tap_mambu.tap_generators.child_generator import ChildGenerator
 from ..constants import config_json
-from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_generator_processor_for_stream
+from tap_mambu.helpers.generator_processor_pairs import get_generator_processor_for_stream
 
 
 def setup_generator_base_test(stream_name, client_mock=None):

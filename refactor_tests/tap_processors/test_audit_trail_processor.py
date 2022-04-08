@@ -11,10 +11,10 @@ def test_audit_trail_processor():
     assert processor.bookmark_offset == 1
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
+@mock.patch("tap_mambu.helpers.write_state")
 def test_audit_trail_update_bookmark(mock_write_state):
     from tap_mambu import discover
-    from tap_mambu.tap_mambu_refactor.tap_processors.audit_trail_processor import AuditTrailProcessor
+    from tap_mambu.tap_processors.audit_trail_processor import AuditTrailProcessor
 
     catalog = discover()
     client_mock = MagicMock()
@@ -42,10 +42,10 @@ def test_audit_trail_update_bookmark(mock_write_state):
     mock_write_state.assert_called_once_with(expected_state)
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
+@mock.patch("tap_mambu.helpers.write_state")
 def test_audit_trail_write_bookmark(mock_write_state):
     from tap_mambu import discover
-    from tap_mambu.tap_mambu_refactor.tap_processors.audit_trail_processor import AuditTrailProcessor
+    from tap_mambu.tap_processors.audit_trail_processor import AuditTrailProcessor
 
     catalog = discover()
     client_mock = MagicMock()

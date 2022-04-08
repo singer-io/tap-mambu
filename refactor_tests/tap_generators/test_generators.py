@@ -1,12 +1,11 @@
 import inspect
-import json
 import os
 from copy import deepcopy
 
 from unittest.mock import MagicMock
 
-from tap_mambu.tap_mambu_refactor.helpers import transform_json
-from tap_mambu.tap_mambu_refactor.tap_generators.generator import TapGenerator
+from tap_mambu.helpers import transform_json
+from tap_mambu.tap_generators.generator import TapGenerator
 from ..constants import config_json
 
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/fixtures"
@@ -76,7 +75,7 @@ def test_generator_iterator_flow():
 
 
 def test_transform_batch_custom_field():
-    from tap_mambu.tap_mambu_refactor.helpers import transform_json
+    from tap_mambu.helpers import transform_json
 
     assert transform_json([
         {"encodedKey": "123", "creation_date": "asd",
@@ -93,7 +92,7 @@ def test_transform_batch_custom_field():
 
 
 def test_transform_batch_custom_field_auto_add():
-    from tap_mambu.tap_mambu_refactor.helpers import transform_json
+    from tap_mambu.helpers import transform_json
 
     assert transform_json([
         dict(encodedKey="123", creation_date="asd", _test=2)
@@ -103,7 +102,7 @@ def test_transform_batch_custom_field_auto_add():
 
 
 def test_transform_batch_larger_batch():
-    from tap_mambu.tap_mambu_refactor.helpers import transform_json
+    from tap_mambu.helpers import transform_json
 
     assert transform_json([
         dict(encodedKey="123", creation_date="asd", custom_fields=list()) for _ in range(10)

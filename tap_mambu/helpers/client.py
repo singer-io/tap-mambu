@@ -70,9 +70,10 @@ ERROR_CODE_EXCEPTION_MAPPING = {
 def get_exception_for_error_code(error_code):
     return ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError)
 
+
 def raise_for_error(response):
-    LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code,\
-        response.text, response.reason))
+    LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code,
+                                                   response.text, response.reason))
     try:
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
@@ -160,7 +161,6 @@ class MambuClient(object):
             raise_for_error(response)
         else:
             return True
-
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),

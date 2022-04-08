@@ -1,4 +1,4 @@
-from tap_mambu.tap_mambu_refactor.tap_generators.generator import TapGenerator
+from tap_mambu.tap_generators.generator import TapGenerator
 
 
 class NoPaginationGenerator(TapGenerator):
