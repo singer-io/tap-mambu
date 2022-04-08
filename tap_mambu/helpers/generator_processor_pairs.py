@@ -13,6 +13,7 @@ from ..tap_generators.index_rate_sources_generator import IndexRateSourcesGenera
 from ..tap_generators.interest_accrual_breakdown_generator import InterestAccrualBreakdownGenerator
 from ..tap_generators.deposit_transactions_generator import DepositTransactionsGenerator
 from ..tap_generators.loan_accounts_generator import LoanAccountsADGenerator, LoanAccountsLMGenerator
+from ..tap_generators.loan_products_generator import LoanProductsGenerator
 from ..tap_generators.loan_repayments_generator import LoanRepaymentsGenerator
 from ..tap_generators.loan_transactions_generator import LoanTransactionsGenerator
 from ..tap_generators.tasks_generator import TasksGenerator
@@ -42,6 +43,7 @@ def get_generator_processor_pairs():
         "installments": ((InstallmentsGenerator,), TapProcessor),
         "interest_accrual_breakdown": ((InterestAccrualBreakdownGenerator,), TapProcessor),
         "loan_accounts": ((LoanAccountsLMGenerator, LoanAccountsADGenerator), LoanAccountsProcessor),
+        "loan_products": ((LoanProductsGenerator,), TapProcessor),
         "loan_repayments": ((LoanRepaymentsGenerator,), LoanRepaymentsProcessor),
         "loan_transactions": ((LoanTransactionsGenerator,), TapProcessor),
         "tasks": ((TasksGenerator,), TapProcessor),
