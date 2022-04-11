@@ -3,4 +3,4 @@ def convert_snake_to_pascal(snake_case):
 
 
 def convert_pascal_to_snake(pascal_case):
-    return ''.join(f'_{c.lower()}' if c.isupper() else c for c in pascal_case).lstrip('_')
+    return ''.join(f'_{c.lower()}' if c.isupper() else c for c in pascal_case.replace('ID', '_id')).lstrip('_')
