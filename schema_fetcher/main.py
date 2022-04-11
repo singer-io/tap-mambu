@@ -149,7 +149,7 @@ def generate_json_schema(stream_name, file_path):
     stream_schema = generate_json_objs(stream_fields_w_refs[json_stream_name_form], stream_fields_w_refs, False)
 
     if streams.convert_swaggered_to_tap_stream(stream_name) in STREAMS_W_CUSTOM_FIELDS:
-        stream_schema.update(CUSTOM_FIELDS_FIELD)
+        stream_schema['properties'].update(CUSTOM_FIELDS_FIELD)
     return stream_schema
 
 
