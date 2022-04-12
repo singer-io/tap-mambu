@@ -10,32 +10,19 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "country": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "parent_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "city": {
                 "type": [
                   "null",
                   "string"
                 ]
               },
-              "latitude": {
+              "country": {
                 "type": [
                   "null",
                   "string"
-                ],
-                "format": "singer.decimal"
+                ]
               },
-              "postcode": {
+              "encoded_key": {
                 "type": [
                   "null",
                   "string"
@@ -47,13 +34,14 @@
                   "integer"
                 ]
               },
-              "encoded_key": {
+              "latitude": {
                 "type": [
                   "null",
                   "string"
-                ]
+                ],
+                "format": "singer.decimal"
               },
-              "region": {
+              "line1": {
                 "type": [
                   "null",
                   "string"
@@ -65,18 +53,30 @@
                   "string"
                 ]
               },
-              "line1": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "longitude": {
                 "type": [
                   "null",
                   "string"
                 ],
                 "format": "singer.decimal"
+              },
+              "parent_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "region": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           }
@@ -86,30 +86,18 @@
         }
       ]
     },
-    "notes": {
+    "assigned_branch_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "last_modified_date": {
+    "creation_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
-    },
-    "name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "meeting_day": {
-      "type": [
-        "null",
-        "string"
-      ]
     },
     "encoded_key": {
       "type": [
@@ -123,20 +111,32 @@
         "string"
       ]
     },
-    "state": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "creation_date": {
+    "last_modified_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "assigned_branch_key": {
+    "meeting_day": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "state": {
       "type": [
         "null",
         "string"

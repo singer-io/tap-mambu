@@ -2,12 +2,6 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "email_address": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
     "addresses": {
       "anyOf": [
         {
@@ -16,32 +10,19 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "country": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "parent_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "city": {
                 "type": [
                   "null",
                   "string"
                 ]
               },
-              "latitude": {
+              "country": {
                 "type": [
                   "null",
                   "string"
-                ],
-                "format": "singer.decimal"
+                ]
               },
-              "postcode": {
+              "encoded_key": {
                 "type": [
                   "null",
                   "string"
@@ -53,13 +34,14 @@
                   "integer"
                 ]
               },
-              "encoded_key": {
+              "latitude": {
                 "type": [
                   "null",
                   "string"
-                ]
+                ],
+                "format": "singer.decimal"
               },
-              "region": {
+              "line1": {
                 "type": [
                   "null",
                   "string"
@@ -71,18 +53,30 @@
                   "string"
                 ]
               },
-              "line1": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "longitude": {
                 "type": [
                   "null",
                   "string"
                 ],
                 "format": "singer.decimal"
+              },
+              "parent_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "region": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           }
@@ -92,13 +86,80 @@
         }
       ]
     },
-    "phone_number": {
+    "branch_holidays": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "creation_date": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "date-time"
+              },
+              "date": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "date"
+              },
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "integer"
+                ]
+              },
+              "is_annually_recurring": {
+                "type": [
+                  "null",
+                  "boolean"
+                ]
+              },
+              "name": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "email_address": {
       "type": [
         "null",
         "string"
       ]
     },
-    "notes": {
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "id": {
       "type": [
         "null",
         "string"
@@ -117,13 +178,13 @@
         "string"
       ]
     },
-    "encoded_key": {
+    "notes": {
       "type": [
         "null",
         "string"
       ]
     },
-    "id": {
+    "phone_number": {
       "type": [
         "null",
         "string"
@@ -133,61 +194,6 @@
       "type": [
         "null",
         "string"
-      ]
-    },
-    "creation_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "branch_holidays": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "date": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "date"
-              },
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "is_anually_recurring": {
-                "type": [
-                  "null",
-                  "boolean"
-                ]
-              },
-              "creation_date": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "date-time"
-              }
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
       ]
     },
     "custom_fields": {
