@@ -25,8 +25,6 @@ TAP_FORMATS = {
     'date-time': 'date-time',
 }
 
-STREAMS_W_CUSTOM_FIELDS = ['clients', 'groups', 'loan_accounts', 'loan_transactions', 'deposit_accounts',
-                           'deposit_products', 'credit_arrangements', 'branches', 'centres', 'users']
 CUSTOM_FIELDS_FIELD = {
     "custom_fields": {
         "anyOf": [

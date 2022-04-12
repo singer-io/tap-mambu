@@ -1,7 +1,7 @@
 import os
 import shutil
 import json
-from schema_fetcher.constants import OUTPUT_DIR_PATH, RESOURCES_LINK, STREAMS_W_CUSTOM_FIELDS, CUSTOM_FIELDS_FIELD
+from schema_fetcher.constants import OUTPUT_DIR_PATH, RESOURCES_LINK, CUSTOM_FIELDS_FIELD
 from schema_fetcher.converters import convert_pascal_to_snake, convert_snake_to_pascal
 from schema_fetcher.helpers import get_mambu_client, get_data_type_and_format
 from schema_fetcher.custom_exceptions import ResourceFileNotFound, StreamJsonObjectNotFound
@@ -148,8 +148,7 @@ def generate_json_schema(stream_name, file_path):
 
     stream_schema = generate_json_objs(stream_fields_w_refs[json_stream_name_form], stream_fields_w_refs, False)
 
-    if streams.convert_swaggered_to_tap_stream(stream_name) in STREAMS_W_CUSTOM_FIELDS:
-        stream_schema['properties'].update(CUSTOM_FIELDS_FIELD)
+    stream_schema['properties'].update(CUSTOM_FIELDS_FIELD)
     return stream_schema
 
 
