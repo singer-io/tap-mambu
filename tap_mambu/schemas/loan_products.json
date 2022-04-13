@@ -2,289 +2,1166 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "encoded_key": {
-      "type": ["null", "string"]
-    },
-    "id": {
-      "type": ["null", "string"]
-    },
-    "creation_date": {
-      "type": ["null", "string"],
-      "format": "date-time"
-    },
-    "last_modified_date": {
-      "type": ["null", "string"],
-      "format": "date-time"
-    },
-    "product_name": {
-      "type": ["null", "string"]
-    },
-    "product_description": {
-      "type": ["null", "string"]
-    },
-    "loan_type": {
-      "type": ["null", "string"]
-    },
-    "loan_product_type": {
-      "type": ["null", "string"]
-    },
-    "default_loan_amount": {
-      "type": ["null", "string"]
-    },
-    "max_number_of_disbursement_tranches": {
-      "type": ["null", "integer"]
-    },
-    "id_generator_type": {
-      "type": ["null", "string"]
-    },
-    "id_pattern": {
-      "type": ["null", "string"]
-    },
-    "account_initial_state": {
-      "type": ["null", "string"]
-    },
-    "activated": {
-      "type": ["null", "boolean"]
-    },
-    "repayment_schedule_method": {
-      "type": ["null", "string"]
-    },
-    "schedule_due_dates_method": {
-      "type": ["null", "string"]
-    },
-    "default_repayment_period_count": {
-      "type": ["null", "integer"]
-    },
-    "repayment_period_unit": {
-      "type": ["null", "string"]
-    },
-    "default_num_installments": {
-      "type": ["null", "integer"]
-    },
-    "grace_period_type": {
-      "type": ["null", "string"]
-    },
-    "default_principal_repayment_interval": {
-      "type": ["null", "integer"]
-    },
-    "rounding_repayment_schedule_method": {
-      "type": ["null", "string"]
-    },
-    "repayment_currency_rounding": {
-      "type": ["null", "string"]
-    },
-    "repayment_elements_rounding_method": {
-      "type": ["null", "string"]
-    },
-    "payment_method": {
-      "type": ["null", "string"]
-    },
-    "amortization_method": {
-      "type": ["null", "string"]
-    },
-    "declining_balance_prepayment_recalculation": {
-      "type": ["null", "string"]
-    },
-    "late_payments_recalculation_method": {
-      "type": ["null", "string"]
-    },
-    "prepayment_acceptance": {
-      "type": ["null", "string"]
-    },
-    "future_payments_acceptance": {
-      "type": ["null", "string"]
-    },
-    "apply_interest_on_prepayment_method": {
-      "type": ["null", "string"]
-    },
-    "repayment_allocation_order": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": ["null", "string"]
-          }
-        },
-        {
-          "type": "null"
-        }
+    "notes": {
+      "type": [
+        "null",
+        "string"
       ]
     },
-    "interest_rate_settings": {
-      "type": ["null", "object"],
+    "availability_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
-        "encoded_key": {
-          "type": ["null", "string"]
-        },
-        "interest_charge_frequency": {
-          "type": ["null", "string"]
-        },
-        "interest_charge_frequency_count": {
-          "type": ["null", "integer"]
-        },
-        "interest_rate_source": {
-          "type": ["null", "string"]
-        },
-        "interest_rate_terms": {
-          "type": ["null", "string"]
-        },
-        "default_interest_rate": {
-          "type": ["null", "string"]
-        }
-      }
-    },
-    "interest_charge_frequency": {
-      "type": ["null", "string"]
-    },
-    "interest_calculation_method": {
-      "type": ["null", "string"]
-    },
-    "interest_balance_calculation_method": {
-      "type": ["null", "string"]
-    },
-    "interest_application_method": {
-      "type": ["null", "string"]
-    },
-    "days_in_year": {
-      "type": ["null", "string"]
-    },
-    "schedule_interest_days_count_method": {
-      "type": ["null", "string"]
-    },
-    "loan_penalty_calculation_method": {
-      "type": ["null", "string"]
-    },
-    "arrears_date_calculation_method": {
-      "type": ["null", "string"]
-    },
-    "arrears_tolerance_period": {
-      "type": ["null", "integer"]
-    },
-    "loan_fees": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "encoded_key": {
-                "type": ["null", "string"]
-              },
-              "name": {
-                "type": ["null", "string"]
-              },
-              "amount": {
-                "type": ["null", "string"]
-              },
-              "amount_calculation_method": {
-                "type": ["null", "string"]
-              },
-              "trigger": {
-                "type": ["null", "string"]
-              },
-              "fee_application": {
-                "type": ["null", "string"]
-              },
-              "active": {
-                "type": ["null", "boolean"]
-              },
-              "creation_date": {
-                "type": ["null", "string"],
-                "format": "date-time"
-              },
-              "amoritization_profile": {
-                "type": ["null", "string"]
-              },
-              "amortization_interval_settings": {
-                "type": ["null", "object"],
-                "additionalProperties": false,
-                "properties": {
-                  "encoded_key": {
-                    "type": ["null", "string"]
-                  },
-                  "frequency": {
-                    "type": ["null", "string"]
-                  },
-                  "period_unit": {
-                    "type": ["null", "string"]
-                  },
-                  "period_count": {
-                    "type": ["null", "integer"]
-                  },
-                  "interval_count": {
-                    "type": ["null", "integer"]
+        "branch_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "for_all_branches": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "available_product_branches": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
+                },
+                {
+                  "type": "null"
                 }
-              },
-              "fee_product_rules": {
-                "type": ["null", "array"],
-                "items": {}
-              }
+              ]
             }
           }
         },
-        {
-          "type": "null"
+        "available_for": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
-      ]
+      }
     },
-    "allow_arbitrary_fees": {
-      "type": ["null", "boolean"]
-    },
-    "accounting_method": {
-      "type": ["null", "string"]
-    },
-    "loan_product_rules": {
-      "type": ["null", "array"],
-      "items": {}
-    },
-    "interest_accrued_accounting_method": {
-      "type": ["null", "string"]
-    },
-    "account_linking_enabled": {
-      "type": ["null", "boolean"]
-    },
-    "auto_link_accounts": {
-      "type": ["null", "boolean"]
-    },
-    "auto_create_linked_accounts": {
-      "type": ["null", "boolean"]
-    },
-    "settlement_options": {
-      "type": ["null", "string"]
-    },
-    "repayment_schedule_edit_options": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": ["null", "string"]
+    "payment_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "prepayment_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "future_payments_acceptance": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "apply_interest_on_prepayment_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "prepayment_acceptance": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "elements_recalculation_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "principal_paid_installment_status": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "prepayment_recalculation_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
           }
         },
-        {
-          "type": "null"
+        "principal_payment_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "default_principal_repayment_interval": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "include_interest_in_floor_amount": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "amount": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "min_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "encoded_key": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "max_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "default_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                }
+              }
+            },
+            "total_due_payment": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "principal_floor_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "principal_payment_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "percentage": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "min_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "encoded_key": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "max_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "default_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                }
+              }
+            },
+            "include_fees_in_floor_amount": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "total_due_amount_floor": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "principal_ceiling_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "payment_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "late_payments_recalculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "repayment_allocation_order": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amortization_method": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
+      }
+    },
+    "tax_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tax_source_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "taxes_on_interest_enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "taxes_on_penalty_enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "tax_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "taxes_on_fees_enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "redraw_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "allow_redraw": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "type": {
+      "type": [
+        "null",
+        "string"
       ]
     },
-    "taxes_on_interest_enabled": {
-      "type": ["null", "boolean"]
+    "arrears_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "monthly_tolerance_day": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
+        "tolerance_floor_amount": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "singer.decimal"
+        },
+        "non_working_days_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "tolerance_percentage_of_outstanding_principal": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "tolerance_period": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
+        },
+        "encoded_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "tolerance_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "date_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
-    "taxes_on_fees_enabled": {
-      "type": ["null", "boolean"]
+    "new_account_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id_generator_type": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "account_initial_state": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "id_pattern": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
-    "taxes_on_penalty_enabled": {
-      "type": ["null", "boolean"]
+    "interest_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "interest_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "interest_rate_settings": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "interest_rate": {
+                    "type": [
+                      "null",
+                      "object"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "min_value": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "format": "singer.decimal"
+                      },
+                      "max_value": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "format": "singer.decimal"
+                      },
+                      "default_value": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "format": "singer.decimal"
+                      }
+                    }
+                  },
+                  "interest_rate_review_unit": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "interest_rate_source": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "interest_rate_review_count": {
+                    "type": [
+                      "null",
+                      "integer"
+                    ]
+                  },
+                  "index_source_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "interest_rate_ceiling_value": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "encoded_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "interest_rate_floor_value": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schedule_interest_days_count_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "interest_application_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "interest_type": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "index_rate_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "interest_rate": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "min_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "max_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                },
+                "default_value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "format": "singer.decimal"
+                }
+              }
+            },
+            "interest_rate_review_unit": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "allow_negative_interest_rate": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "interest_rate_source": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "interest_charge_frequency": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "accrue_interest_after_maturity": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "interest_rate_terms": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "interest_charge_frequency_count": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "interest_rate_review_count": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "index_source_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "interest_rate_ceiling_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "interest_rate_tiers": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "ending_balance": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "format": "singer.decimal"
+                      },
+                      "interest_rate": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "format": "singer.decimal"
+                      },
+                      "encoded_key": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "interest_rate_floor_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "interest_balance_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "days_in_year": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "accrue_late_interest": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "compounding_frequency": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
-    "arrears_non_working_days_method": {
-      "type": ["null", "string"]
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
     },
-    "automatically_close_dormant_accounts": {
-      "type": ["null", "boolean"]
+    "currency": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
-    "line_of_credit_requirement": {
-      "type": ["null", "string"]
+    "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "state": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "penalty_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "loan_penalty_grace_period": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
+        "loan_penalty_calculation_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "penalty_rate": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        }
+      }
+    },
+    "adjust_interest_for_first_installment": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "fees_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fees": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "amount": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "last_modified_date": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "date-time"
+                  },
+                  "amount_calculation_method": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "tax_settings": {
+                    "type": [
+                      "null",
+                      "object"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "taxable_calculation_method": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      }
+                    }
+                  },
+                  "trigger": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "creation_date": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "date-time"
+                  },
+                  "accounting_rules": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "encoded_key": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            },
+                            "gl_account_key": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            },
+                            "transaction_channel_key": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            },
+                            "financial_resource": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "name": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "fee_application": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "amortization_settings": {
+                    "type": [
+                      "null",
+                      "object"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "fee_amortization_upon_reschedule_refinance_option": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "interval_type": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "period_count": {
+                        "type": [
+                          "null",
+                          "integer"
+                        ]
+                      },
+                      "interval_count": {
+                        "type": [
+                          "null",
+                          "integer"
+                        ]
+                      },
+                      "encoded_key": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "amortization_profile": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "period_unit": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "frequency": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      }
+                    }
+                  },
+                  "encoded_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "id": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "state": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "apply_date_method": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "percentage_amount": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allow_arbitrary_fees": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "account_link_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "linked_account_options": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settlement_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "linkable_deposit_product_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "security_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "is_collateral_enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "is_guarantors_enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "required_guaranties": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "singer.decimal"
+        }
+      }
     },
     "templates": {
       "anyOf": [
@@ -294,22 +1171,37 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "encoded_key": {
-                "type": ["null", "string"]
-              },
               "name": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "creation_date": {
-                "type": ["null", "string"],
-                "format": "date-time"
-              },
-              "last_modified_date": {
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "format": "date-time"
               },
               "type": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "last_modified_date": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "date-time"
               }
             }
           }
@@ -319,251 +1211,624 @@
         }
       ]
     },
-    "product_security_settings": {
-      "type": ["null", "object"],
+    "grace_period_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
       "additionalProperties": false,
       "properties": {
-        "encoded_key": {
-          "type": ["null", "string"]
+        "grace_period": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
         },
-        "is_guarantors_enabled": {
-          "type": ["null", "boolean"]
-        },
-        "is_collateral_enabled": {
-          "type": ["null", "boolean"]
-        },
-        "is_investor_funds_enabled": {
-          "type": ["null", "boolean"]
-        },
-        "required_guaranties": {
-          "type": ["null", "string"]
+        "grace_period_type": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
       }
     },
-    "allow_guarantors": {
-      "type": ["null", "boolean"]
+    "offset_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "allow_offset": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
     },
-    "allow_collateral": {
-      "type": ["null", "boolean"]
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     },
-    "required_guaranty_percentage": {
-      "type": ["null", "string"]
+    "credit_arrangement_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "credit_arrangement_requirement": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
-    "is_investor_funds_enabled": {
-      "type": ["null", "boolean"]
+    "allow_custom_repayment_allocation": {
+      "type": [
+        "null",
+        "boolean"
+      ]
     },
-    "for_individuals": {
-      "type": ["null", "boolean"]
-    },
-    "for_pure_groups": {
-      "type": ["null", "boolean"]
-    },
-    "for_hybrid_groups": {
-      "type": ["null", "boolean"]
-    },
-    "repayment_rescheduling_method": {
-      "type": ["null", "string"]
-    },
-    "custom_field_values": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "encoded_key": {
-                "type": ["null", "string"]
-              },
-              "parent_key": {
-                "type": ["null", "string"]
-              },
-              "custom_field_key": {
-                "type": ["null", "string"]
-              },
-              "custom_field": {
-                "type": ["null", "object"],
-                "additionalProperties": false,
-                "properties": {
-                  "encoded_key": {
-                    "type": ["null", "string"]
-                  },
-                  "id": {
-                    "type": ["null", "string"]
-                  },
-                  "name": {
-                    "type": ["null", "string"]
-                  },
-                  "type": {
-                    "type": ["null", "string"]
-                  },
-                  "data_type": {
-                    "type": ["null", "string"]
-                  },
-                  "value_length": {
-                    "type": ["null", "string"]
-                  },
-                  "is_default": {
-                    "type": ["null", "boolean"]
-                  },
-                  "is_required": {
-                    "type": ["null", "boolean"]
-                  },
-                  "custom_field_set": {
-                    "type": ["null", "object"],
-                    "additionalProperties": false,
-                    "properties": {
-                      "encoded_key": {
-                        "type": ["null", "string"]
-                      },
-                      "id": {
-                        "type": ["null", "string"]
-                      },
-                      "name": {
-                        "type": ["null", "string"]
-                      },
-                      "creation_date": {
-                        "type": ["null", "string"],
-                        "format": "date-time"
-                      },
-                      "last_modified_date": {
-                        "type": ["null", "string"],
-                        "format": "date-time"
-                      },
-                      "index_in_list": {
-                        "type": ["null", "integer"]
-                      },
-                      "type": {
-                        "type": ["null", "string"]
-                      },
-                      "usage": {
-                        "type": ["null", "string"]
-                      }
-                    }
-                  },
-                  "index_in_list": {
-                    "type": ["null", "integer"]
-                  },
-                  "state": {
-                    "type": ["null", "string"]
-                  },
-                  "custom_field_selection_options": {
-                    "anyOf": [
-                      {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "properties": {
-                            "encoded_key": {
-                              "type": ["null", "string"]
-                            },
-                            "value": {
-                              "type": ["null", "string"]
-                            },
-                            "score": {
-                              "type": ["null", "string"]
-                            }
-                          }
-                        }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "view_rights": {
-                    "type": ["null", "object"],
-                    "additionalProperties": false,
-                    "properties": {
-                      "encoded_key": {
-                        "type": ["null", "string"]
-                      },
-                      "is_accessible_by_all_users": {
-                        "type": ["null", "boolean"]
-                      },
-                      "roles": {
-                        "anyOf": [{
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "edit_rights": {
-                    "type": ["null", "object"],
-                    "additionalProperties": false,
-                    "properties": {
-                      "encoded_key": {
-                        "type": ["null", "string"]
-                      },
-                      "is_accessible_by_all_users": {
-                        "type": ["null", "boolean"]
-                      },
-                      "roles": {
-                        "anyOf": [{
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "unique": {
-                    "type": ["null", "boolean"]
-                  },
-                  "values": {
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "amounts": {
-                    "type": ["null", "object"],
-                    "additionalProperties": true,
-                    "properties": {}
-                  }
-                }
-              },
-              "value": {
-                "type": ["null", "string"]
-              },
-              "amount": {
-                "type": ["null", "string"]
-              },
-              "index_in_list": {
-                "type": ["null", "integer"]
-              },
-              "custom_field_id": {
-                "type": ["null", "string"]
-              },
-              "custom_field_set_group_index": {
-                "type": ["null", "integer"]
-              }
+    "schedule_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "repayment_schedule_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "repayment_rescheduling_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "short_month_handling_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "num_installments": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
             }
           }
         },
-        {
-          "type": "null"
+        "interest_accrual_since": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "repayment_period_unit": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "preview_schedule": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "number_of_previewed_instalments": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "preview_schedule_enabled": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          }
+        },
+        "default_repayment_period_count": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
+        "billing_cycles": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "start_days": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "fixed_days_of_month": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repayment_schedule_edit_options": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schedule_due_dates_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "first_repayment_due_date_offset": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
+        },
+        "rounding_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "rounding_repayment_schedule_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "repayment_currency_rounding": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "repayment_elements_rounding_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
         }
+      }
+    },
+    "accounting_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "accounting_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "interest_accrual_calculation": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "accounting_rules": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "encoded_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "gl_account_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "transaction_channel_key": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "financial_resource": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interest_accrued_accounting_method": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "name": {
+      "type": [
+        "null",
+        "string"
       ]
+    },
+    "loan_amount_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "loan_amount": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "tranche_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "max_number_of_tranches": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "category": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "internal_controls": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dormancy_period_days": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
+        "four_eyes_principle": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "active_for_loan_approval": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          }
+        },
+        "lock_settings": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "capping_percentage": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "lock_period_days": {
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "capping_constraint_type": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "capping_method": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "funding_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "organization_interest_commission": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "lock_funds_at_approval": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "funder_interest_commission": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "max_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "default_value": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "required_funds": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "singer.decimal"
+        },
+        "funder_interest_commission_allocation_type": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "enabled": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
     }
   }
 }
