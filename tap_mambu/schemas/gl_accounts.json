@@ -2,48 +2,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "migration_event_key": {
+    "activated": {
       "type": [
         "null",
-        "string"
-      ]
-    },
-    "last_modified_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "gl_code": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "usage": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "description": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "creation_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "type": {
-      "type": [
-        "null",
-        "string"
+        "boolean"
       ]
     },
     "allow_manual_journal_entries": {
@@ -59,17 +21,12 @@
       ],
       "format": "singer.decimal"
     },
-    "name": {
+    "creation_date": {
       "type": [
         "null",
         "string"
-      ]
-    },
-    "encoded_key": {
-      "type": [
-        "null",
-        "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "currency": {
       "type": [
@@ -86,16 +43,93 @@
         }
       }
     },
+    "description": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "gl_code": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "migration_event_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "strip_trailing_zeros": {
       "type": [
         "null",
         "boolean"
       ]
     },
-    "activated": {
+    "type": {
       "type": [
         "null",
-        "boolean"
+        "string"
+      ]
+    },
+    "usage": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "custom_fields": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
       ]
     }
   }

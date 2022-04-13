@@ -2,6 +2,127 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "addresses": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "city": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "country": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "index_in_list": {
+                "type": [
+                  "null",
+                  "integer"
+                ]
+              },
+              "latitude": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
+              },
+              "line1": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "line2": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "longitude": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
+              },
+              "parent_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "region": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "assigned_branch_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "assigned_centre_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "assigned_user_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "email_address": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "group_members": {
       "anyOf": [
         {
@@ -24,12 +145,6 @@
                       "type": "object",
                       "additionalProperties": false,
                       "properties": {
-                        "role_name": {
-                          "type": [
-                            "null",
-                            "string"
-                          ]
-                        },
                         "encoded_key": {
                           "type": [
                             "null",
@@ -37,6 +152,18 @@
                           ]
                         },
                         "group_role_name_key": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "role_name": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "role_name_id": {
                           "type": [
                             "null",
                             "string"
@@ -58,103 +185,25 @@
         }
       ]
     },
-    "migration_event_key": {
+    "group_name": {
       "type": [
         "null",
         "string"
       ]
     },
-    "preferred_language": {
+    "group_role_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "addresses": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "country": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "parent_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "city": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "latitude": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
-              },
-              "postcode": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "index_in_list": {
-                "type": [
-                  "null",
-                  "integer"
-                ]
-              },
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "region": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "line2": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "line1": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "longitude": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
-              }
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
+    "home_phone": {
+      "type": [
+        "null",
+        "string"
       ]
     },
-    "notes": {
+    "id": {
       "type": [
         "null",
         "string"
@@ -167,44 +216,13 @@
       ],
       "format": "date-time"
     },
-    "home_phone": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "creation_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "assigned_branch_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
     "loan_cycle": {
       "type": [
         "null",
-        "string"
+        "integer"
       ]
     },
-    "assigned_centre_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "group_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "email_address": {
+    "migration_event_key": {
       "type": [
         "null",
         "string"
@@ -216,25 +234,13 @@
         "string"
       ]
     },
-    "group_role_key": {
+    "notes": {
       "type": [
         "null",
         "string"
       ]
     },
-    "encoded_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "id": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "assigned_user_key": {
+    "preferred_language": {
       "type": [
         "null",
         "string"

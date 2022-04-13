@@ -2,29 +2,12 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "assigned_branch_key": {
+    "activation_date": {
       "type": [
         "null",
         "string"
-      ]
-    },
-    "last_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "migration_event_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "preferred_language": {
-      "type": [
-        "null",
-        "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "addresses": {
       "anyOf": [
@@ -34,32 +17,19 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "country": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "parent_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "city": {
                 "type": [
                   "null",
                   "string"
                 ]
               },
-              "latitude": {
+              "country": {
                 "type": [
                   "null",
                   "string"
-                ],
-                "format": "singer.decimal"
+                ]
               },
-              "postcode": {
+              "encoded_key": {
                 "type": [
                   "null",
                   "string"
@@ -71,13 +41,14 @@
                   "integer"
                 ]
               },
-              "encoded_key": {
+              "latitude": {
                 "type": [
                   "null",
                   "string"
-                ]
+                ],
+                "format": "singer.decimal"
               },
-              "region": {
+              "line1": {
                 "type": [
                   "null",
                   "string"
@@ -89,18 +60,30 @@
                   "string"
                 ]
               },
-              "line1": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "longitude": {
                 "type": [
                   "null",
                   "string"
                 ],
                 "format": "singer.decimal"
+              },
+              "parent_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "postcode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "region": {
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           }
@@ -110,23 +93,57 @@
         }
       ]
     },
-    "notes": {
+    "approved_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "assigned_branch_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "gender": {
+    "assigned_centre_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "group_loan_cycle": {
+    "assigned_user_key": {
       "type": [
         "null",
-        "integer"
+        "string"
       ]
+    },
+    "birth_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "client_role_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "closed_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     },
     "email_address": {
       "type": [
@@ -140,36 +157,36 @@
         "string"
       ]
     },
-    "id": {
+    "first_name": {
       "type": [
         "null",
         "string"
       ]
     },
-    "state": {
+    "gender": {
       "type": [
         "null",
         "string"
       ]
     },
-    "assigned_user_key": {
-      "type": [
-        "null",
-        "string"
+    "group_keys": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "null"
+        }
       ]
     },
-    "client_role_key": {
+    "group_loan_cycle": {
       "type": [
         "null",
-        "string"
+        "integer"
       ]
-    },
-    "last_modified_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
     },
     "home_phone": {
       "type": [
@@ -177,34 +194,7 @@
         "string"
       ]
     },
-    "creation_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "birth_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date"
-    },
-    "assigned_centre_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "approved_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "first_name": {
+    "id": {
       "type": [
         "null",
         "string"
@@ -218,19 +208,103 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "identification_document_template_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "issuing_authority": {
-                "type": [
-                  "null",
-                  "string"
+              "attachments": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "creation_date": {
+                          "type": [
+                            "null",
+                            "string"
+                          ],
+                          "format": "date-time"
+                        },
+                        "encoded_key": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "file_name": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "file_size": {
+                          "type": [
+                            "null",
+                            "integer"
+                          ]
+                        },
+                        "id": {
+                          "type": [
+                            "null",
+                            "integer"
+                          ]
+                        },
+                        "last_modified_date": {
+                          "type": [
+                            "null",
+                            "string"
+                          ],
+                          "format": "date-time"
+                        },
+                        "location": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "name": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "notes": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "owner_key": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "owner_type": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "type": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "client_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "document_id": {
                 "type": [
                   "null",
                   "string"
@@ -242,10 +316,28 @@
                   "string"
                 ]
               },
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "identification_document_template_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
               "index_in_list": {
                 "type": [
                   "null",
                   "integer"
+                ]
+              },
+              "issuing_authority": {
+                "type": [
+                  "null",
+                  "string"
                 ]
               },
               "valid_until": {
@@ -254,18 +346,6 @@
                   "string"
                 ],
                 "format": "date"
-              },
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "document_id": {
-                "type": [
-                  "null",
-                  "string"
-                ]
               }
             }
           }
@@ -273,6 +353,89 @@
         {
           "type": "null"
         }
+      ]
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "last_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "loan_cycle": {
+      "type": [
+        "null",
+        "integer"
+      ]
+    },
+    "middle_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "migration_event_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "mobile_phone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "mobile_phone2": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "portal_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "encoded_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "last_logged_in_date": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "date-time"
+        },
+        "portal_state": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "preferred_language": {
+      "type": [
+        "null",
+        "string"
       ]
     },
     "profile_picture_key": {
@@ -287,31 +450,11 @@
         "string"
       ]
     },
-    "mobile_phone": {
+    "state": {
       "type": [
         "null",
         "string"
       ]
-    },
-    "closed_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "middle_name": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "activation_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
     },
     "custom_fields": {
       "anyOf": [

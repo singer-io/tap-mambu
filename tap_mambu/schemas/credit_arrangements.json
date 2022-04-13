@@ -2,13 +2,6 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "available_credit_amount": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
     "amount": {
       "type": [
         "null",
@@ -16,24 +9,26 @@
       ],
       "format": "singer.decimal"
     },
-    "notes": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "last_modified_date": {
+    "approved_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "holder_key": {
+    "available_credit_amount": {
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "singer.decimal"
+    },
+    "closed_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     },
     "consumed_credit_amount": {
       "type": [
@@ -49,18 +44,20 @@
       ],
       "format": "date-time"
     },
-    "approved_date": {
+    "currency": {
       "type": [
         "null",
-        "string"
+        "object"
       ],
-      "format": "date-time"
-    },
-    "sub_state": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
     "encoded_key": {
       "type": [
@@ -75,13 +72,13 @@
       ],
       "format": "date-time"
     },
-    "id": {
+    "exposure_limit_type": {
       "type": [
         "null",
         "string"
       ]
     },
-    "state": {
+    "holder_key": {
       "type": [
         "null",
         "string"
@@ -93,12 +90,43 @@
         "string"
       ]
     },
+    "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "start_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
+    },
+    "state": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "sub_state": {
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "custom_fields": {
       "anyOf": [

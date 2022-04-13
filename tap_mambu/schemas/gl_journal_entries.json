@@ -2,6 +2,12 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "amount": {
       "type": [
         "null",
@@ -9,11 +15,18 @@
       ],
       "format": "singer.decimal"
     },
-    "notes": {
+    "assigned_branch_key": {
       "type": [
         "null",
         "string"
       ]
+    },
+    "booking_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
     },
     "creation_date": {
       "type": [
@@ -22,46 +35,16 @@
       ],
       "format": "date-time"
     },
-    "product_key": {
+    "encoded_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "type": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "assigned_branch_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "transaction_id": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "user_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "entry_i_d": {
+    "entry_id": {
       "type": [
         "null",
         "integer"
-      ]
-    },
-    "account_key": {
-      "type": [
-        "null",
-        "string"
       ]
     },
     "foreign_amount": {
@@ -78,6 +61,25 @@
           ],
           "additionalProperties": false,
           "properties": {
+            "encoded_key": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "end_date": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "from_currency_code": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
             "rate": {
               "type": [
                 "null",
@@ -85,7 +87,7 @@
               ],
               "format": "singer.decimal"
             },
-            "end_date": {
+            "start_date": {
               "type": [
                 "null",
                 "string"
@@ -97,25 +99,6 @@
                 "null",
                 "string"
               ]
-            },
-            "encoded_key": {
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            "from_currency_code": {
-              "type": [
-                "null",
-                "string"
-              ]
-            },
-            "start_date": {
-              "type": [
-                "null",
-                "string"
-              ],
-              "format": "date-time"
             }
           }
         },
@@ -143,25 +126,6 @@
         }
       }
     },
-    "reversal_entry_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "encoded_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "booking_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
     "gl_account": {
       "type": [
         "null",
@@ -169,48 +133,10 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "migration_event_key": {
+        "activated": {
           "type": [
             "null",
-            "string"
-          ]
-        },
-        "last_modified_date": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "format": "date-time"
-        },
-        "gl_code": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "usage": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "description": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "creation_date": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "format": "date-time"
-        },
-        "type": {
-          "type": [
-            "null",
-            "string"
+            "boolean"
           ]
         },
         "allow_manual_journal_entries": {
@@ -226,17 +152,12 @@
           ],
           "format": "singer.decimal"
         },
-        "name": {
+        "creation_date": {
           "type": [
             "null",
             "string"
-          ]
-        },
-        "encoded_key": {
-          "type": [
-            "null",
-            "string"
-          ]
+          ],
+          "format": "date-time"
         },
         "currency": {
           "type": [
@@ -253,24 +174,137 @@
             }
           }
         },
+        "description": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "encoded_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "gl_code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "last_modified_date": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "date-time"
+        },
+        "migration_event_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "name": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
         "strip_trailing_zeros": {
           "type": [
             "null",
             "boolean"
           ]
         },
-        "activated": {
+        "type": {
           "type": [
             "null",
-            "boolean"
+            "string"
+          ]
+        },
+        "usage": {
+          "type": [
+            "null",
+            "string"
           ]
         }
       }
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "product_key": {
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "product_type": {
       "type": [
         "null",
         "string"
+      ]
+    },
+    "reversal_entry_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "transaction_id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "user_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "custom_fields": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_set_id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
       ]
     }
   }
