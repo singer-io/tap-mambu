@@ -916,6 +916,7 @@ def sync(client, config, catalog, state):
                     "credit_arrangements",
                     "custom_field_sets",
                     "deposit_accounts",
+                    "deposit_products",
                     "deposit_transactions",
                     "gl_accounts",
                     "gl_journal_entries",
