@@ -921,8 +921,11 @@
               }
             }
           }
+        },
+        {
+          "type": "null"
         }
-      }
+      ]
     },
     "type": {
       "type": [
@@ -959,19 +962,10 @@
             }
           }
         },
-        "days_in_year": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "interest_calculation_balance": {
-          "type": [
-            "null",
-            "string"
-          ]
+        {
+          "type": "null"
         }
-      }
+      ]
     }
   }
 }
