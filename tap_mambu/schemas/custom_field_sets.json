@@ -298,6 +298,126 @@
           "type": "null"
         }
       ]
+    },
+    "edit_rights": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "all_users": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "roles": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "creation_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "view_rights": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "all_users": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "roles": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "value_validation_settings": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "validation_pattern": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "unique": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "available_for": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "dependent_field_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "id": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "state": {
+      "type": [
+        "null",
+        "string"
+      ]
     }
   }
 }
