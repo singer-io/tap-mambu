@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 from refactor_tests.constants import config_json
 from refactor_tests.tap_generators import setup_generator_base_test
-from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_available_streams
-from tap_mambu.tap_mambu_refactor.tap_generators.no_pagination_generator import NoPaginationGenerator
+from tap_mambu.helpers.generator_processor_pairs import get_available_streams
+from tap_mambu.tap_generators.no_pagination_generator import NoPaginationGenerator
 
 
 def test_no_pagination_generators():

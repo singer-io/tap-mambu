@@ -66,3 +66,9 @@ def get_available_streams():
 def get_generator_processor_for_stream(stream: str):
     stream_generator_processor_dict = get_generator_processor_pairs()
     return stream_generator_processor_dict[stream]
+
+
+def get_stream_subtypes(stream: str):
+    if stream in ["gl_accounts"]:
+        return ["ASSET", "LIABILITY", "EQUITY", "INCOME", "EXPENSE"]
+    return ["self"]

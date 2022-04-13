@@ -14,6 +14,13 @@ class TapGenerator(ABC):
         self.config = config
         self.state = state
         self.sub_type = sub_type
+
+        # Define parameters inside init
+        self.params = dict()
+        self.time_extracted = 0
+        self.offset = 0
+
+        # Initialize parameters
         self._init_config()
         self._init_endpoint_config()
         self._init_endpoint_body()
@@ -88,7 +95,8 @@ class TapGenerator(ABC):
     def fetch_batch(self):
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in self.params.items()])
 
-        LOGGER.info(f'(generator) Stream {self.stream_name} - URL for {self.stream_name} ({self.endpoint_api_method}, {self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
+        LOGGER.info(f'(generator) Stream {self.stream_name} - URL for {self.stream_name} ({self.endpoint_api_method}, '
+                    f'{self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
         LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
 
         response = self.client.request(

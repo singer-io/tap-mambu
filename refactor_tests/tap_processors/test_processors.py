@@ -8,12 +8,12 @@ import mock
 import os.path
 import inspect
 
-from tap_mambu.tap_mambu_refactor.helpers.generator_processor_pairs import get_generator_processor_for_stream, \
+from tap_mambu.helpers.generator_processor_pairs import get_generator_processor_for_stream, \
     get_available_streams
-from tap_mambu.tap_mambu_refactor.tap_generators.child_generator import ChildGenerator
-from tap_mambu.tap_mambu_refactor.tap_processors.child_processor import ChildProcessor
-from tap_mambu.tap_mambu_refactor.tap_processors.deduplication_processor import DeduplicationProcessor
-from tap_mambu.transform import convert
+from tap_mambu.tap_generators.child_generator import ChildGenerator
+from tap_mambu.tap_processors.child_processor import ChildProcessor
+from tap_mambu.tap_processors.deduplication_processor import DeduplicationProcessor
+from tap_mambu.helpers import convert
 
 from ..constants import config_json
 from ..helpers import GeneratorMock, IsInstanceMatcher
@@ -21,8 +21,8 @@ from ..helpers import GeneratorMock, IsInstanceMatcher
 FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixtures"
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_schema")
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_bookmark")
+@mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_schema")
+@mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_bookmark")
 def test_tap_processor_deduplication(mock_write_bookmark,
                                      mock_write_schema,  # Mock write_schema so we don't pollute the output
                                      capsys):
@@ -69,17 +69,17 @@ def test_tap_processor_deduplication(mock_write_bookmark,
     ], "Output should contain mocked records"
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.parent_processor.get_selected_streams")
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_schema")
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.TapProcessor.write_bookmark")
-@mock.patch("tap_mambu.tap_mambu_refactor.sync_endpoint_refactor")
+@mock.patch("tap_mambu.tap_processors.parent_processor.get_selected_streams")
+@mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_schema")
+@mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_bookmark")
+@mock.patch("tap_mambu.sync.sync_endpoint")
 def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                              mock_write_bookmark,
                                              mock_write_schema,  # Mock write_schema so we don't pollute the output
                                              mock_get_selected_streams,
                                              capsys):
     from tap_mambu import discover
-    from tap_mambu.tap_mambu_refactor.tap_processors.parent_processor import ParentProcessor
+    from tap_mambu.tap_processors.parent_processor import ParentProcessor
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
@@ -120,7 +120,7 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     # sync_endpoint_refactor called for every record (len(generator_data)) for every child_stream + once for parent
     assert actual_records_count == \
            len(generator_data) * (fake_children_record_count * len(processor.endpoint_child_streams) + 1), \
-        "Record count mismatch when adding child records"
+           "Record count mismatch when adding child records"
 
     mock_sync_endpoint_refactor.assert_called_with(client=client_mock,
                                                    catalog=processor.catalog,
@@ -138,10 +138,10 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     ], "Output should contain mocked records"
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
+@mock.patch("tap_mambu.helpers.write_state")
 def test_bookmarks(mock_write_state):
     from tap_mambu import discover
-    from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
+    from tap_mambu.tap_processors.processor import TapProcessor
 
     catalog = discover()
     client_mock = MagicMock()
@@ -160,10 +160,10 @@ def test_bookmarks(mock_write_state):
     mock_write_state.assert_called_once_with(expected_state)
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.write_schema")
+@mock.patch("tap_mambu.tap_processors.processor.write_schema")
 def test_write_schema(mock_write_schema):
     from singer.catalog import Catalog
-    from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
+    from tap_mambu.tap_processors.processor import TapProcessor
 
     catalog = Catalog.load(f"{FIXTURES_PATH}/processor_catalog.json")
     client_mock = MagicMock()
@@ -189,11 +189,11 @@ def test_write_schema(mock_write_schema):
     mock_write_schema.assert_called_with("loan_accounts", schema, stream_key_properties)
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.write_record")
-@mock.patch("tap_mambu.tap_mambu_refactor.tap_processors.processor.write_schema")
+@mock.patch("tap_mambu.tap_processors.processor.write_record")
+@mock.patch("tap_mambu.tap_processors.processor.write_schema")
 def test_write_exceptions(mock_write_schema, mock_write_record):
     from tap_mambu import discover
-    from tap_mambu.tap_mambu_refactor.tap_processors.processor import TapProcessor
+    from tap_mambu.tap_processors.processor import TapProcessor
     catalog = discover()
 
     mock_write_record.side_effect = [None, OSError("Mock Record Exception")]
@@ -244,7 +244,11 @@ def test_catalog_automatic_fields():
         catalog_stream = catalog.get_stream(stream)
         generator_classes, processor_class = get_generator_processor_for_stream(stream)
 
-        automatic_fields = [mdata["breadcrumb"][1] for mdata in catalog_stream.metadata if mdata["breadcrumb"] and mdata["metadata"]["inclusion"] == "automatic"]
+        automatic_fields = [
+            mdata["breadcrumb"][1]
+            for mdata in catalog_stream.metadata
+            if mdata["breadcrumb"] and mdata["metadata"]["inclusion"] == "automatic"
+        ]
 
         generator = None
         for generator_class in generator_classes:
@@ -255,7 +259,8 @@ def test_catalog_automatic_fields():
                                         sub_type="self",
                                         **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
             if generator.endpoint_bookmark_field != "":
-                if generator.stream_name not in ["audit_trail"]:  # Those streams do not respect the camelCase convention for field names
+                # Those streams do not respect the camelCase convention for field names
+                if generator.stream_name not in ["audit_trail"]:
                     assert "_" not in generator.endpoint_bookmark_field,\
                         f"Generator bookmark field for '{stream}' stream should be in camelCase!"
                 assert convert(generator.endpoint_bookmark_field) in automatic_fields,\

@@ -9,7 +9,7 @@ FIXTURES_PATH = f"{os.path.dirname(os.path.abspath(inspect.stack()[0][1]))}/Fixt
 
 def test_get_selected_streams():
     from singer.catalog import Catalog
-    from tap_mambu.tap_mambu_refactor.helpers import get_selected_streams
+    from tap_mambu.helpers import get_selected_streams
     catalog = Catalog.load(f"{FIXTURES_PATH}/catalog.json")
     selected_streams = get_selected_streams(catalog)
     expected_streams = ["loan_accounts", "loan_repayments", "audit_trail"]
@@ -17,7 +17,7 @@ def test_get_selected_streams():
 
 
 def test_get_bookmark():
-    from tap_mambu.tap_mambu_refactor.helpers import get_bookmark
+    from tap_mambu.helpers import get_bookmark
     state = {"currently_syncing": "loan_accounts",
              "bookmarks": {"loan_accounts": "2021-10-01T00:00:00Z"}}
     assert get_bookmark(state, "loan_accounts", "self", "2021-06-01T00:00:00Z") == "2021-10-01T00:00:00Z"
@@ -31,7 +31,7 @@ def test_get_bookmark():
 
 
 def test_get_bookmark_sub_type():
-    from tap_mambu.tap_mambu_refactor.helpers import get_bookmark
+    from tap_mambu.helpers import get_bookmark
     state = {"currently_syncing": "loan_accounts",
              "bookmarks": {"loan_accounts": {
                  "1": "2021-10-01T00:00:00Z"
@@ -39,9 +39,9 @@ def test_get_bookmark_sub_type():
     assert get_bookmark(state, "loan_accounts", "1", "2021-06-01T00:00:00Z") == "2021-10-01T00:00:00Z"
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
+@mock.patch("tap_mambu.helpers.write_state")
 def test_write_bookmark(mock_write_state):
-    from tap_mambu.tap_mambu_refactor.helpers import write_bookmark
+    from tap_mambu.helpers import write_bookmark
 
     state = {"currently_syncing": "loan_accounts"}
     write_bookmark(state, "loan_accounts", "self", "2021-10-01T00:00:00Z")
@@ -57,9 +57,9 @@ def test_write_bookmark(mock_write_state):
                                          "bookmarks": {"loan_accounts": "2021-11-01T00:00:00Z"}})
 
 
-@mock.patch("tap_mambu.tap_mambu_refactor.helpers.write_state")
+@mock.patch("tap_mambu.helpers.write_state")
 def test_write_bookmark_sub_type(mock_write_state):
-    from tap_mambu.tap_mambu_refactor.helpers import write_bookmark
+    from tap_mambu.helpers import write_bookmark
 
     state = {"currently_syncing": "loan_accounts"}
     write_bookmark(state, "loan_accounts", "1", "2021-10-01T00:00:00Z")
