@@ -8,6 +8,7 @@ from ..tap_generators.credit_arrangements_generator import CreditArrangementsGen
 from ..tap_generators.custom_field_sets_generator import CustomFieldSetsGenerator
 from ..tap_generators.deposit_accounts_generator import DepositAccountsGenerator
 from ..tap_generators.deposit_cards_generator import DepositCardsGenerator
+from ..tap_generators.gl_accounts_generator import GlAccountsGenerator
 from ..tap_generators.gl_journal_entries_generator import GlJournalEntriesGenerator
 from ..tap_generators.installments_generator import InstallmentsGenerator
 from ..tap_generators.groups_generator import GroupsGenerator
@@ -40,6 +41,7 @@ def get_generator_processor_pairs():
         "credit_arrangements": ((CreditArrangementsGenerator,), TapProcessor),
         "custom_field_sets": ((CustomFieldSetsGenerator,), TapProcessor),
         "deposit_accounts": ((DepositAccountsGenerator,), DepositAccountsProcessor),
+        "gl_accounts": ((GlAccountsGenerator,), TapProcessor),
         "gl_journal_entries": ((GlJournalEntriesGenerator,), TapProcessor),
         "groups": ((GroupsGenerator,), TapProcessor),
         "index_rate_sources": ((IndexRateSourcesGenerator,), TapProcessor),
