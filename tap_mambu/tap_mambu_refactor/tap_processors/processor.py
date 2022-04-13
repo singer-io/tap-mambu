@@ -61,7 +61,7 @@ class TapProcessor(ABC):
         # otherwise we can't decide how to merge records
         if len(generator_values) == 1 and not self.endpoint_deduplication_key:
             # We won't merge records, as there is only one generator and no deduplication key
-            return list(generator_values.generator_values.items())[0]
+            return list(generator_values.items())[0]
 
         # Find lowest value in the list, and if two or more are equal, find max bookmark
         min_record_key = None
@@ -120,7 +120,7 @@ class TapProcessor(ABC):
                 # Remove any record with the same deduplication_key from the list
                 # (so we don't process the same record twice)
                 for iterator in self.generator_values.keys():
-                    if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
+                    if self.endpoint_deduplication_key is None or record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
                         self.generator_values[iterator] = None
 
         self.write_bookmark()
