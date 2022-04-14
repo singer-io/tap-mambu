@@ -3,6 +3,7 @@ from typing import List
 from singer import utils, get_logger
 
 from ..helpers import transform_json
+from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -99,15 +100,16 @@ class TapGenerator(ABC):
                     f'{self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
         LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
 
-        response = self.client.request(
-            method=self.endpoint_api_method,
-            path=self.endpoint_path,
-            version=self.endpoint_api_version,
-            apikey_type=self.endpoint_api_key_type,
-            params=endpoint_querystring,
-            endpoint=self.stream_name,
-            json=self.endpoint_body
-        )
+        with PerformanceMetrics(generator=True):
+            response = self.client.request(
+                method=self.endpoint_api_method,
+                path=self.endpoint_path,
+                version=self.endpoint_api_version,
+                apikey_type=self.endpoint_api_key_type,
+                params=endpoint_querystring,
+                endpoint=self.stream_name,
+                json=self.endpoint_body
+            )
 
         self.time_extracted = utils.now()
         LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')

@@ -2,6 +2,7 @@ import singer
 
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
 from .helpers.generator_processor_pairs import get_generator_processor_for_stream, get_stream_subtypes
+from .helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = singer.get_logger()
 
@@ -31,6 +32,8 @@ def sync_endpoint(client, catalog, state,
 def sync_all_streams(client, config, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
+
+    PerformanceMetrics.set_generator_batch_size(int(config.get("page_size", 500)))
     
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))
@@ -67,6 +70,7 @@ def sync_all_streams(client, config, catalog, state):
                 LOGGER.info('START Syncing: {}, Type: {}'.format(stream_name, sub_type))
 
                 update_currently_syncing(state, stream_name)
+                PerformanceMetrics.reset_metrics()
                 total_records = sync_endpoint(
                     client=client,
                     catalog=catalog,
@@ -81,3 +85,6 @@ def sync_all_streams(client, config, catalog, state):
                                 stream_name,
                                 total_records))
                 LOGGER.info('FINISHED Syncing: {}'.format(stream_name))
+                statistics = PerformanceMetrics.get_statistics()
+                LOGGER.info(f"Average Generator Records/s: {round(1/statistics['generator'])} [98th percentile: {round(1/statistics['generator_98th'])}]")
+                LOGGER.info(f"Average Processor Records/s: {round(1/statistics['processor'])} [98th percentile: {round(1/statistics['processor_98th'])}]")
