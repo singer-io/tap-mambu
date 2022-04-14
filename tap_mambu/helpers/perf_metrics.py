@@ -65,6 +65,7 @@ class PerformanceMetrics:
 
     @classmethod
     def get_statistics(cls):
+        extraction_duration = time.monotonic() - cls._metrics_start_time
         generator_durations = sorted([record[1] - record[0] for record in cls._generator_metrics], reverse=True)
         processor_durations = sorted([record[1] - record[0] for record in cls._processor_metrics], reverse=True)
 
@@ -78,4 +79,6 @@ class PerformanceMetrics:
         processor_avg_98th = sum(processor_durations_98th) / len(processor_durations_98th)
 
         return dict(generator=generator_avg, generator_98th=generator_avg_98th,
-                    processor=processor_avg, processor_98th=processor_avg_98th)
+                    processor=processor_avg, processor_98th=processor_avg_98th,
+                    records=len(processor_durations)//extraction_duration,
+                    extraction=extraction_duration)
