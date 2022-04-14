@@ -30,7 +30,7 @@ unit-test-job:
     - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Running unit tests..."
-    - coverage run --branch --source=tap_mambu -m pytest refactor_tests
+    - coverage run --branch --source=tap_mambu -m pytest mambu_tests
     - coverage json
     - coverage xml -i
     - mkdir coverage-reports
