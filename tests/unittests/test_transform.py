@@ -1,5 +1,5 @@
-from tap_mambu import transform_json
 import unittest
+from tap_mambu.helpers import transform_json
 
 
 class TestTransformJson(unittest.TestCase):
