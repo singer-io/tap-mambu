@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.5.0
+  * New stream, finished non-breaking refactor, new fields [#74](https://github.com/singer-io/tap-mambu/pull/74)
+    * Added new stream `interest_accrual_breakdown`
+    * Finished backwards-compatible refactoring
+    * `loan_transactions` field updates
+      * Fixed typo from `tax_interest_from_arrears_amount` to `tax_on_interest_from_arrears_amount`
+      * Added many fields
+    * `tasks` added `task_link_key` field
+
 ## 2.4.2
   * Refactor `communications`, `deposit_transactions`, `groups`, `index_rate_sources`, `installments`, `loan_transactions`, and `tasks` to the new sync pattern [#72](https://github.com/singer-io/tap-mambu/pull/72)
 
