@@ -85,8 +85,18 @@ def sync_all_streams(client, config, catalog, state):
                                 stream_name,
                                 total_records))
                 LOGGER.info('FINISHED Syncing: {}'.format(stream_name))
+
                 statistics = PerformanceMetrics.get_statistics()
-                LOGGER.info(f"Average Generator Records/s: {round(1/statistics['generator'])} [98th percentile: {round(1/statistics['generator_98th'])}]")
-                LOGGER.info(f"Average Processor Records/s: {round(1/statistics['processor'])} [98th percentile: {round(1/statistics['processor_98th'])}]")
+
+                LOGGER.info(f"Average Generator Records/s: {round(1/statistics['generator'])} "
+                            f"[98th percentile: {round(1/statistics['generator_98th'])}]")
+
+                LOGGER.info(f"Average Processor Records/s: {round(1/statistics['processor'])} "
+                            f"[98th percentile: {round(1/statistics['processor_98th'])}]")
+
+                LOGGER.info(f"Total Generator Wait (s): {round(statistics['generator_wait'], 1)} ")
+
+                LOGGER.info(f"Total Processor Wait (s): {round(statistics['processor_wait'], 1)} ")
+
                 LOGGER.info(f"Average Records/s: {statistics['records']}")
                 LOGGER.info(f"Total Duration: {statistics['extraction']}")

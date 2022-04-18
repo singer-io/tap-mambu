@@ -60,7 +60,7 @@ class TapProcessor(ABC):
         with metrics.record_counter(self.stream_name) as counter:
             for record in self.generators[0]:
                 # Process the record
-                with PerformanceMetrics(processor=True):
+                with PerformanceMetrics(metric_name="processor"):
                     is_processed = self.process_record(record, self.generators[0].time_extracted,
                                                        self.generators[0].endpoint_bookmark_field)
                 if is_processed:

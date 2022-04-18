@@ -84,6 +84,7 @@ class TapGenerator(ABC):
         return self.buffer.pop(0)
 
     def __next__(self):
+        # with PerformanceMetrics(metric_name="processor_wait"):
         return self.next()
 
     def prepare_batch(self):
@@ -100,7 +101,7 @@ class TapGenerator(ABC):
                     f'{self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
         LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
 
-        with PerformanceMetrics(generator=True):
+        with PerformanceMetrics(metric_name="generator"):
             response = self.client.request(
                 method=self.endpoint_api_method,
                 path=self.endpoint_path,

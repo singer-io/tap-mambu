@@ -6,36 +6,36 @@ from matplotlib.lines import Line2D
 
 class PerformanceMetrics:
     _metrics_start_time = time.monotonic()
-    _generator_metrics = list()
-    _processor_metrics = list()
+    _metrics = dict(generator=list(),
+                    processor=list(),
+                    generator_wait=list(),
+                    processor_wait=list())
     _generator_batch_size = 500
 
-    def __init__(self, generator=False, processor=False):
+    def __init__(self, metric_name):
         self.start_time = None
-        if generator == processor:
-            raise ValueError("Either generator or processor argument must be True, but not both!")
-        self.is_generator_metric = generator
-        self.is_processor_metric = processor
+        if metric_name not in self._metrics:
+            raise ValueError("One argument must be True, but only one!")
+        self._metric_name = metric_name
 
     def __enter__(self):
         self.start_time = time.monotonic()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         metric = (self.start_time, time.monotonic())
-        if self.is_generator_metric:
-            self._generator_metrics.append(metric)
-        elif self.is_processor_metric:
-            self._processor_metrics.append(metric)
+        self._metrics[self._metric_name].append(metric)
 
     @classmethod
     def reset_metrics(cls):
         cls._metrics_start_time = time.monotonic()
-        cls._generator_metrics = list()
-        cls._processor_metrics = list()
+        cls._metrics = dict(generator=list(),
+                            processor=list(),
+                            generator_wait=list(),
+                            processor_wait=list())
 
     @classmethod
     def set_generator_batch_size(cls, batch_size):
-        if cls._generator_metrics or cls._processor_metrics:
+        if any(cls._metrics.values()):
             raise RuntimeError("You cannot change batch size after measuring metrics!")
         cls._generator_batch_size = batch_size
 
@@ -44,9 +44,9 @@ class PerformanceMetrics:
         return self._generator_batch_size
 
     @classmethod
-    def show_graph(cls):
-        all_timestamps = [(*generator_time, "r", "Generator") for generator_time in cls._generator_metrics] + \
-                         [(*processor_time, "b", "Processor") for processor_time in cls._processor_metrics]
+    def show_thread_graph(cls):
+        all_timestamps = [(*generator_time, "r", "Generator") for generator_time in cls._metrics["generator"]] + \
+                         [(*processor_time, "b", "Processor") for processor_time in cls._metrics["processor"]]
         counter = 0
         total_time = 0
         for timestamp in sorted(all_timestamps, key=lambda ts: ts[0]):
@@ -64,21 +64,44 @@ class PerformanceMetrics:
         plt.show()
 
     @classmethod
+    def show_request_duration_graph(cls):
+        data_points = [record[1] - record[0] for record in cls._metrics["generator"]]
+        x = list(range(len(data_points)))
+        plt.bar(x, data_points)
+        plt.show()
+
+
+    @staticmethod
+    def get_sum(metric):
+        if not metric:
+            return 0
+        return sum([record[1] - record[0] for record in metric])
+
+    @staticmethod
+    def get_avg_with_98th(metric):
+        if not metric:
+            return 0, 0
+        values_total = sorted([record[1] - record[0] for record in metric], reverse=True)
+        values_98th = values_total[:math.ceil(len(values_total) * 2 / 100)]
+
+        average = sum(values_total) / len(values_total)
+        average_98th = sum(values_98th) / len(values_98th)
+
+        return average, average_98th
+
+    @classmethod
     def get_statistics(cls):
         extraction_duration = time.monotonic() - cls._metrics_start_time
-        generator_durations = sorted([record[1] - record[0] for record in cls._generator_metrics], reverse=True)
-        processor_durations = sorted([record[1] - record[0] for record in cls._processor_metrics], reverse=True)
 
-        generator_durations_98th = generator_durations[:math.ceil(len(generator_durations) * 2 / 100)]
-        processor_durations_98th = processor_durations[:math.ceil(len(processor_durations) * 2 / 100)]
+        generator_avg, generator_avg_98th = cls.get_avg_with_98th(cls._metrics["generator"])
+        processor_avg, processor_avg_98th = cls.get_avg_with_98th(cls._metrics["processor"])
+        generator_wait = cls.get_sum(cls._metrics["generator_wait"])
+        processor_wait = cls.get_sum(cls._metrics["processor_wait"])
 
-        generator_avg = sum(generator_durations) / len(generator_durations) / cls._generator_batch_size
-        generator_avg_98th = sum(generator_durations_98th) / len(generator_durations_98th) / cls._generator_batch_size
-
-        processor_avg = sum(processor_durations) / len(processor_durations)
-        processor_avg_98th = sum(processor_durations_98th) / len(processor_durations_98th)
-
-        return dict(generator=generator_avg, generator_98th=generator_avg_98th,
+        return dict(generator=generator_avg / cls._generator_batch_size,
+                    generator_98th=generator_avg_98th / cls._generator_batch_size,
                     processor=processor_avg, processor_98th=processor_avg_98th,
-                    records=len(processor_durations)//extraction_duration,
+                    generator_wait=generator_wait,
+                    processor_wait=processor_wait,
+                    records=len(cls._metrics["processor"]) // extraction_duration,
                     extraction=extraction_duration)
