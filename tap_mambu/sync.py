@@ -88,11 +88,13 @@ def sync_all_streams(client, config, catalog, state):
 
                 statistics = PerformanceMetrics.get_statistics()
 
-                LOGGER.info(f"Average Generator Records/s: {round(1/statistics['generator'])} "
-                            f"[98th percentile: {round(1/statistics['generator_98th'])}]")
+                if statistics['generator'] and statistics['generator_98th']:
+                    LOGGER.info(f"Average Generator Records/s: {round(1/statistics['generator'])} "
+                                f"[98th percentile: {round(1/statistics['generator_98th'])}]")
 
-                LOGGER.info(f"Average Processor Records/s: {round(1/statistics['processor'])} "
-                            f"[98th percentile: {round(1/statistics['processor_98th'])}]")
+                if statistics['processor'] and statistics['processor_98th']:
+                    LOGGER.info(f"Average Processor Records/s: {round(1/statistics['processor'])} "
+                                f"[98th percentile: {round(1/statistics['processor_98th'])}]")
 
                 LOGGER.info(f"Total Generator Wait (s): {round(statistics['generator_wait'], 1)} ")
 
