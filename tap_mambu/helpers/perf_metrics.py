@@ -1,7 +1,5 @@
 import math
 import time
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
 
 class PerformanceMetrics:
@@ -45,6 +43,9 @@ class PerformanceMetrics:
 
     @classmethod
     def show_thread_graph(cls):
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+
         all_timestamps = [(*generator_time, "r", "Generator") for generator_time in cls._metrics["generator"]] + \
                          [(*processor_time, "b", "Processor") for processor_time in cls._metrics["processor"]]
         counter = 0
@@ -65,11 +66,13 @@ class PerformanceMetrics:
 
     @classmethod
     def show_request_duration_graph(cls):
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+
         data_points = [record[1] - record[0] for record in cls._metrics["generator"]]
         x = list(range(len(data_points)))
         plt.bar(x, data_points)
         plt.show()
-
 
     @staticmethod
     def get_sum(metric):
