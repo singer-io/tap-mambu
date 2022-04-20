@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.1
+  * Hotfix for edge cases introduced in version 2.5.0 [#76](https://github.com/singer-io/tap-mambu/pull/76)
+
 ## 2.5.0
   * New stream, finished non-breaking refactor, new fields [#74](https://github.com/singer-io/tap-mambu/pull/74)
     * Added new stream `interest_accrual_breakdown`
