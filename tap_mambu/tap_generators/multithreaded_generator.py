@@ -73,10 +73,10 @@ class MultithreadedGenerator(TapGenerator):
                     futures_to_delete.append(future)
                     running_threads -= 1
 
-                    for record in raw_batch:
-                        for key, value in record['activity'].items():
-                            record[key] = value
-                        del record['activity']
+                    # for record in raw_batch:
+                    #     for key, value in record['activity'].items():
+                    #         record[key] = value
+                    #     del record['activity']
                     for record in transform_json(raw_batch, self.stream_name):
                         self.buffer.append(record)
 
