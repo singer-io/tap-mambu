@@ -21,34 +21,44 @@
       ]
     },
     "custom_settings": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "encoded_key": {
-          "type": [
-            "null",
-            "string"
-          ]
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "loan_transaction_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "source": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "type": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
         },
-        "loan_transaction_key": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "source": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "type": {
-          "type": [
-            "null",
-            "string"
-          ]
+        {
+          "type": "null"
         }
-      }
+      ]
     },
     "due_date": {
       "type": [
@@ -185,49 +195,59 @@
       ]
     },
     "repayment_unapplied_fee_details": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "encoded_key": {
-          "type": [
-            "null",
-            "string"
-          ]
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "fees_due": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
+              },
+              "index_in_list": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
+              },
+              "predefined_fee_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "repayment_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "tax_on_fee_due": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "format": "singer.decimal"
+              }
+            }
+          }
         },
-        "fees_due": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "format": "singer.decimal"
-        },
-        "index_in_list": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "format": "singer.decimal"
-        },
-        "predefined_fee_key": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "repayment_key": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "tax_on_fee_due": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "format": "singer.decimal"
+        {
+          "type": "null"
         }
-      }
+      ]
     },
     "state": {
       "type": [
