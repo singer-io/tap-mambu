@@ -18,7 +18,7 @@ class AuditTrailProcessor(TapProcessor):
         self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
         if type(self.last_bookmark_value) is list:
             if len(self.last_bookmark_value) != 2:
-                raise ValueError("Cannot parse audit trail bookmark because the length of the list is wrong!")
+                raise ValueError("Cannot parse audit trail bookmark from list because we expect 2 values!")
             self.last_bookmark_value = self.last_bookmark_value[0]
         self.max_bookmark_value = self.last_bookmark_value
 
