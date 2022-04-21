@@ -1,6 +1,6 @@
 from .processor import TapProcessor
 from singer.utils import strptime_to_utc
-from ..helpers import convert, write_bookmark
+from ..helpers import convert, write_bookmark, get_bookmark
 
 
 class AuditTrailProcessor(TapProcessor):
@@ -12,6 +12,15 @@ class AuditTrailProcessor(TapProcessor):
     def _init_endpoint_config(self):
         # There are no unique fields in this stream
         self.endpoint_deduplication_key = None
+
+    def _init_bookmarks(self):
+        super(AuditTrailProcessor, self)._init_bookmarks()
+        self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+        if type(self.last_bookmark_value) is list:
+            if len(self.last_bookmark_value) != 2:
+                raise ValueError("Cannot parse audit trail bookmark from list because we expect 2 values!")
+            self.last_bookmark_value = self.last_bookmark_value[0]
+        self.max_bookmark_value = self.last_bookmark_value
 
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
