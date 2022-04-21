@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.2
+  * Hotfix for audit_trail bookmarking issue [#79](https://github.com/singer-io/tap-mambu/pull/79)
+
 ## 2.5.1
   * Hotfix for edge cases introduced in version 2.5.0 [#76](https://github.com/singer-io/tap-mambu/pull/76)
 
