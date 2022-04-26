@@ -5,6 +5,7 @@ from singer.utils import strptime_to_utc, now as singer_now
 
 from ..helpers import transform_datetime, convert, get_bookmark, write_bookmark
 from ..helpers.exceptions import NoDeduplicationCapabilityException
+from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -59,8 +60,10 @@ class TapProcessor(ABC):
         with metrics.record_counter(self.stream_name) as counter:
             for record in self.generators[0]:
                 # Process the record
-                if self.process_record(record, self.generators[0].time_extracted,
-                                       self.generators[0].endpoint_bookmark_field):
+                with PerformanceMetrics(metric_name="processor"):
+                    is_processed = self.process_record(record, self.generators[0].time_extracted,
+                                                       self.generators[0].endpoint_bookmark_field)
+                if is_processed:
                     record_count += 1
                     record_count += self._process_child_records(record)
                     counter.increment()
