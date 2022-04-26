@@ -208,7 +208,7 @@
                   "string"
                 ]
               },
-              "fees_due": {
+              "fee_due": {
                 "type": [
                   "null",
                   "string"

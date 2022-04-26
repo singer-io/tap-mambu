@@ -64,18 +64,6 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "branchKey": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "clientKey": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "field_change_name": {
                 "type": [
                   "null",
@@ -100,18 +88,6 @@
                   "integer"
                 ]
               },
-              "loanAccountKey": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "loanProductKey": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
               "new_value": {
                 "type": [
                   "null",
@@ -123,12 +99,6 @@
                   "null",
                   "string"
                 ]
-              },
-              "transaction_id": {
-                "type": [
-                  "null",
-                  "integer"
-                ]
               }
             }
           }
@@ -139,6 +109,12 @@
       ]
     },
     "gl_accounts_closure_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "gl_account_key": {
       "type": [
         "null",
         "string"
@@ -192,6 +168,12 @@
         "string"
       ]
     },
+    "savings_account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "savings_account_name": {
       "type": [
         "null",
@@ -229,7 +211,7 @@
       ],
       "format": "date-time"
     },
-    "transaction_ID": {
+    "transaction_id": {
       "type": [
         "null",
         "integer"
