@@ -133,13 +133,15 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "last_penalty_applied_date": {
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "notes": {
       "type": [
@@ -192,7 +194,8 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "repayment_unapplied_fee_details": {
       "anyOf": [
