@@ -1,5 +1,6 @@
 import backoff
 import requests
+import requests.adapters
 from requests.exceptions import ConnectionError
 from singer import metrics
 import singer
@@ -114,6 +115,8 @@ class MambuClient(object):
         self.__user_agent = user_agent
         self.__apikey = apikey
         self.__session = requests.Session()
+        # self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=500)
+        # self.__session.mount("https://", self.__adapter)
         self.__verified = False
         self.__apikey_audit = apikey_audit
 
