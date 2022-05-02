@@ -2,6 +2,7 @@ import singer
 
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
 from .helpers.generator_processor_pairs import get_generator_processor_for_stream, get_stream_subtypes
+from .helpers.multithreaded_requests import MultithreadedRequestsPool
 from .helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = singer.get_logger()
@@ -102,3 +103,5 @@ def sync_all_streams(client, config, catalog, state):
 
                 LOGGER.info(f"Average Records/s: {statistics['records']}")
                 LOGGER.info(f"Total Duration: {statistics['extraction']}")
+
+    MultithreadedRequestsPool.shutdown()
