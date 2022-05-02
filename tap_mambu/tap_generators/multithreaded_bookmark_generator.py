@@ -106,6 +106,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
                                                                    self.endpoint_path, self.endpoint_api_method,
                                                                    self.endpoint_api_version,
+                                                                   self.endpoint_api_key_type,
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
         # wait for responses, and check them for errors
