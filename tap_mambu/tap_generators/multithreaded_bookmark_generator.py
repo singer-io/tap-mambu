@@ -19,7 +19,9 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         self.time_extracted = None
         self.static_params = dict(self.endpoint_params)
         self.offset = 0
-        self.limit = self.client.page_size
+        self.overlap_window = 20
+        self.artificial_limit = self.client.page_size
+        self.limit = self.client.page_size + self.overlap_window
         self.batch_limit = 20000
         self.params = self.static_params
 
@@ -37,17 +39,16 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         # here we change the date to the new one,
         # in order to paginate through the data using date, resetting offset to 0
 
-    @staticmethod
-    def error_check_and_fix(a, b, overlap_window=20):
-        reunion = a[-overlap_window:]
-        for record in b[:overlap_window]:
+    def error_check_and_fix(self, a, b):
+        reunion = a[-self.overlap_window:]
+        for record in b[:self.overlap_window]:
             if record not in reunion:
                 reunion.append(record)
-        if len(reunion) > 2*overlap_window:
+        if len(reunion) >= 2*self.overlap_window:
             raise RuntimeError("Failed to error correct, aborting job.")
-        if 2*overlap_window > len(reunion) > overlap_window:
-            return reunion + [record for record in b[:overlap_window] if record not in reunion]
-        return reunion + b[overlap_window:]
+        if 2*self.overlap_window > len(reunion) > self.overlap_window:
+            return reunion + [record for record in b[:self.overlap_window] if record not in reunion]
+        return reunion + b[self.overlap_window:]
 
     @staticmethod
     def stop_all_request_threads(futures):
@@ -71,7 +72,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
     def _all_fetch_batch_steps(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
-        for offset in [offset for offset in range(0, 20000, self.limit)]:
+        for offset in [offset for offset in range(0, 20000, self.artificial_limit)]:
             self.offset = offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
@@ -88,7 +89,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            temp_buffer = self._transform_batch(future.result())
+            temp_buffer = self.transform_batch(future.result())
             if not final_buffer:
                 final_buffer += temp_buffer
                 continue

@@ -16,9 +16,8 @@ class ActivitiesGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
         self.endpoint_bookmark_field = "timestamp"
 
-    @staticmethod
-    def _transform_batch(batch):
-        for record in batch:
+    def transform_batch(self, batch):
+        for record in super(ActivitiesGenerator, self).transform_batch(batch):
             for key, value in record['activity'].items():
                 record[key] = value
             del record['activity']

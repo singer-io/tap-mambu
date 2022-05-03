@@ -94,8 +94,7 @@ class TapGenerator(ABC):
             **self.static_params
         }
 
-    @staticmethod
-    def _transform_batch(batch):
+    def transform_batch(self, batch):
         return batch
 
     def fetch_batch(self):
@@ -118,4 +117,4 @@ class TapGenerator(ABC):
 
         self.time_extracted = utils.now()
         LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')
-        return self._transform_batch(response)
+        return self.transform_batch(response)
