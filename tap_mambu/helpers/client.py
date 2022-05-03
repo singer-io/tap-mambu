@@ -56,6 +56,14 @@ class MambuInternalServiceError(MambuError):
     pass
 
 
+class MambuNoCredInConfig(MambuError):
+    pass
+
+
+class MambuNoSubdomainInConfig(MambuError):
+    pass
+
+
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: MambuBadRequestError,
     401: MambuUnauthorizedError,
@@ -135,13 +143,13 @@ class MambuClient(object):
         use_apikey = False
         if self.__username is None or self.__password is None:
             if self.__apikey is None:
-                raise Exception(
+                raise MambuNoCredInConfig(
                     'Error: Missing username or password, or apikey in config.json.'
                 )
             else:
                 use_apikey = True
         if self.__subdomain is None:
-            raise Exception('Error: Missing subdomain in cofig.json.')
+            raise MambuNoSubdomainInConfig('Error: Missing subdomain in config.json.')
         headers = {}
         # Endpoint: simple API call to return a single record (org settings) to test access
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings
@@ -219,6 +227,5 @@ class MambuClient(object):
 
         if response.status_code != 200:
             raise_for_error(response)
-        
-        return response.json()
 
+        return response.json()
