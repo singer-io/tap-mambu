@@ -46,8 +46,6 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                 reunion.append(record)
         if len(reunion) >= 2*self.overlap_window:
             raise RuntimeError("Failed to error correct, aborting job.")
-        if 2*self.overlap_window > len(reunion) > self.overlap_window:
-            return reunion + [record for record in b[:self.overlap_window] if record not in reunion]
         return reunion + b[self.overlap_window:]
 
     @staticmethod
@@ -99,7 +97,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                 stop_iteration = True
 
             try:
-                final_buffer += self.error_check_and_fix(final_buffer, temp_buffer)
+                final_buffer = final_buffer[:-self.overlap_window] + self.error_check_and_fix(final_buffer, temp_buffer)
             except RuntimeError:  # if errors are found
                 LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
                                  "Cleaning up...")
