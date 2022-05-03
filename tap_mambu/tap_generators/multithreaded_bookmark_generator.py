@@ -89,7 +89,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            temp_buffer = self.transform_batch(future.result())
+            temp_buffer = transform_json(self.transform_batch(future.result()), self.stream_name)
             if not final_buffer:
                 final_buffer += temp_buffer
                 continue
