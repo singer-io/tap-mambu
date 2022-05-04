@@ -64,6 +64,10 @@ class MambuNoSubdomainInConfig(MambuError):
     pass
 
 
+class MambuNoAuditApikeyInConfig(MambuError):
+    pass
+
+
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: MambuBadRequestError,
     401: MambuUnauthorizedError,
@@ -202,7 +206,7 @@ class MambuClient(object):
 
         if apikey_type == 'audit':
             if self.__apikey_audit is None:
-                raise Exception(
+                raise MambuNoAuditApikeyInConfig(
                     'Error: Missing apikey_audit in config.json.'
                 )
             else:
