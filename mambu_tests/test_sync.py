@@ -1,3 +1,4 @@
+import pytest
 import mock
 from mock import PropertyMock, call
 
@@ -91,6 +92,8 @@ def test_sync_all_streams_flow(mock_get_selected_streams,
 def test_sync_all_streams_no_selected_streams(mock_get_selected_streams, mock_singer_get_currently_syncing):
     mock_get_selected_streams.return_value = set()
     sync_all_streams('client', {}, 'catalog', 'state')
+
+    mock_get_selected_streams.assert_called_with('catalog')
     mock_singer_get_currently_syncing.assert_not_called()
 
 
@@ -98,11 +101,29 @@ def test_sync_all_streams_no_selected_streams(mock_get_selected_streams, mock_si
 @mock.patch("tap_mambu.sync.get_selected_streams")
 def test_sync_all_streams_flow_child_stream(mock_get_selected_streams,
                                             mock_should_sync_stream):
-    child_streams = [stream_name for stream_name, pairs in get_generator_processor_pairs().items()
-                     for generator in pairs[0]
-                     if issubclass(generator, ChildGenerator)]
-    mock_get_selected_streams.return_value = child_streams
+    streams_without_child = []
+    child_streams = []
+
+    for stream_name, pairs in get_generator_processor_pairs().items():
+        for generator in pairs[0]:
+            if issubclass(generator, ChildGenerator):
+                child_streams.append(stream_name)
+            else:
+                streams_without_child.append(stream_name)
+
+    all_streams = streams_without_child + child_streams
+    mock_get_selected_streams.return_value = all_streams
+    mock_should_sync_stream.return_value = (None, None)
 
     sync_all_streams('client', {}, 'catalog', {})
 
-    mock_should_sync_stream.assert_not_called()
+    for stream_name in streams_without_child:
+        mock_should_sync_stream.assert_any_call(all_streams,
+                                                None,
+                                                stream_name)
+
+    for stream_name in child_streams:
+        with pytest.raises(AssertionError):
+            mock_should_sync_stream.assert_called_with(all_streams,
+                                                       None,
+                                                       stream_name)

@@ -9,18 +9,6 @@ from .constants import config_json
 
 
 @mock.patch("tap_mambu.helpers.client.MambuClient.check_access")
-def test_client_no_entry_check_access(mock_check_access):
-    _ = MambuClient(username=config_json.get('username'),
-                    password=config_json.get('password'),
-                    subdomain=config_json['subdomain'],
-                    page_size=int(config_json.get('page_size', 500)),
-                    user_agent=config_json['user_agent'],
-                    apikey='',
-                    apikey_audit='')
-    mock_check_access.assert_not_called()
-
-
-@mock.patch("tap_mambu.helpers.client.MambuClient.check_access")
 def test_client_entry_check_access(mock_check_access):
     client = MambuClient(username=config_json.get('username'),
                          password=config_json.get('password'),
@@ -29,6 +17,8 @@ def test_client_entry_check_access(mock_check_access):
                          user_agent=config_json['user_agent'],
                          apikey='',
                          apikey_audit='')
+
+    mock_check_access.assert_not_called()
     with client:
         mock_check_access.assert_called_once()
 
@@ -151,13 +141,14 @@ def test_client_request_get_flow(mock_check_access, mock_requests_session_reques
                                                                    'User-Agent': 'test_user_agent'})
     assert req_response == {'test_record': {'data1': 1, 'data2': 2}}
 
-    client.request(method='GET', path='test_path', apikey_type='audit')
-    mock_requests_session_request.assert_called_with(method='GET',
+    client.request(method='POST', path='test_path', apikey_type='audit')
+    mock_requests_session_request.assert_called_with(method='POST',
                                                      url='https://test_subdomain.mambu.com/api/test_path',
                                                      json=None,
                                                      headers={'Accept': 'application/vnd.mambu.v2+json',
                                                               'apikey': 'test_apikey_audit',
-                                                              'User-Agent': 'test_user_agent'})
+                                                              'User-Agent': 'test_user_agent',
+                                                              'Content-Type': 'application/json'})
     mock_metrics_http_request_timer.assert_called_with(None)
     mock_check_access.assert_called_once()
 
@@ -195,7 +186,7 @@ def test_client_request_post_flow(mock_check_access, mock_requests_session_reque
                                                                    'User-Agent': 'test_user_agent',
                                                                    'Content-Type': 'application/json'})
 
-    client.request(method='POST',
+    client.request(method='GET',
                    url='www.api.test_url',
                    json={'test': 'filter'},
                    version='v_test',
@@ -203,12 +194,12 @@ def test_client_request_post_flow(mock_check_access, mock_requests_session_reque
                             'User-Agent': 'test_user_agent',
                             'Content-Type': 'test_content_type'},
                    endpoint='test_endpoint_second')
-    mock_requests_session_request.assert_called_with(method='POST',
+    mock_requests_session_request.assert_called_with(method='GET',
                                                      url='www.api.test_url',
                                                      json={'test': 'filter'},
                                                      headers={'Accept': 'test_accept_header',
                                                               'User-Agent': 'test_user_agent',
-                                                              'Content-Type': 'application/json'})
+                                                              'Content-Type': 'test_content_type'})
     mock_metrics_http_request_timer.assert_called_with('test_endpoint_second')
     mock_check_access.assert_called_once()
 
