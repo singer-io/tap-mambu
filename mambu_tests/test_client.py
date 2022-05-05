@@ -1,10 +1,11 @@
+import requests
 import pytest
 import mock
 from mock import Mock
 
 from tap_mambu import MambuClient
-from tap_mambu.helpers.client import MambuNoCredInConfig, MambuNoSubdomainInConfig, MambuNoAuditApikeyInConfig, \
-    Server5xxError
+from tap_mambu.helpers.client import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
+    MambuNoAuditApikeyInConfig, Server5xxError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
 from .constants import config_json
 
 
@@ -266,3 +267,70 @@ def test_client_request_raise_for_error(mock_check_access,
 
         client.request(method='GET')
         mock_raise_for_error.assert_called_with(response)
+
+
+@mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
+def test_raise_for_error_call(mock_requests_raise_for_status):
+    response = Mock()
+    response.raise_for_status = mock_requests_raise_for_status
+
+    raise_for_error(response)
+
+    # tested if the raise_for_status function was called
+    mock_requests_raise_for_status.assert_called_once()
+
+
+@mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
+def test_raise_for_error_no_content(mock_requests_raise_for_status):
+    mock_requests_raise_for_status.side_effect = Mock(side_effect=requests.HTTPError('test'))
+    response = Mock()
+    response.content = []
+    response.raise_for_status = mock_requests_raise_for_status
+
+    func_response = raise_for_error(response)
+
+    # test case: when response content is empty -> the function should just return and do nothing
+    assert func_response is None
+    response.json.assert_not_called()
+
+    # test case: when something from the try/except HTTPError block throws ValueError, TypeError ->
+    # it should raise MambuError
+    response.content = None
+    with pytest.raises(MambuError):
+        raise_for_error(response)
+    response.json.assert_not_called()
+
+    # test case: when the response content isn't empty but it also doesn't contain "error" or "errorCode" ->
+    # it should raise MambuError
+    response.content = {'error': 404,
+                        'status': 404,
+                        'message': 'not found'}
+    response.json.return_value = {}
+    with pytest.raises(MambuError):
+        raise_for_error(response)
+    response.json.assert_called_once()
+
+
+@mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
+def test_raise_for_error_known_error_codes(mock_requests_raise_for_status):
+    mock_requests_raise_for_status.side_effect = Mock(side_effect=requests.HTTPError('test'))
+
+    for status_code in range(300, 501):
+        content = {'error': status_code,
+                   'status': status_code,
+                   'message': 'test'}
+        response = Mock()
+        response.content = content
+        response.json.return_value = content
+        response.raise_for_status = mock_requests_raise_for_status
+
+        # test if the exceptions are handled correctly, meaning ->
+        # - throw the custom exceptions for the defined ones
+        # - throw MambuError for others
+        if status_code not in ERROR_CODE_EXCEPTION_MAPPING:
+            with pytest.raises(MambuError):
+                raise_for_error(response)
+        else:
+            with pytest.raises(ERROR_CODE_EXCEPTION_MAPPING[status_code]):
+                raise_for_error(response)
+        response.json.assert_called_once()
