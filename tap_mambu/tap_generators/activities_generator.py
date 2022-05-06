@@ -15,11 +15,9 @@ class ActivitiesGenerator(TapGenerator):
         self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
         self.endpoint_bookmark_field = "timestamp"
 
-    def fetch_batch(self):
-        response = super(ActivitiesGenerator, self).fetch_batch()
-
-        for record in response:
+    def transform_batch(self, batch):
+        for record in super(ActivitiesGenerator, self).transform_batch(batch):
             for key, value in record['activity'].items():
                 record[key] = value
             del record['activity']
-        return response
+        return batch
