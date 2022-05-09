@@ -1,9 +1,10 @@
 from singer import utils
 from .generator import TapGenerator
+from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import transform_datetime, get_bookmark
 
 
-class ActivitiesGenerator(TapGenerator):
+class ActivitiesGenerator(MultithreadedBookmarkGenerator):
     def _init_endpoint_config(self):
         super(ActivitiesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "activities"

@@ -3,7 +3,7 @@ from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import transform_datetime, get_bookmark
 
 
-class ClientsGenerator(MultithreadedBookmarkGenerator):
+class ClientsGenerator(TapGenerator):
     def _init_endpoint_config(self):
         super(ClientsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "clients:search"
