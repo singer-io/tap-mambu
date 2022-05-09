@@ -34,7 +34,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         self.endpoint_intermediary_bookmark_value = None
 
     def prepare_batch_params(self):
-        self.endpoint_params['from'] = self.endpoint_intermediary_bookmark_value
+        self.offset = 0
         # here we change the date to the new one,
         # in order to paginate through the data using date, resetting offset to 0
 

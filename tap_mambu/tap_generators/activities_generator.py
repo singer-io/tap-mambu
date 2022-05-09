@@ -11,7 +11,7 @@ class ActivitiesGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_api_version = "v1"
 
         self.endpoint_params["from"] = transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+            get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
         self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
         self.endpoint_bookmark_field = "timestamp"
 
@@ -21,3 +21,6 @@ class ActivitiesGenerator(MultithreadedBookmarkGenerator):
                 record[key] = value
             del record['activity']
         return batch
+
+    def prepare_batch_params(self):
+        self.endpoint_params['from'] = self.endpoint_intermediary_bookmark_value
