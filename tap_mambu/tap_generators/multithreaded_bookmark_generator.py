@@ -1,9 +1,11 @@
+import json
 import time
 from copy import deepcopy
 from threading import Thread
 
 import backoff
 from singer import get_logger
+from singer.utils import strptime_to_utc
 
 from .generator import TapGenerator
 from ..helpers import transform_json, convert
@@ -32,20 +34,20 @@ class MultithreadedBookmarkGenerator(TapGenerator):
     def _init_endpoint_config(self):
         super(MultithreadedBookmarkGenerator, self)._init_endpoint_config()
         self.endpoint_intermediary_bookmark_value = None
+        self.endpoint_intermediary_bookmark_offset = 0
 
     def prepare_batch_params(self):
-        self.offset = 0
+        self.offset = self.endpoint_intermediary_bookmark_offset
         # here we change the date to the new one,
         # in order to paginate through the data using date, resetting offset to 0
 
     def error_check_and_fix(self, a, b):
-        reunion = a[-self.overlap_window:]
-        for record in b[:self.overlap_window]:
-            if record not in reunion:
-                reunion.append(record)
-        if len(reunion) >= 2 * self.overlap_window:
+        reunion = a | b
+        if len(reunion) == len(a) + len(b):
             raise RuntimeError("Failed to error correct, aborting job.")
-        return reunion + b[self.overlap_window:]
+        if len(a) + self.artificial_limit < len(reunion) < len(a) + len(b):
+            LOGGER.warning("Error checking returned errors, but they will be corrected!")
+        return reunion
 
     @staticmethod
     def stop_all_request_threads(futures):
@@ -57,22 +59,23 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                 time.sleep(0.1)
 
     def fetch_batch_continuously(self):
-        counter = False
+        first_run = True
         while not self.end_of_file:
             while len(self.buffer) > self.batch_limit:
                 time.sleep(0.1)
-            if counter:
+            if not first_run:
                 self.prepare_batch_params()
             if not self._all_fetch_batch_steps():
                 self.end_of_file = True
-            counter = True
+            first_run = False
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
+        original_offset = self.offset
         for offset in [offset for offset in range(0, self.batch_limit, self.artificial_limit)]:
-            self.offset = offset
+            self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
@@ -82,23 +85,25 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
         # wait for responses, and check them for errors
-        final_buffer = list()
+        final_buffer = set()
         stop_iteration = False
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
 
-            temp_buffer = transform_json(self.transform_batch(future.result()), self.stream_name)
+            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in
+                               transform_json(self.transform_batch(future.result()), self.stream_name)])
             if not final_buffer:
-                final_buffer += temp_buffer
+                final_buffer = final_buffer | temp_buffer
                 continue
 
             if not temp_buffer:  # We finished the data to extract, time to stop
                 self.stop_all_request_threads(futures)
                 stop_iteration = True
+                break
 
             try:
-                final_buffer = final_buffer[:-self.overlap_window] + self.error_check_and_fix(final_buffer, temp_buffer)
+                final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
             except RuntimeError:  # if errors are found
                 LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
                                  "Cleaning up...")
@@ -115,18 +120,30 @@ class MultithreadedBookmarkGenerator(TapGenerator):
 
         # if no errors found:
         # dump data into buffer
-        for record in final_buffer:
+        for raw_record in final_buffer:
+            record = json.loads(raw_record.decode("utf8"))
             self.buffer.append(record)
-            record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
             # increment bookmark
-            if record_bookmark_value is not None:
-                if self.endpoint_intermediary_bookmark_value is None or \
-                        record_bookmark_value > self.endpoint_intermediary_bookmark_value:
-                    self.endpoint_intermediary_bookmark_value = record_bookmark_value
+            self.set_intermediary_bookmark(record)
+
         self.last_batch_size = len(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def set_intermediary_bookmark(self, record):
+        record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
+        if record_bookmark_value is not None:
+            if self.endpoint_intermediary_bookmark_value is None or \
+                    self.compare_bookmark_values(record_bookmark_value[:10],
+                                                 self.endpoint_intermediary_bookmark_value[:10]):
+                self.endpoint_intermediary_bookmark_value = strptime_to_utc(record_bookmark_value).strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10]
+                self.endpoint_intermediary_bookmark_offset = 1
+            elif record_bookmark_value[:10] == self.endpoint_intermediary_bookmark_value[:10]:
+                self.endpoint_intermediary_bookmark_offset += 1
+
+    def compare_bookmark_values(self, a, b):
+        return a > b
 
     def __iter__(self):
         if self.fetch_batch_thread is None:

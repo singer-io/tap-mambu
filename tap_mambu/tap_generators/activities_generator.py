@@ -23,4 +23,8 @@ class ActivitiesGenerator(MultithreadedBookmarkGenerator):
         return batch
 
     def prepare_batch_params(self):
-        self.endpoint_params['from'] = self.endpoint_intermediary_bookmark_value
+        super(ActivitiesGenerator, self).prepare_batch_params()
+        self.static_params['to'] = self.endpoint_intermediary_bookmark_value
+
+    def compare_bookmark_values(self, a, b):
+        return a < b
