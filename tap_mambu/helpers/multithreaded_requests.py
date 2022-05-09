@@ -1,5 +1,4 @@
 from concurrent.futures import Future, ThreadPoolExecutor
-from threading import Thread
 from typing import List
 
 from .perf_metrics import PerformanceMetrics
