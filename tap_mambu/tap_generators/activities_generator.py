@@ -1,6 +1,6 @@
 from singer import utils
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import transform_datetime, get_bookmark
+from ..helpers import get_bookmark
 
 
 class ActivitiesGenerator(MultithreadedBookmarkGenerator):
@@ -10,7 +10,7 @@ class ActivitiesGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_api_method = "GET"
         self.endpoint_api_version = "v1"
 
-        self.endpoint_params["from"] = transform_datetime(
+        self.endpoint_params["from"] = DatetimeUtils.transform_datetime(
             get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
         self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
         self.endpoint_bookmark_field = "timestamp"

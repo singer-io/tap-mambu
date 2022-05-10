@@ -1,6 +1,7 @@
 import singer
 
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
+from .helpers.datetime_utils import get_timezone_info, str_to_localized_datetime, datetime_to_utc_str
 from .helpers.generator_processor_pairs import get_generator_processor_for_stream, get_stream_subtypes
 from .helpers.multithreaded_requests import MultithreadedRequestsPool
 from .helpers.perf_metrics import PerformanceMetrics
@@ -33,6 +34,8 @@ def sync_endpoint(client, catalog, state,
 def sync_all_streams(client, config, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
+
+    get_timezone_info(client)
 
     PerformanceMetrics.set_generator_batch_size(int(config.get("page_size", 500)))
     

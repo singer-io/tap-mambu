@@ -1,6 +1,6 @@
 from .generator import TapGenerator
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import transform_datetime, get_bookmark
+from ..helpers import get_bookmark
 
 
 class ClientsGenerator(TapGenerator):

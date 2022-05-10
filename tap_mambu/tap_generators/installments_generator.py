@@ -1,6 +1,5 @@
 from singer import utils
 from .generator import TapGenerator
-from ..helpers import transform_datetime
 
 
 class InstallmentsGenerator(TapGenerator):

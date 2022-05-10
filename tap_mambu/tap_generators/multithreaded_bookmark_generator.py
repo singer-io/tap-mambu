@@ -9,6 +9,7 @@ from singer.utils import strptime_to_utc
 
 from .generator import TapGenerator
 from ..helpers import transform_json, convert
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
@@ -23,7 +24,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 20000
+        self.batch_limit = 2000
         self.params = self.static_params
 
     def _init_config(self):
@@ -132,14 +133,14 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         return True
 
     def set_intermediary_bookmark(self, record):
-        record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
+        record_bookmark_value = str_to_localized_datetime(record.get(convert(self.endpoint_bookmark_field)))
         if record_bookmark_value is not None:
             if self.endpoint_intermediary_bookmark_value is None or \
-                    self.compare_bookmark_values(record_bookmark_value[:10],
-                                                 self.endpoint_intermediary_bookmark_value[:10]):
-                self.endpoint_intermediary_bookmark_value = strptime_to_utc(record_bookmark_value).strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10]
+                    self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value)[:10],
+                                                 self.endpoint_intermediary_bookmark_value):
+                self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)[:10]
                 self.endpoint_intermediary_bookmark_offset = 1
-            elif record_bookmark_value[:10] == self.endpoint_intermediary_bookmark_value[:10]:
+            elif datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
                 self.endpoint_intermediary_bookmark_offset += 1
 
     def compare_bookmark_values(self, a, b):
