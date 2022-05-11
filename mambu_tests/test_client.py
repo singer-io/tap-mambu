@@ -44,7 +44,7 @@ def test_client_check_access_api_key(mock_requests_session_get):
 
     mock_requests_session_get.assert_called_once_with(url=f'{base_url}/settings/organization',
                                                       headers={'Accept': 'application/vnd.mambu.v1+json',
-                                                               'User-Agent': 'User_Agent_Test'})
+                                                               'User-Agent': 'MambuTap-User_Agent_Test'})
 
 
 @mock.patch("tap_mambu.helpers.client.requests.Session.get")
@@ -67,7 +67,8 @@ def test_client_check_access_user_pass(mock_requests_session_get):
     assert client.page_size == 100
 
     mock_requests_session_get.assert_called_once_with(url=f'{base_url}/settings/organization',
-                                                      headers={'Accept': 'application/vnd.mambu.v1+json'})
+                                                      headers={'Accept': 'application/vnd.mambu.v1+json',
+                                                               'User-Agent': 'MambuTap'})
 
 
 @mock.patch("tap_mambu.helpers.client.raise_for_error")
@@ -139,7 +140,7 @@ def test_client_request_get_flow(mock_check_access, mock_requests_session_reques
                                                           json=None,
                                                           headers={'Accept': 'application/vnd.mambu.v2+json',
                                                                    'apikey': 'test_apikey_audit',
-                                                                   'User-Agent': 'test_user_agent'})
+                                                                   'User-Agent': 'MambuTap-test_user_agent'})
     assert req_response == {'test_record': {'data1': 1, 'data2': 2}}
 
     client.request(method='POST', path='test_path', apikey_type='audit')
@@ -148,7 +149,7 @@ def test_client_request_get_flow(mock_check_access, mock_requests_session_reques
                                                      json=None,
                                                      headers={'Accept': 'application/vnd.mambu.v2+json',
                                                               'apikey': 'test_apikey_audit',
-                                                              'User-Agent': 'test_user_agent',
+                                                              'User-Agent': 'MambuTap-test_user_agent',
                                                               'Content-Type': 'application/json'})
     mock_metrics_http_request_timer.assert_called_with(None)
     mock_check_access.assert_called_once()
@@ -167,7 +168,7 @@ def test_client_request_post_flow(mock_check_access, mock_requests_session_reque
                          password=config_json.get('password'),
                          subdomain=config_json['subdomain'],
                          page_size=int(config_json.get('page_size', 500)),
-                         user_agent=config_json['user_agent'],
+                         user_agent='',
                          apikey=None,
                          apikey_audit='')
 
@@ -184,7 +185,7 @@ def test_client_request_post_flow(mock_check_access, mock_requests_session_reque
                                                           url='www.api.test_url',
                                                           json={'test': 'filter'},
                                                           headers={'Accept': 'test_accept_header',
-                                                                   'User-Agent': 'test_user_agent',
+                                                                   'User-Agent': 'MambuTap',
                                                                    'Content-Type': 'application/json'})
 
     client.request(method='GET',
@@ -199,7 +200,7 @@ def test_client_request_post_flow(mock_check_access, mock_requests_session_reque
                                                      url='www.api.test_url',
                                                      json={'test': 'filter'},
                                                      headers={'Accept': 'test_accept_header',
-                                                              'User-Agent': 'test_user_agent',
+                                                              'User-Agent': 'MambuTap',
                                                               'Content-Type': 'test_content_type'})
     mock_metrics_http_request_timer.assert_called_with('test_endpoint_second')
     mock_check_access.assert_called_once()

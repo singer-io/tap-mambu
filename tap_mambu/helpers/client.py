@@ -117,14 +117,14 @@ class MambuClient(object):
                  subdomain,
                  apikey_audit,
                  page_size,
-                 user_agent=None):
+                 user_agent=''):
         self.__username = username
         self.__password = password
         self.__subdomain = subdomain
         base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
         self.page_size = page_size
-        self.__user_agent = user_agent
+        self.__user_agent = f'MambuTap-{user_agent}' if user_agent else 'MambuTap'
         self.__apikey = apikey
         self.__session = requests.Session()
         # self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=500)
@@ -159,8 +159,7 @@ class MambuClient(object):
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings
         endpoint = 'settings/organization'
         url = '{}/{}'.format(self.base_url, endpoint)
-        if self.__user_agent:
-            headers['User-Agent'] = self.__user_agent
+        headers['User-Agent'] = self.__user_agent
         headers['Accept'] = 'application/vnd.mambu.v1+json'
         if use_apikey:
             # Api Key API Consumer Authentication: https://support.mambu.com/docs/api-consumers
@@ -212,8 +211,7 @@ class MambuClient(object):
             else:
                 kwargs['headers']['apikey'] = self.__apikey_audit
 
-        if self.__user_agent:
-            kwargs['headers']['User-Agent'] = self.__user_agent
+        kwargs['headers']['User-Agent'] = self.__user_agent
 
         if method == 'POST':
             kwargs['headers']['Content-Type'] = 'application/json'
