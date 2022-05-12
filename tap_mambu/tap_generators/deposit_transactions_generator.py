@@ -10,7 +10,7 @@ class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_path = "deposits/transactions:search"
         self.endpoint_bookmark_field = "creationDate"
         self.endpoint_sorting_criteria = {
-            "field": "creationDate",
+            "field": "id",
             "order": "ASC"
         }
         self.endpoint_filter_criteria = [
