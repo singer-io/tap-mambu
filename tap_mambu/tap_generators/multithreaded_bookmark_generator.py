@@ -92,7 +92,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                 time.sleep(0.1)
 
             temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in
-                               transform_json(self.transform_batch(future.result()), self.stream_name)])
+                               self.transform_batch(transform_json(future.result(), self.stream_name))])
             if not final_buffer:
                 final_buffer = final_buffer | temp_buffer
                 continue
@@ -132,9 +132,11 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         return True
 
     def set_intermediary_bookmark(self, record):
-        record_bookmark_value = str_to_localized_datetime(record.get(convert(self.endpoint_bookmark_field)))
+        record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
         if record_bookmark_value is None:
             return
+
+        record_bookmark_value = str_to_localized_datetime(record_bookmark_value)
 
         if self.endpoint_intermediary_bookmark_value is None or \
                 self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value),
