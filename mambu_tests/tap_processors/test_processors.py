@@ -266,17 +266,21 @@ def test_catalog_automatic_fields():
                 assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
                     f"Generator bookmark field for '{stream}' stream should be set to automatic in catalog!"
 
-        processor = processor_class(catalog=catalog,
-                                    stream_name="loan_accounts",
-                                    client=client_mock,
-                                    config=config_json,
-                                    state={'currently_syncing': 'loan_accounts'},
-                                    sub_type="self",
-                                    generators=[generator],
-                                    **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+        # We need to mock iter, so we don't trigger preloading data
+        # (as the processor would when instantiating the generator)
+        with mock.patch.object(generator, "__iter__") as mock_iter:
+            mock_iter.return_value = generator
+            processor = processor_class(catalog=catalog,
+                                        stream_name="loan_accounts",
+                                        client=client_mock,
+                                        config=config_json,
+                                        state={'currently_syncing': 'loan_accounts'},
+                                        sub_type="self",
+                                        generators=[generator],
+                                        **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
 
-        if isinstance(processor, DeduplicationProcessor):
-            assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
-                        f"Processor deduplication key for '{stream}' stream should be in snake_case!"
-            assert processor.endpoint_deduplication_key in automatic_fields,\
-                        f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"
+            if isinstance(processor, DeduplicationProcessor):
+                assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
+                            f"Processor deduplication key for '{stream}' stream should be in snake_case!"
+                assert processor.endpoint_deduplication_key in automatic_fields,\
+                            f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"

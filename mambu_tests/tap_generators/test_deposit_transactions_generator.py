@@ -11,7 +11,7 @@ def test_deposit_transactions_generator():
     assert generator.endpoint_path == "deposits/transactions:search"
     assert generator.endpoint_bookmark_field == "creationDate"
     assert generator.endpoint_sorting_criteria == {
-            "field": "creationDate",
+            "field": "id",
             "order": "ASC"
         }
     assert generator.endpoint_filter_criteria == [
