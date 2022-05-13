@@ -5,7 +5,6 @@ from threading import Thread
 
 import backoff
 from singer import get_logger
-from singer.utils import strptime_to_utc
 
 from .generator import TapGenerator
 from ..helpers import transform_json, convert
@@ -24,7 +23,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 2000
+        self.batch_limit = 20000
         self.params = self.static_params
 
     def _init_config(self):
@@ -134,14 +133,19 @@ class MultithreadedBookmarkGenerator(TapGenerator):
 
     def set_intermediary_bookmark(self, record):
         record_bookmark_value = str_to_localized_datetime(record.get(convert(self.endpoint_bookmark_field)))
-        if record_bookmark_value is not None:
-            if self.endpoint_intermediary_bookmark_value is None or \
-                    self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value)[:10],
-                                                 self.endpoint_intermediary_bookmark_value):
-                self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)[:10]
-                self.endpoint_intermediary_bookmark_offset = 1
-            elif datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
-                self.endpoint_intermediary_bookmark_offset += 1
+        if record_bookmark_value is None:
+            return
+
+        if self.endpoint_intermediary_bookmark_value is None or \
+                self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value),
+                                             self.endpoint_intermediary_bookmark_value):
+            self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)
+            self.endpoint_intermediary_bookmark_offset = 1
+            return
+
+        if datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
+            self.endpoint_intermediary_bookmark_offset += 1
+            return
 
     def compare_bookmark_values(self, a, b):
         return a > b
@@ -163,3 +167,21 @@ class MultithreadedBookmarkGenerator(TapGenerator):
 
     def fetch_batch(self):
         raise DeprecationWarning("Function is being deprecated, and not implemented in this subclass!")
+
+
+class MultithreadedBookmarkDayByDayGenerator(MultithreadedBookmarkGenerator):
+    def set_intermediary_bookmark(self, record):
+        record_bookmark_value = str_to_localized_datetime(record.get(convert(self.endpoint_bookmark_field)))
+        if record_bookmark_value is None:
+            return
+
+        if self.endpoint_intermediary_bookmark_value is None or \
+                self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value)[:10],
+                                             self.endpoint_intermediary_bookmark_value):
+            self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)[:10]
+            self.endpoint_intermediary_bookmark_offset = 1
+            return
+
+        if datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
+            self.endpoint_intermediary_bookmark_offset += 1
+            return

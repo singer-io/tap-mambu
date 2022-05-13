@@ -1,18 +1,14 @@
-from .generator import TapGenerator
-from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers import get_bookmark
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str
 
 
-class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
+class DepositTransactionsGenerator(MultithreadedBookmarkDayByDayGenerator):
     def _init_endpoint_config(self):
         super(DepositTransactionsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "deposits/transactions:search"
         self.endpoint_bookmark_field = "creationDate"
-        self.endpoint_sorting_criteria = {
-            "field": "id",
-            "order": "ASC"
-        }
+        self.endpoint_sorting_criteria["field"] = "id"
         self.endpoint_filter_criteria = [
             {
                 "field": "creationDate",
