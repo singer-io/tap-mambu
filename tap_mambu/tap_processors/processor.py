@@ -18,7 +18,7 @@ class TapProcessor(ABC):
         self.generators = generators
         self.generator_values = dict()
         for generator in self.generators:
-            self.generator_values[iter(generator)] = None
+            self.generator_values[generator.__iter__()] = None
         self.catalog = catalog
         self.stream_name = stream_name
         self.client = client
