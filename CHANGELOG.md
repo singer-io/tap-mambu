@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0
+  * Major schema refactoring, V2 API upgrade [#77](https://github.com/singer-io/tap-mambu/pull/77)
+    * Finishes structural refactoring of the tap to generator-processor pattern
+    * Upgrades all streams with a comparable endpoint to V2 API
+    * Updates all schemas to match current documentation
+    * Adds schema extraction script to repo for generating schemas from Swagger specs
+
 ## 2.5.2
   * Hotfix for audit_trail bookmarking issue [#79](https://github.com/singer-io/tap-mambu/pull/79)
 
