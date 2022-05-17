@@ -1,0 +1,239 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "assigned_centre_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "assigned_user_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "branch_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "branch_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "centre_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "centre_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "client_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "client_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "encoded_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "field_changes": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_change_name": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "field_detail_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "field_detail_name": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "integer"
+                ]
+              },
+              "new_value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "original_value": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gl_accounts_closure_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "gl_account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "group_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "group_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "line_of_credit_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "loan_account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "loan_account_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "loan_product_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "loan_product_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "savings_account_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "savings_account_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "savings_product_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "savings_product_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "task_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "task_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "timestamp": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "transaction_id": {
+      "type": [
+        "null",
+        "integer"
+      ]
+    },
+    "type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "user_key": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "user_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  }
+}

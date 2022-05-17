@@ -30,7 +30,7 @@ unit-test-job:
     - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Running unit tests..."
-    - coverage run --branch --source=tap_mambu/tap_mambu_refactor -m pytest refactor_tests
+    - coverage run --branch --source=tap_mambu -m pytest mambu_tests
     - coverage json
     - coverage xml -i
     - mkdir coverage-reports
@@ -43,8 +43,8 @@ lint-test-job:
     - python3 -m pip install --upgrade -e ".[mambu-tests]"
   script:
     - echo "Linting code..."
-    - pylint tap_mambu/tap_mambu_refactor --exit-zero
-    - pylint tap_mambu/tap_mambu_refactor -d C -d R -d W || true
+    - pylint tap_mambu --exit-zero
+    - pylint tap_mambu -d C -d R -d W || true
 
 snyk-dependency-test-job:
   image:
@@ -166,3 +166,18 @@ sonarqube_enterprise_nocompile_pr_decoration_poc:
     refs:
       - master
       - tags
+
+
+tap-tester-job:
+  image: registry.gitlab.com/mambucom/product/ecosystem/mambu-marketplace/connectors/singer/taptester/tap-tester:dev-6
+  stage: test
+  before_script:
+    - pip install --upgrade -e .
+  script:
+    - source /tap_tester/tap_tester_venv/bin/activate
+    - >
+      STITCH_TARGET_PATH=/tap_tester/target_stitch_venv/bin/target-stitch
+      TAP_MAMBU_SUBDOMAIN="$TAP_MAMBU_SUBDOMAIN"
+      TAP_MAMBU_USERNAME="$TAP_MAMBU_USERNAME"
+      TAP_MAMBU_PASSWORD="$TAP_MAMBU_PASSWORD"
+      /tap_tester/tap_tester_raw/bin/run-test --tap=/usr/local/bin/tap-mambu tests
