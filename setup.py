@@ -33,6 +33,6 @@ setup(name='tap-mambu',
       packages=find_packages(),
       package_data={
           'tap_mambu': [
-              'schemas/*.json'
+              'helpers/schemas/*.json'
           ]
       })
