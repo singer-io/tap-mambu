@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='tap-mambu',
-      version='2.5.0',
+      version='3.0.0',
       description='Singer.io tap for extracting data from the Mambu 2.0 API',
       author='jeff.huth@bytecode.io',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
@@ -36,6 +36,6 @@ setup(name='tap-mambu',
       packages=find_packages(),
       package_data={
           'tap_mambu': [
-              'schemas/*.json'
+              'helpers/schemas/*.json'
           ]
       })
