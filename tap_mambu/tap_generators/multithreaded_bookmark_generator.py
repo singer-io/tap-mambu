@@ -69,6 +69,10 @@ class MultithreadedBookmarkGenerator(TapGenerator):
                 self.end_of_file = True
             first_run = False
 
+    def _get_transformed_records(self, future):
+        return set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in
+                    self.transform_batch(transform_json(future.result(), self.stream_name))])
+
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
@@ -91,8 +95,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in
-                               self.transform_batch(transform_json(future.result(), self.stream_name))])
+            temp_buffer = self._get_transformed_records(future)
             if not final_buffer:
                 final_buffer = final_buffer | temp_buffer
                 continue
