@@ -1,9 +1,9 @@
-from .generator import TapGenerator
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers import get_bookmark
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str
 
 
-class CommunicationsGenerator(TapGenerator):
+class CommunicationsGenerator(MultithreadedBookmarkDayByDayGenerator):
     def _init_endpoint_config(self):
         super(CommunicationsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "communications/messages:search"
@@ -28,3 +28,7 @@ class CommunicationsGenerator(TapGenerator):
 
     def _init_endpoint_body(self):
         self.endpoint_body = self.endpoint_filter_criteria
+
+    def prepare_batch_params(self):
+        super(CommunicationsGenerator, self).prepare_batch_params()
+        self.endpoint_filter_criteria[1]["value"] = self.endpoint_intermediary_bookmark_value[:10]
