@@ -23,7 +23,7 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 20000
+        self.batch_limit = 2000
         self.params = self.static_params
 
     def _init_config(self):
