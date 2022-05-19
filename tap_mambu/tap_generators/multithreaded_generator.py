@@ -1,92 +1,125 @@
-import concurrent.futures
+import json
 import time
+from copy import deepcopy
 from threading import Thread
+
+import backoff
 from singer import get_logger
 
 from .generator import TapGenerator
-from ..helpers import transform_json
+from ..helpers import transform_json, convert
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
+from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
 
-class MultithreadedGenerator(TapGenerator):
-    max_threads = 100
-    max_buffer_size = 20000
+class MultithreadedOffsetGenerator(TapGenerator):
+    def _init_params(self):
+        self.time_extracted = None
+        self.static_params = dict(self.endpoint_params)
+        self.offset = 0
+        self.overlap_window = 20
+        self.artificial_limit = self.client.page_size
+        self.limit = self.client.page_size + self.overlap_window
+        self.batch_limit = 1000
+        self.params = self.static_params
 
-    def _init_buffers(self):
-        super(MultithreadedGenerator, self)._init_buffers()
-        self.fetch_thread = None
+    def _init_config(self):
+        super(MultithreadedOffsetGenerator, self)._init_config()
         self.end_of_file = False
+        self.fetch_batch_thread = None
+        self.last_batch_set = set()
+        self.futures = list()
 
-    def fetch_batch_chunk(self, offset):
-        my_params = dict(self.params)
-        my_params["offset"] = offset
-        my_params["limit"] = self.limit
-        endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in my_params.items()])
+    def error_check_and_fix(self, a, b):
+        reunion = a | b
+        if len(reunion) == len(a) + len(b):
+            raise RuntimeError("Failed to error correct, aborting job.")
+        if len(a) + self.artificial_limit < len(reunion) < len(a) + len(b):
+            LOGGER.warning("Error checking returned errors, but they will be corrected!")
+        return reunion
 
-        if self.end_of_file:
-            raise EOFError("No more data to be extracted!")
+    @staticmethod
+    def stop_all_request_threads(futures):
+        for future in futures:
+            future.cancel()
 
-        LOGGER.info(f'(generator) Stream {self.stream_name} - URL for {self.stream_name} ({self.endpoint_api_method}, '
-                    f'{self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
-        LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
-        with PerformanceMetrics(metric_name="generator"):
-            response = self.client.request(
-                method=self.endpoint_api_method,
-                path=self.endpoint_path,
-                version=self.endpoint_api_version,
-                apikey_type=self.endpoint_api_key_type,
-                params=endpoint_querystring,
-                endpoint=self.stream_name,
-                json=self.endpoint_body
-            )
-
-        LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')
-
-        if not response:
-            raise EOFError("No more data to be extracted!")
-        return response
+        for future in futures:
+            while not future.done():  # Both finished and cancelled futures return 'done'
+                time.sleep(0.1)
 
     def fetch_batch_continuously(self):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = list()
-            running_threads = 0
-            while not self.end_of_file:
-                if len(self.buffer) > self.max_buffer_size:
-                    with PerformanceMetrics(metric_name="generator_wait"):
-                        while len(self.buffer) > self.max_buffer_size:
-                            time.sleep(0.01)
+        while not self.end_of_file:
+            self._all_fetch_batch_steps()
+            time.sleep(0.1)
 
-                futures_to_delete = list()
-                for future in futures:
-                    if not future.done():
-                        break
-                    try:
-                        raw_batch = future.result()
-                    except TimeoutError:
-                        break
-                    except EOFError:
-                        self.end_of_file = True
-                        break
+    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
+    def _all_fetch_batch_steps(self):
+        # prepare batches (with self.limit for each of them until we reach batch_limit)
+        futures = list()
+        while len(self.buffer) + len(self.futures) * self.limit <= self.batch_limit:
+            self.prepare_batch()
+            # send batches to multithreaded_requests_pool
+            futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
+                                                                   self.endpoint_path, self.endpoint_api_method,
+                                                                   self.endpoint_api_version,
+                                                                   self.endpoint_api_key_type,
+                                                                   deepcopy(self.endpoint_body),
+                                                                   deepcopy(self.params)))
+            self.offset += self.artificial_limit
+        # wait for responses, and check them for errors
+        last_batch = set()
+        final_buffer = self.last_batch_set
+        stop_iteration = False
+        for future in futures:
+            while not future.done():
+                time.sleep(0.1)
 
-                    futures_to_delete.append(future)
-                    running_threads -= 1
+            transformed_batch = self.transform_batch(transform_json(future.result(), self.stream_name))
+            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
 
-                    # for record in raw_batch:
-                    #     for key, value in record['activity'].items():
-                    #         record[key] = value
-                    #     del record['activity']
-                    for record in transform_json(raw_batch, self.stream_name):
-                        self.buffer.append(record)
+            if not temp_buffer:  # We finished the data to extract, time to stop
+                self.stop_all_request_threads(futures)
+                stop_iteration = True
+                break
 
-                for future_to_delete in futures_to_delete:
-                    futures.remove(future_to_delete)
+            last_batch = temp_buffer
 
-                while running_threads < self.max_threads and len(self.buffer) <= self.max_buffer_size:
-                    futures.append(executor.submit(MultithreadedGenerator.fetch_batch_chunk, self, self.offset))
-                    self.offset += self.limit
-                    running_threads += 1
+            try:
+                final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
+            except RuntimeError:  # if errors are found
+                LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
+                                 "Cleaning up...")
+
+                # wait all threads to finish/cancel all threads
+                self.stop_all_request_threads(futures)
+                LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
+                # retry the whole process (using backoff decorator, so we need to propagate the exception)
+                # effectively rerunning this function with the same parameters
+                raise
+
+            if stop_iteration:
+                break
+        final_buffer -= self.last_batch_set
+        self.last_batch_set = last_batch
+        # if no errors found:
+        # dump data into buffer
+        for raw_record in final_buffer:
+            record = json.loads(raw_record.decode("utf8"))
+            self.buffer.append(record)
+
+        self.last_batch_size = len(self.last_batch_set)
+        if not final_buffer or stop_iteration:
+            return False
+        return True
+
+    def __iter__(self):
+        if self.fetch_batch_thread is None:
+            self.fetch_batch_thread = Thread(target=self.fetch_batch_continuously, name="FetchContinuouslyThread")
+            self.fetch_batch_thread.start()
+        return self
 
     def next(self):
         if not self.buffer and not self.end_of_file:
@@ -97,8 +130,5 @@ class MultithreadedGenerator(TapGenerator):
             raise StopIteration()
         return self.buffer.pop(0)
 
-    def _all_fetch_batch_steps(self):
-        if self.fetch_thread is None:
-            self.fetch_thread = Thread(target=MultithreadedGenerator.fetch_batch_continuously,
-                                       args=(self,), daemon=True, name="FetchThread")
-            self.fetch_thread.start()
+    def fetch_batch(self):
+        raise DeprecationWarning("Function is being deprecated, and not implemented in this subclass!")
