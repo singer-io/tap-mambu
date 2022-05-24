@@ -23,7 +23,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 1000
+        self.batch_limit = 20000
         self.params = self.static_params
 
     def _init_config(self):
@@ -52,14 +52,15 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     def fetch_batch_continuously(self):
         while not self.end_of_file:
-            self._all_fetch_batch_steps()
+            if not self._all_fetch_batch_steps():
+                self.end_of_file = True
             time.sleep(0.1)
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
-        while len(self.buffer) + len(self.futures) * self.limit <= self.batch_limit:
+        while len(self.buffer) + len(futures) * self.limit <= self.batch_limit:
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
@@ -84,6 +85,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.stop_all_request_threads(futures)
                 stop_iteration = True
                 break
+
+            if not final_buffer:
+                final_buffer = final_buffer | temp_buffer
+                continue
 
             last_batch = temp_buffer
 
