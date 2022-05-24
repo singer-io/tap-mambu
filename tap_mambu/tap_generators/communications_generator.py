@@ -14,14 +14,14 @@ class CommunicationsGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_bookmark_field = "creationDate"
         self.endpoint_filter_criteria = [
             {
-                'field': 'state',
-                'operator': 'EQUALS',
-                'value': 'SENT'
+                "field": "state",
+                "operator": "EQUALS",
+                "value": "SENT"
             },
             {
-                'field': 'creationDate',
-                'operator': 'AFTER',
-                'value': datetime_to_utc_str(str_to_localized_datetime(
+                "field": "creationDate",
+                "operator": "AFTER",
+                "value": datetime_to_utc_str(str_to_localized_datetime(
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
             }
         ]
