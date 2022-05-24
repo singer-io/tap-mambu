@@ -1,5 +1,4 @@
 from .generator import TapGenerator
-from .multithreaded_generator import MultithreadedOffsetGenerator
 
 
 class TasksGenerator(TapGenerator):
@@ -10,4 +9,3 @@ class TasksGenerator(TapGenerator):
         self.endpoint_bookmark_field = "lastModifiedDate"
         self.endpoint_params["sortBy"] = "lastModifiedDate:ASC"
         self.endpoint_sorting_criteria = {}
-
