@@ -1,4 +1,5 @@
 from .generator import TapGenerator
+from .multithreaded_generator import MultithreadedOffsetGenerator
 
 
 class TasksGenerator(TapGenerator):

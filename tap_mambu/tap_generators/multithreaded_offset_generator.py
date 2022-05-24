@@ -31,7 +31,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.end_of_file = False
         self.fetch_batch_thread = None
         self.last_batch_set = set()
-        self.futures = list()
 
     def error_check_and_fix(self, a, b):
         reunion = a | b
@@ -92,6 +91,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
             last_batch = temp_buffer
 
+            if not final_buffer:
+                final_buffer = final_buffer | temp_buffer
+                continue
+
             try:
                 final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
             except RuntimeError:  # if errors are found
@@ -107,6 +110,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
             if stop_iteration:
                 break
+        
         final_buffer -= self.last_batch_set
         self.last_batch_set = last_batch
         # if no errors found:
