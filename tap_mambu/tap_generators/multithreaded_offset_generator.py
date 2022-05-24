@@ -85,10 +85,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 stop_iteration = True
                 break
 
-            if not final_buffer:
-                final_buffer = final_buffer | temp_buffer
-                continue
-
             last_batch = temp_buffer
 
             if not final_buffer:
