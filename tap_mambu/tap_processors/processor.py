@@ -1,13 +1,12 @@
 from abc import ABC
 
-from singer import write_record, metadata, write_schema, get_logger, metrics
+from singer import write_record, metadata, write_schema, get_logger, metrics, Transformer
 from singer.utils import strptime_to_utc, now as singer_now
 
-from ..helpers import convert, get_bookmark, write_bookmark
-from ..helpers.datetime_utils import str_to_localized_datetime
+from ..helpers import convert, get_bookmark, write_bookmark, transform_datetime
 from ..helpers.exceptions import NoDeduplicationCapabilityException
 from ..helpers.perf_metrics import PerformanceMetrics
-from ..helpers.transformer import Transformer
+# from ..helpers.transformer import Transformer
 
 LOGGER = get_logger()
 
@@ -98,7 +97,7 @@ class TapProcessor(ABC):
             return True
 
         # Keep only records whose bookmark is after the last_datetime
-        if str_to_localized_datetime(transformed_record[bookmark_field]) >= str_to_localized_datetime(self.last_bookmark_value):
+        if transform_datetime(transformed_record[bookmark_field]) >= transform_datetime(self.last_bookmark_value):
             return True
         return False
 

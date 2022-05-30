@@ -1,8 +1,7 @@
 from singer import utils
 
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import get_bookmark
-from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str
+from ..helpers import get_bookmark, transform_datetime
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
@@ -18,8 +17,8 @@ class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": "creationDate",
                 "operator": "BETWEEN",
-                "value": datetime_to_utc_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10],
+                "value": transform_datetime(
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10],
                 "secondValue": utils.now().strftime("%Y-%m-%d")[:10]
             }
         ]

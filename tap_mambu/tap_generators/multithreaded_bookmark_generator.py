@@ -1,3 +1,4 @@
+import datetime
 import json
 import time
 from copy import deepcopy
@@ -7,8 +8,7 @@ import backoff
 from singer import get_logger
 
 from .generator import TapGenerator
-from ..helpers import transform_json, convert
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
+from ..helpers import transform_json, convert, transform_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
@@ -95,7 +95,9 @@ class MultithreadedBookmarkGenerator(TapGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            temp_buffer = self._get_transformed_records(future)
+            transformed_batch = self.transform_batch(transform_json(future.result(), self.stream_name))
+            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
+
             if not final_buffer:
                 final_buffer = final_buffer | temp_buffer
                 continue
@@ -139,16 +141,16 @@ class MultithreadedBookmarkGenerator(TapGenerator):
         if record_bookmark_value is None:
             return
 
-        record_bookmark_value = str_to_localized_datetime(record_bookmark_value)
+        record_bookmark_value: datetime.datetime = transform_datetime(record_bookmark_value)
 
         if self.endpoint_intermediary_bookmark_value is None or \
-                self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value),
+                self.compare_bookmark_values(record_bookmark_value,
                                              self.endpoint_intermediary_bookmark_value):
-            self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)
+            self.endpoint_intermediary_bookmark_value = record_bookmark_value
             self.endpoint_intermediary_bookmark_offset = 1
             return
 
-        if datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
+        if record_bookmark_value == self.endpoint_intermediary_bookmark_value:
             self.endpoint_intermediary_bookmark_offset += 1
             return
 
@@ -176,17 +178,19 @@ class MultithreadedBookmarkGenerator(TapGenerator):
 
 class MultithreadedBookmarkDayByDayGenerator(MultithreadedBookmarkGenerator):
     def set_intermediary_bookmark(self, record):
-        record_bookmark_value = str_to_localized_datetime(record.get(convert(self.endpoint_bookmark_field)))
+        record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
         if record_bookmark_value is None:
             return
 
+        record_bookmark_value: datetime.datetime = transform_datetime(record_bookmark_value)[:10]
+
         if self.endpoint_intermediary_bookmark_value is None or \
-                self.compare_bookmark_values(datetime_to_utc_str(record_bookmark_value)[:10],
+                self.compare_bookmark_values(record_bookmark_value,
                                              self.endpoint_intermediary_bookmark_value):
-            self.endpoint_intermediary_bookmark_value = datetime_to_utc_str(record_bookmark_value)[:10]
+            self.endpoint_intermediary_bookmark_value = record_bookmark_value
             self.endpoint_intermediary_bookmark_offset = 1
             return
 
-        if datetime_to_utc_str(record_bookmark_value)[:10] == self.endpoint_intermediary_bookmark_value:
+        if record_bookmark_value == self.endpoint_intermediary_bookmark_value:
             self.endpoint_intermediary_bookmark_offset += 1
             return

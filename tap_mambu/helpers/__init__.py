@@ -12,6 +12,14 @@ def get_bookmark(state, stream, sub_type, default):
     return state.get('bookmarks', {}).get(stream, {}).get(sub_type, default)
 
 
+def transform_datetime(this_dttm):
+    with Transformer() as transformer:
+        # noinspection PyProtectedMember
+        # pylint: disable=W0212
+        new_dttm = transformer._transform_datetime(this_dttm)
+    return new_dttm
+
+
 def write_bookmark(state, stream, sub_type, value):
     if 'bookmarks' not in state:
         state['bookmarks'] = {}
