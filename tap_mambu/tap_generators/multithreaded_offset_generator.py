@@ -7,8 +7,7 @@ import backoff
 from singer import get_logger
 
 from .generator import TapGenerator
-from ..helpers import transform_json, convert
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
+from ..helpers import transform_json, transform_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
