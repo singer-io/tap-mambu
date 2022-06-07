@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from mock import Mock, patch, call
 
@@ -17,25 +19,29 @@ def test_init_variable_params():
 
 
 def test_error_check_and_fix():
+    limit = 100
+    overlap_window = 10
+    total_records_no = limit + overlap_window
+
     generator = MultithreadedBookmarkGeneratorFake()
-    generator.overlap_window = 2
-    generator.artificial_limit = 3
+    generator.overlap_window = limit
+    generator.artificial_limit = overlap_window
 
     # test when a and b have the same values on the overlap window indexes
-    a = {1, 2, 3, 4, 5}
-    b = {4, 5, 6, 7, 8}
-    assert generator.error_check_and_fix(a, b) == {1, 2, 3, 4, 5, 6, 7, 8}
+    a = [json.dumps({'encoded_key': f'0-{record_no}-test'}) for record_no in range(0, total_records_no)]
+    b = a[-overlap_window:] + [json.dumps({'encoded_key': f'1-{record_no}-test'}) for record_no in range(0, limit)]
+    assert generator.error_check_and_fix(set(a), set(b)) == set(a).union(b)
 
     # test when a and b don't overlap 100% but the error it's manageable
-    a = {1, 2, 3, 4, 5}
-    b = {5, 6, 7, 8, 9, 10}
-    assert generator.error_check_and_fix(a, b) == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+    a = [json.dumps({'encoded_key': f'0-{record_no}-test'}) for record_no in range(0, total_records_no)]
+    b = a[-(overlap_window - 5):] + [json.dumps({'encoded_key': f'1-{record_no}-test'}) for record_no in range(0, limit)]
+    assert generator.error_check_and_fix(set(a), set(b)) == set(a).union(b)
 
     # test when a and b don't overlap at all
     with pytest.raises(RuntimeError):
-        a = {1, 2, 3, 4, 5}
-        b = {6, 7, 8}
-        assert generator.error_check_and_fix(a, b) == {1, 2, 3, 4, 5, 6, 7, 8}
+        a = {json.dumps({'encoded_key': f'0-{record_no}-test'}) for record_no in range(0, total_records_no)}
+        b = {json.dumps({'encoded_key': f'1-{record_no}-test'}) for record_no in range(0, total_records_no)}
+        generator.error_check_and_fix(a, b)
 
 
 def test_set_intermediary_bookmark():
