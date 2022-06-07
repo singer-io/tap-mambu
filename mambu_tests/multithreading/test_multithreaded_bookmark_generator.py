@@ -182,7 +182,6 @@ def test_all_fetch_batch_steps_flow(mock_queue_request,
     mock_artificial_limit = mock_client.page_size
 
     generator = MultithreadedBookmarkGeneratorFake(client=mock_client)
-
     generator.overlap_window = mock_overlap_window
     generator.batch_limit = mock_batch_limit
     generator.endpoint_path = mock_endpoint_path
@@ -192,8 +191,6 @@ def test_all_fetch_batch_steps_flow(mock_queue_request,
     generator.endpoint_body = mock_endpoint_body
     generator.params = mock_params
     generator.limit = mock_client.page_size + mock_overlap_window
-
-    assert generator.offset == 0
 
     # generate fake data as if they were extracted from the API
     mock_records = [[{'encoded_key': f'0-{record_no}'}
@@ -206,25 +203,21 @@ def test_all_fetch_batch_steps_flow(mock_queue_request,
 
     mock_transform_batch.side_effect = mock_records
 
+    assert generator.offset == 0
     all_fetch_batch_steps_output = generator._all_fetch_batch_steps()
 
     assert all_fetch_batch_steps_output is True
 
-    mock_prepare_batch.assert_called()
-
     mock_params['offset'] = 0
     mock_params['limit'] = mock_artificial_limit + mock_overlap_window
+    calls = []
     for offset in range(0, mock_batch_limit, mock_artificial_limit):
-        # test if the queue_request method is called using the correct offset
-        mock_queue_request.assert_has_calls([call(mock_client,
-                                                  'test_stream',
-                                                  mock_endpoint_path,
-                                                  mock_endpoint_api_method,
-                                                  mock_endpoint_api_version,
-                                                  mock_endpoint_api_key_type,
-                                                  mock_endpoint_body,
-                                                  mock_params)])
+        calls.append(call(mock_client, 'test_stream', mock_endpoint_path, mock_endpoint_api_method,
+                          mock_endpoint_api_version, mock_endpoint_api_key_type, mock_endpoint_body, dict(mock_params)))
         mock_params['offset'] += mock_artificial_limit
+
+    # test if the queue_request method is called using the correct offset
+    mock_queue_request.assert_has_calls(calls)
 
     # test if the methods are called the correct amount of times
     assert mock_prepare_batch.call_count == mock_batch_limit / mock_client.page_size
