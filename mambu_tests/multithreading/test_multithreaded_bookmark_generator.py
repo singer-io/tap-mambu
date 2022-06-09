@@ -1,5 +1,5 @@
 import json
-
+import threading
 import pytest
 from mock import Mock, patch, call
 
@@ -34,7 +34,8 @@ def test_error_check_and_fix():
 
     # test when a and b don't overlap 100% but the error it's manageable
     a = [json.dumps({'encoded_key': f'0-{record_no}-test'}) for record_no in range(0, total_records_no)]
-    b = a[-(overlap_window - 5):] + [json.dumps({'encoded_key': f'1-{record_no}-test'}) for record_no in range(0, limit)]
+    b = a[-(overlap_window - 5):] + [json.dumps({'encoded_key': f'1-{record_no}-test'})
+                                     for record_no in range(0, limit)]
     assert generator.error_check_and_fix(set(a), set(b)) == set(a).union(b)
 
     # test when a and b don't overlap at all
@@ -117,6 +118,26 @@ def test_fetch_batch_continuously_multiple_calls(mock_prepare_batch_params, mock
     mock_all_fetch_batch_steps.assert_called()
     assert mock_all_fetch_batch_steps.call_count == 3
     assert generator.end_of_file is True
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator._all_fetch_batch_steps")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.time.sleep")
+def test_fetch_batch_continuously_sleep_branch(mock_time_sleep, mock_all_fetch_batch_steps):
+    mock_all_fetch_batch_steps.return_value = False
+
+    generator = MultithreadedBookmarkGeneratorFake()
+    generator.buffer = [{'encoded_key': f'0-{record_no}-test'} for record_no in range(0, 10)]
+    generator.batch_limit = 5
+
+    fetch_batch_thread = threading.Thread(target=generator.fetch_batch_continuously)
+    fetch_batch_thread.start()
+
+    while len(generator.buffer) >= generator.batch_limit:
+        generator.buffer.pop()
+    fetch_batch_thread.join()
+
+    assert mock_time_sleep.call_count > generator.batch_limit
 
 
 @patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
@@ -241,3 +262,85 @@ def test_all_fetch_batch_steps_flow(mock_queue_request,
     # the duplicated records
     assert mock_set_intermediary_bookmark.call_count == \
            sum(len(batch) - mock_overlap_window for batch in mock_records) + mock_overlap_window
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator.stop_all_request_threads")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedBookmarkGenerator.transform_batch")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedRequestsPool.queue_request")
+def test_all_fetch_batch_steps_exception(mock_queue_request,
+                                         mock_transform_batch,
+                                         mock_stop_all_request_threads):
+    generator = MultithreadedBookmarkGeneratorFake()
+
+    mock_records = [[{'encoded_key': f'0-{record_no}'}
+                     for record_no in range(0, generator.client.page_size + generator.overlap_window)],
+                    [{'encoded_key': f'1-{record_no}'}
+                     for record_no in range(0, generator.client.page_size)]]
+    mock_transform_batch.side_effect = mock_records
+
+    # test if the method raises RuntimeError if it can't correct the batches
+    with pytest.raises(RuntimeError):
+        generator._all_fetch_batch_steps()
+
+    mock_stop_all_request_threads.assert_called()
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_json")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.time.sleep")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedRequestsPool.queue_request")
+def test_all_fetch_batch_steps_thread_not_done(mock_queue_request, mock_time_sleep, mock_transform_json):
+    def create_mock_future_pending():
+        mock_future_pending = Mock()
+        mock_future_pending.done = Mock()
+        mock_future_pending.done.side_effect = [False, False, True]
+        return mock_future_pending
+
+    mock_future_done = Mock()
+    mock_future_done.done = Mock()
+    mock_future_done.done.return_value = True
+
+    generator = MultithreadedBookmarkGeneratorFake()
+
+    mock_queue_request.side_effect = [mock_future_done for _ in
+                                      range(0, generator.batch_limit - generator.artificial_limit,
+                                            generator.artificial_limit)] + \
+                                     [create_mock_future_pending()]
+
+    generator._all_fetch_batch_steps()
+
+    # test if the sleep function is called when the request isn't finished
+    assert mock_time_sleep.call_count == 2
+
+    # just a check to make sure the algorithm passed over the while loop
+    mock_transform_json.assert_called()
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.time.sleep")
+def test_stop_all_request_threads(mock_time_sleep):
+    def create_future(side_effect=None):
+        future = Mock()
+        future.cancel = Mock()
+        future.done = Mock()
+        if side_effect:
+            future.done.side_effect = side_effect
+        else:
+            future.done.return_value = True
+        return future
+
+    finished_futures = [create_future() for _ in range(0, 100)]
+    not_finished_futures = [create_future(side_effect=[False, True]) for _ in range(0, 5)]
+
+    MultithreadedBookmarkGeneratorFake.stop_all_request_threads(finished_futures + not_finished_futures)
+
+    assert mock_time_sleep.call_count == len(not_finished_futures)
+
+    # test if the cancel and done methods are called the correct amount of times
+    for finished_future in finished_futures:
+        assert finished_future.cancel.call_count == 1
+        assert finished_future.done.call_count == 1
+
+    # test if the cancel and done methods are called the correct amount of times
+    for not_finished_future in not_finished_futures:
+        assert not_finished_future.cancel.call_count == 1
+        assert not_finished_future.done.call_count == 2
