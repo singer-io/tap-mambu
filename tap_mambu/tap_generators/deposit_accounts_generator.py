@@ -3,6 +3,10 @@ from ..helpers import get_bookmark, transform_datetime
 
 
 class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
+    def _init_params(self):
+        super(DepositAccountsGenerator, self)._init_params()
+        self.batch_limit = 5000
+
     def _init_endpoint_config(self):
         super(DepositAccountsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "deposits:search"
@@ -15,7 +19,7 @@ class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))
             }
         ]
         self.endpoint_bookmark_field = "lastModifiedDate"

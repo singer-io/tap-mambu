@@ -5,6 +5,10 @@ from ..helpers import get_bookmark, transform_datetime
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
+    def _init_params(self):
+        super(GlJournalEntriesGenerator, self)._init_params()
+        self.batch_limit = 1000
+
     def _init_endpoint_config(self):
         super(GlJournalEntriesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "gljournalentries:search"

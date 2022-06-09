@@ -22,7 +22,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 20000
+        self.batch_limit = 10000
         self.params = self.static_params
 
     def _init_config(self):
@@ -76,7 +76,9 @@ class MultithreadedOffsetGenerator(TapGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            transformed_batch = self.transform_batch(transform_json(future.result(), self.stream_name))
+            result = future.result()
+
+            transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
 
             if not temp_buffer:  # We finished the data to extract, time to stop
