@@ -24,6 +24,6 @@ def test_gl_journal_entries_generator_endpoint_config_init():
         "field": "creationDate",
         "operator": "BETWEEN",
         "value": "2021-06-01",
-        "secondValue": utils.now().strftime("%Y-%m-%d")
+        "secondValue": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[10]
     }
     assert generator.endpoint_bookmark_field == "creationDate"

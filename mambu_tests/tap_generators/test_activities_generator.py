@@ -15,7 +15,7 @@ def test_activities_generator_endpoint_config_init():
     assert generator.endpoint_api_version == "v1"
     assert generator.endpoint_params == {
         "from": "2021-06-01",
-        "to": utils.now().strftime("%Y-%m-%d")[:10],
+        "to": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10],
         "detailsLevel": "FULL",
         "paginationDetails": "OFF"
     }

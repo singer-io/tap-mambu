@@ -22,8 +22,8 @@ class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
                 "field": "creationDate",
                 "operator": "BETWEEN",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10],
-                "secondValue": utils.now().strftime("%Y-%m-%d")[:10]
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)),
+                "secondValue": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         ]
 
