@@ -1,5 +1,5 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
-from ..helpers import get_bookmark, transform_datetime
+from ..helpers import transform_datetime, get_bookmark
 
 
 class LoanTransactionsGenerator(MultithreadedBookmarkDayByDayGenerator):
@@ -19,4 +19,4 @@ class LoanTransactionsGenerator(MultithreadedBookmarkDayByDayGenerator):
 
     def prepare_batch_params(self):
         super(LoanTransactionsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value[:10]

@@ -26,4 +26,4 @@ class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
 
     def prepare_batch_params(self):
         super(DepositAccountsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value  # TODO: Test again without [:10]
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value

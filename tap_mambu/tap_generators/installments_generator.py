@@ -1,7 +1,7 @@
 import json
 from singer import utils
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
-from ..helpers import transform_json, transform_datetime
+from ..helpers import transform_datetime
 
 
 class InstallmentsGenerator(MultithreadedOffsetGenerator):

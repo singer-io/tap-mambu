@@ -1,7 +1,7 @@
 from singer import utils
 
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import get_bookmark, transform_datetime
+from ..helpers import transform_datetime, get_bookmark
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):

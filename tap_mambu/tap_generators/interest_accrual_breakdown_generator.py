@@ -1,4 +1,3 @@
-from .generator import TapGenerator
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import get_bookmark, transform_datetime
 
@@ -17,7 +16,7 @@ class InterestAccrualBreakdownGenerator(MultithreadedBookmarkGenerator):
                 "field": "creationDate",
                 "operator": "AFTER",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))
             }
         ]
 
