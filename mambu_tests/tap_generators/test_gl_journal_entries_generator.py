@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from singer import utils
 
 from . import setup_generator_base_test
@@ -23,7 +25,8 @@ def test_gl_journal_entries_generator_endpoint_config_init():
     assert generator.endpoint_filter_criteria[0] == {
         "field": "creationDate",
         "operator": "BETWEEN",
-        "value": "2021-06-01",
-        "secondValue": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[10]
+        "value": "2021-06-01T00:00:00.000000Z",
+        "secondValue": datetime.strptime(generator.endpoint_filter_criteria[0]["secondValue"],
+                                         "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     }
     assert generator.endpoint_bookmark_field == "creationDate"
