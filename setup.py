@@ -11,8 +11,8 @@ setup(name='tap-mambu',
       install_requires=[
           'backoff==1.8.0',
           'requests==2.23.0',
-          'singer-python==5.12.1'
-          # 'pytz==2018.4'
+          'singer-python==5.12.1',
+          'pytz==2018.4'
       ],
       extras_require={
           'dev': [
