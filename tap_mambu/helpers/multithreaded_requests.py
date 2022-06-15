@@ -21,8 +21,8 @@ class MultithreadedRequestsPool:
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in endpoint_params.items()])
 
         LOGGER.info(f'(generator) Stream {stream_name} - URL for {stream_name} ({endpoint_api_method}, '
-                    f'{endpoint_api_version}): {client.base_url}/{endpoint_path}?{endpoint_querystring}')
-        LOGGER.info(f'(generator) Stream {stream_name} - body = {endpoint_body}')
+                    f'{endpoint_api_version}): {client.base_url}/{endpoint_path}?{endpoint_querystring}'
+                    f' - body = {endpoint_body}')
 
         with PerformanceMetrics(metric_name="generator"):
             response = client.request(
