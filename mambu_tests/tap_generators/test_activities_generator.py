@@ -31,7 +31,7 @@ def test_activities_generator_dict_unpacking():
 
     generator.client.request.side_effect = [[
         {"client": "N/A", "activity": {"id": nr + page*4}}
-        for nr in range(5)] for page in range(3)] + [[] for _ in range(1000)]
+        for nr in range(5)] for page in range(3)] + [[] for _ in range(1000)] + [[] * 1000]
 
     for record in generator:
         assert "id" in record, "Record in activity generator were not unpacked " \
