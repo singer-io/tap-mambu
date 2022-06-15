@@ -1,8 +1,8 @@
-from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers import get_bookmark, transform_datetime
 
 
-class InterestAccrualBreakdownGenerator(MultithreadedBookmarkGenerator):
+class InterestAccrualBreakdownGenerator(MultithreadedBookmarkDayByDayGenerator):
     def _init_endpoint_config(self):
         super(InterestAccrualBreakdownGenerator, self)._init_endpoint_config()
         self.endpoint_path = "accounting/interestaccrual:search"
@@ -16,10 +16,10 @@ class InterestAccrualBreakdownGenerator(MultithreadedBookmarkGenerator):
                 "field": "creationDate",
                 "operator": "AFTER",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
             }
         ]
 
     def prepare_batch_params(self):
         super(InterestAccrualBreakdownGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value[:10]
