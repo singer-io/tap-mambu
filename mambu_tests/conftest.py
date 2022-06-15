@@ -1,4 +1,3 @@
-# TODO: find a better solution
 def pytest_collection(session):
     import sys
     from mock import MagicMock
