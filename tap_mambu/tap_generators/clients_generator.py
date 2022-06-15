@@ -1,8 +1,12 @@
-from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator, MultithreadedBookmarkDayByDayGenerator
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers import get_bookmark, transform_datetime
 
 
 class ClientsGenerator(MultithreadedBookmarkDayByDayGenerator):
+    def _init_params(self):
+        super(ClientsGenerator, self)._init_params()
+        self.batch_limit = 2000
+
     def _init_endpoint_config(self):
         super(ClientsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "clients:search"
@@ -22,4 +26,4 @@ class ClientsGenerator(MultithreadedBookmarkDayByDayGenerator):
 
     def prepare_batch_params(self):
         super(ClientsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value  # TODO: Test again without [:10]
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value[:10]

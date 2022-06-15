@@ -1,10 +1,14 @@
 from singer import utils
 
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import get_bookmark, transform_datetime
+from ..helpers import transform_datetime, get_bookmark
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
+    def _init_params(self):
+        super(GlJournalEntriesGenerator, self)._init_params()
+        self.batch_limit = 1000
+
     def _init_endpoint_config(self):
         super(GlJournalEntriesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "gljournalentries:search"
@@ -18,8 +22,8 @@ class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
                 "field": "creationDate",
                 "operator": "BETWEEN",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10],
-                "secondValue": utils.now().strftime("%Y-%m-%d")[:10]
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)),
+                "secondValue": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             }
         ]
 

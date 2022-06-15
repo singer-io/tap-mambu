@@ -3,6 +3,10 @@ from ..helpers import get_bookmark, transform_datetime
 
 
 class DepositTransactionsGenerator(MultithreadedBookmarkDayByDayGenerator):
+    def _init_params(self):
+        super(DepositTransactionsGenerator, self)._init_params()
+        self.batch_limit = 1000
+
     def _init_endpoint_config(self):
         super(DepositTransactionsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "deposits/transactions:search"

@@ -18,6 +18,6 @@ def test_deposit_accounts_generator():
             {
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
-                "value": '2021-06-01'
+                "value": '2021-06-01T00:00:00.000000Z'
             }
         ]
