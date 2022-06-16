@@ -1,7 +1,4 @@
-from tap_mambu.helpers.multithreaded_requests import MultithreadedRequestsPool
-
-
-_original_shutdown = MultithreadedRequestsPool.shutdown
+_threads_original_shutdown = None
 
 
 def pytest_collection(session):
@@ -19,8 +16,12 @@ def pytest_collection(session):
     sys.modules['backoff'] = MagicMock()
     sys.modules['backoff'].on_exception = mock_on_exception
 
+    from tap_mambu.helpers.multithreaded_requests import MultithreadedRequestsPool
+
+    global _threads_original_shutdown
+    _threads_original_shutdown = MultithreadedRequestsPool.shutdown
     MultithreadedRequestsPool.shutdown = MagicMock()
 
 
 def pytest_sessionfinish(session, exitstatus):
-    _original_shutdown()
+    _threads_original_shutdown()
