@@ -40,7 +40,7 @@ class TapGenerator(ABC):
             "paginationDetails": "OFF"
         }
         self.endpoint_sorting_criteria = {
-            "field": "encoded_key",
+            "field": "encodedKey",
             "order": "ASC"
         }
         self.endpoint_filter_criteria = []
@@ -94,6 +94,9 @@ class TapGenerator(ABC):
             **self.static_params
         }
 
+    def transform_batch(self, batch):
+        return batch
+
     def fetch_batch(self):
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in self.params.items()])
 
@@ -114,4 +117,4 @@ class TapGenerator(ABC):
 
         self.time_extracted = utils.now()
         LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')
-        return response
+        return self.transform_batch(response)

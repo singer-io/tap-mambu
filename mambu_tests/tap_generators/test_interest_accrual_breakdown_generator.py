@@ -10,7 +10,7 @@ def test_interest_accrual_breakdown_generator_endpoint_config_init():
     assert generator.endpoint_path == 'accounting/interestaccrual:search'
     assert generator.endpoint_bookmark_field == "creationDate"
     assert generator.endpoint_sorting_criteria == {
-        "field": "creationDate",
+        "field": "entryId",
         "order": "ASC"
     }
     assert generator.endpoint_filter_criteria == [

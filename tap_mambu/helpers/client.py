@@ -127,8 +127,8 @@ class MambuClient(object):
         self.__user_agent = f'MambuTap-{user_agent}' if user_agent else 'MambuTap'
         self.__apikey = apikey
         self.__session = requests.Session()
-        # self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=500)
-        # self.__session.mount("https://", self.__adapter)
+        self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=100)
+        self.__session.mount("https://", self.__adapter)
         self.__verified = False
         self.__apikey_audit = apikey_audit
 

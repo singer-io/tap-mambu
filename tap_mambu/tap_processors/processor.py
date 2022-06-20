@@ -1,11 +1,12 @@
 from abc import ABC
 
-from singer import write_record, Transformer, metadata, write_schema, get_logger, metrics
+from singer import write_record, metadata, write_schema, get_logger, metrics, Transformer
 from singer.utils import strptime_to_utc, now as singer_now
 
-from ..helpers import transform_datetime, convert, get_bookmark, write_bookmark
+from ..helpers import convert, get_bookmark, write_bookmark, transform_datetime
 from ..helpers.exceptions import NoDeduplicationCapabilityException
 from ..helpers.perf_metrics import PerformanceMetrics
+# from ..helpers.transformer import Transformer
 
 LOGGER = get_logger()
 
@@ -16,7 +17,7 @@ class TapProcessor(ABC):
         self.generators = generators
         self.generator_values = dict()
         for generator in self.generators:
-            self.generator_values[iter(generator)] = None
+            self.generator_values[generator.__iter__()] = None
         self.catalog = catalog
         self.stream_name = stream_name
         self.client = client
