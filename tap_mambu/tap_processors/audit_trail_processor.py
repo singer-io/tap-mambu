@@ -9,6 +9,10 @@ class AuditTrailProcessor(TapProcessor):
         # This will be used to signal the generator how many records to skip (when more than one record has same date)
         self.bookmark_offset = 1
 
+    def _init_endpoint_config(self):
+        # There are no unique fields in this stream
+        self.endpoint_deduplication_key = None
+
     def _init_bookmarks(self):
         super(AuditTrailProcessor, self)._init_bookmarks()
         self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
