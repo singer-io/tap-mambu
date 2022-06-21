@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.1
+  * Added groundwork for metrics collection and multithreading [#81](https://github.com/singer-io/tap-mambu/pull/81)
+
 ## 3.0.0
   * Major schema refactoring, V2 API upgrade [#77](https://github.com/singer-io/tap-mambu/pull/77)
     * Finishes structural refactoring of the tap to generator-processor pattern
