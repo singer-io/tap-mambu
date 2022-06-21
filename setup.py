@@ -24,6 +24,9 @@ setup(name='tap-mambu',
               'pylint==2.12.2',
               'pytest==6.2.5',
               'mock==4.0.3'
+          ],
+          'mambu-performance': [
+              'matplotlib==3.5.1'
           ]
       },
       entry_points='''
