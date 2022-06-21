@@ -1,9 +1,12 @@
-from .generator import TapGenerator
-from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import transform_datetime, get_bookmark
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
+from ..helpers import get_bookmark, transform_datetime
 
 
-class ClientsGenerator(MultithreadedBookmarkGenerator):
+class ClientsGenerator(MultithreadedBookmarkDayByDayGenerator):
+    def _init_params(self):
+        super(ClientsGenerator, self)._init_params()
+        self.batch_limit = 2000
+
     def _init_endpoint_config(self):
         super(ClientsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "clients:search"
@@ -20,3 +23,7 @@ class ClientsGenerator(MultithreadedBookmarkGenerator):
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
             }
         ]
+
+    def prepare_batch_params(self):
+        super(ClientsGenerator, self).prepare_batch_params()
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value[:10]

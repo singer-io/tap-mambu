@@ -40,7 +40,7 @@ class TapGenerator(ABC):
             "paginationDetails": "OFF"
         }
         self.endpoint_sorting_criteria = {
-            "field": "encoded_key",
+            "field": "encodedKey",
             "order": "ASC"
         }
         self.endpoint_filter_criteria = []

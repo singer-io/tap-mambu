@@ -10,7 +10,7 @@ def test_loan_transactions_generator_endpoint_config_init():
 
     assert generator.endpoint_path == 'loans/transactions:search'
     assert generator.endpoint_sorting_criteria == {
-        "field": "creationDate",
+        "field": "id",
         "order": "ASC"
     }
     assert generator.endpoint_bookmark_field == "creationDate"

@@ -1,9 +1,9 @@
 from singer import utils
-from .generator import TapGenerator
-from ..helpers import transform_datetime, get_bookmark
+from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
+from ..helpers import get_bookmark, transform_datetime
 
 
-class ActivitiesGenerator(TapGenerator):
+class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
     def _init_endpoint_config(self):
         super(ActivitiesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "activities"
@@ -11,7 +11,7 @@ class ActivitiesGenerator(TapGenerator):
         self.endpoint_api_version = "v1"
 
         self.endpoint_params["from"] = transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+            get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
         self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
         self.endpoint_bookmark_field = "timestamp"
 
@@ -21,3 +21,10 @@ class ActivitiesGenerator(TapGenerator):
                 record[key] = value
             del record['activity']
         return batch
+
+    def prepare_batch_params(self):
+        super(ActivitiesGenerator, self).prepare_batch_params()
+        self.static_params['to'] = self.endpoint_intermediary_bookmark_value
+
+    def compare_bookmark_values(self, a, b):
+        return a < b
