@@ -44,3 +44,7 @@ class MultithreadedRequestsPool:
                       endpoint_api_key_type, endpoint_body, endpoint_params) -> Future:
         return cls._dispatcher.submit(cls.run, client, stream_name, endpoint_path, endpoint_api_method,
                                       endpoint_api_version, endpoint_api_key_type, endpoint_body, endpoint_params)
+
+    @classmethod
+    def queue_function(cls, func, *args, **kwargs):
+        return cls._dispatcher.submit(func, *args, **kwargs)
