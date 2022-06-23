@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.0.1
+  * Added groundwork for metrics collection and multithreading [#81](https://github.com/singer-io/tap-mambu/pull/81)
+
+## 3.0.0
+  * Major schema refactoring, V2 API upgrade [#77](https://github.com/singer-io/tap-mambu/pull/77)
+    * Finishes structural refactoring of the tap to generator-processor pattern
+    * Upgrades all streams with a comparable endpoint to V2 API
+    * Updates all schemas to match current documentation
+    * Adds schema extraction script to repo for generating schemas from Swagger specs
+
+## 2.5.2
+  * Hotfix for audit_trail bookmarking issue [#79](https://github.com/singer-io/tap-mambu/pull/79)
+
+## 2.5.1
+  * Hotfix for edge cases introduced in version 2.5.0 [#76](https://github.com/singer-io/tap-mambu/pull/76)
+
 ## 2.5.0
   * New stream, finished non-breaking refactor, new fields [#74](https://github.com/singer-io/tap-mambu/pull/74)
     * Added new stream `interest_accrual_breakdown`

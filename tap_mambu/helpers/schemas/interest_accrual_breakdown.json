@@ -25,7 +25,8 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "branch_key": {
       "type": [
@@ -43,7 +44,8 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "format": "date-time"
     },
     "entry_id": {
       "type": [

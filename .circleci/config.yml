@@ -17,7 +17,7 @@ jobs:
           name: 'JSON Validator'
           command: |
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json tap_mambu/schemas/*.json
+            stitch-validate-json tap_mambu/helpers/schemas/*.json
       - run:
           when: always
           name: 'Unit Tests'
