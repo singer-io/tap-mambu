@@ -7,7 +7,7 @@ import backoff
 from singer import get_logger
 
 from .generator import TapGenerator
-from ..helpers import transform_json, transform_datetime
+from ..helpers import transform_json
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
@@ -24,6 +24,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.limit = self.client.page_size + self.overlap_window
         self.batch_limit = 10000
         self.params = self.static_params
+        self.futures = list()
 
     def _init_config(self):
         super(MultithreadedOffsetGenerator, self)._init_config()
@@ -31,11 +32,12 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.fetch_batch_thread = None
         self.last_batch_set = set()
 
-    def error_check_and_fix(self, a, b):
+    @staticmethod
+    def get_and_check_set_reunion(a: set, b: set, lower_limit: int):
         reunion = a | b
         if len(reunion) == len(a) + len(b):
             raise RuntimeError("Failed to error correct, aborting job.")
-        if len(a) + self.artificial_limit < len(reunion) < len(a) + len(b):
+        if len(a) + lower_limit < len(reunion) < len(a) + len(b):
             LOGGER.warning("Error checking returned errors, but they will be corrected!")
         return reunion
 
@@ -57,32 +59,30 @@ class MultithreadedOffsetGenerator(TapGenerator):
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
-        futures = list()
-        while len(self.buffer) + len(futures) * self.limit <= self.batch_limit:
+        self.futures = list()
+        while len(self.buffer) + len(self.futures) * self.limit <= self.batch_limit:
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
-            futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
-                                                                   self.endpoint_path, self.endpoint_api_method,
-                                                                   self.endpoint_api_version,
-                                                                   self.endpoint_api_key_type,
-                                                                   deepcopy(self.endpoint_body),
-                                                                   deepcopy(self.params)))
+            self.futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
+                                                                        self.endpoint_path, self.endpoint_api_method,
+                                                                        self.endpoint_api_version,
+                                                                        self.endpoint_api_key_type,
+                                                                        deepcopy(self.endpoint_body),
+                                                                        deepcopy(self.params)))
             self.offset += self.artificial_limit
         # wait for responses, and check them for errors
         last_batch = set()
         final_buffer = self.last_batch_set
         stop_iteration = False
-        for future in futures:
+        for future in self.futures:
             while not future.done():
                 time.sleep(0.1)
-
             result = future.result()
-
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
 
             if not temp_buffer:  # We finished the data to extract, time to stop
-                self.stop_all_request_threads(futures)
+                self.stop_all_request_threads(self.futures)
                 stop_iteration = True
                 break
 
@@ -92,22 +92,11 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 final_buffer = final_buffer | temp_buffer
                 continue
 
-            try:
-                final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
-            except RuntimeError:  # if errors are found
-                LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
-                                 "Cleaning up...")
-
-                # wait all threads to finish/cancel all threads
-                self.stop_all_request_threads(futures)
-                LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
-                # retry the whole process (using backoff decorator, so we need to propagate the exception)
-                # effectively rerunning this function with the same parameters
-                raise
+            final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
 
             if stop_iteration:
                 break
-        
+
         final_buffer -= self.last_batch_set
         self.last_batch_set = last_batch
         # if no errors found:
@@ -120,6 +109,21 @@ class MultithreadedOffsetGenerator(TapGenerator):
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def error_check_and_fix(self, final_buffer: set, temp_buffer: set):
+        try:
+            final_buffer = self.get_and_check_set_reunion(final_buffer, temp_buffer, self.artificial_limit)
+        except RuntimeError:  # if errors are found
+            LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
+                             "Cleaning up...")
+
+            # wait all threads to finish/cancel all threads
+            self.stop_all_request_threads(self.futures)
+            LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
+            # retry the whole process (using backoff decorator, so we need to propagate the exception)
+            # effectively rerunning this function with the same parameters
+            raise
+        return final_buffer
 
     def __iter__(self):
         if self.fetch_batch_thread is None:
