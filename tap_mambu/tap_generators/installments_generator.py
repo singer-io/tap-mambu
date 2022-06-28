@@ -2,6 +2,7 @@ import json
 from singer import utils
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_datetime
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
 
 
 class InstallmentsGenerator(MultithreadedOffsetGenerator):
@@ -10,7 +11,7 @@ class InstallmentsGenerator(MultithreadedOffsetGenerator):
         self.endpoint_path = "installments"
         self.endpoint_api_method = "GET"
         self.endpoint_params = {
-            "dueFrom": transform_datetime(self.start_date)[:10],
+            "dueFrom": datetime_to_utc_str(str_to_localized_datetime(self.start_date))[:10],
             "dueTo": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10],
             "detailsLevel": "FULL",
             "paginationDetails": "OFF"

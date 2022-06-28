@@ -8,6 +8,7 @@ from singer import get_logger
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert, transform_datetime
+from ..helpers.datetime_utils import str_to_localized_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
 LOGGER = get_logger()

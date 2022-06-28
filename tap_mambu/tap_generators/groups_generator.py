@@ -1,6 +1,7 @@
 from .generator import TapGenerator
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import get_bookmark, transform_datetime
+from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime, datetime_to_utc_str
 
 
 class GroupsGenerator(MultithreadedBookmarkGenerator):
@@ -16,11 +17,11 @@ class GroupsGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
-                "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))
+                "value": datetime_to_utc_str(str_to_localized_datetime(
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
             }
         ]
 
     def prepare_batch_params(self):
         super(GroupsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value
+        self.endpoint_filter_criteria[0]["value"] = datetime_to_local_str(self.endpoint_intermediary_bookmark_value)
