@@ -53,7 +53,6 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
     def collect_batches(self, futures):
         # wait for responses, and check them for errors
-        futures = list()
         final_buffer = set()
         stop_iteration = False
         for future in futures:
@@ -72,7 +71,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 stop_iteration = True
                 break
 
-            final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
+            final_buffer = self.error_check_and_fix(final_buffer, temp_buffer, futures)
 
             if stop_iteration:
                 break
@@ -89,7 +88,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         super().preprocess_batches(final_buffer)
         self.last_batch_size = len(final_buffer)
 
-    def set_intermediary_bookmark(self, record_bookmark_value: datetime.datetime):
+    def set_intermediary_bookmark(self, record_bookmark_value):
         if self.endpoint_intermediary_bookmark_value is None or \
                 self.compare_bookmark_values(record_bookmark_value,
                                              self.endpoint_intermediary_bookmark_value):

@@ -73,7 +73,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     def collect_batches(self, futures):
         # wait for responses, and check them for errors
-        futures = list()
         last_batch = set()
         final_buffer = self.last_batch_set
         stop_iteration = False
