@@ -35,25 +35,28 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 self.end_of_file = True
             first_run = False
 
-    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
-    def _all_fetch_batch_steps(self):
+    def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
-        self.futures = list()
+        futures = list()
         original_offset = self.offset
         for offset in [offset for offset in range(0, self.batch_limit, self.artificial_limit)]:
             self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
-            self.futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
+            futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
                                                                    self.endpoint_path, self.endpoint_api_method,
                                                                    self.endpoint_api_version,
                                                                    self.endpoint_api_key_type,
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
+        return futures
+
+    def collect_batches(self, futures):
         # wait for responses, and check them for errors
+        futures = list()
         final_buffer = set()
         stop_iteration = False
-        for future in self.futures:
+        for future in futures:
             while not future.done():
                 time.sleep(0.1)
             result = future.result()
@@ -65,7 +68,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 continue
 
             if not temp_buffer:  # We finished the data to extract, time to stop
-                self.stop_all_request_threads(self.futures)
+                self.stop_all_request_threads(futures)
                 stop_iteration = True
                 break
 
@@ -73,21 +76,18 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
             if stop_iteration:
                 break
+        return final_buffer, stop_iteration
 
-        # if no errors found:
-        # dump data into buffer
-        for raw_record in final_buffer:
-            record = json.loads(raw_record.decode("utf8"))
-            self.buffer.append(record)
-            # increment bookmark
-            record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
-            if record_bookmark_value is not None:
-                self.set_intermediary_bookmark(transform_datetime(record_bookmark_value))
+    def preprocess_record(self, raw_record):
+        record = super().preprocess_record(raw_record)
+        # increment bookmark
+        record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
+        if record_bookmark_value is not None:
+            self.set_intermediary_bookmark(transform_datetime(record_bookmark_value))
 
+    def preprocess_batches(self, final_buffer):
+        super().preprocess_batches(final_buffer)
         self.last_batch_size = len(final_buffer)
-        if not final_buffer or stop_iteration:
-            return False
-        return True
 
     def set_intermediary_bookmark(self, record_bookmark_value: datetime.datetime):
         if self.endpoint_intermediary_bookmark_value is None or \
