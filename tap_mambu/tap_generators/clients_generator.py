@@ -5,7 +5,7 @@ from ..helpers import get_bookmark, transform_datetime
 class ClientsGenerator(MultithreadedBookmarkDayByDayGenerator):
     def _init_params(self):
         super(ClientsGenerator, self)._init_params()
-        self.batch_limit = 2000
+        self.batch_limit = self.client.page_size * (self.max_threads // 2) + self.overlap_window
 
     def _init_endpoint_config(self):
         super(ClientsGenerator, self)._init_endpoint_config()

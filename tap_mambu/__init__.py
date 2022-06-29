@@ -15,7 +15,7 @@ REQUIRED_CONFIG_KEYS = [
     'user_agent'
 ]
 
-DEFAULT_PAGE_SIZE = 500
+DEFAULT_PAGE_SIZE = 200
 
 
 def do_discover():
