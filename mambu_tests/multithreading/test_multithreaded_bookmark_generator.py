@@ -124,3 +124,150 @@ def test_collect_batches_thread_not_done(mock_time_sleep, mock_transform_json):
 
     # just a check to make sure the algorithm passed over the while loop
     mock_transform_json.assert_called()
+
+
+@patch.object(MultithreadedBookmarkGenerator, 'prepare_batch',
+              side_effect=MultithreadedBookmarkGenerator.prepare_batch,
+              autospec=True)
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedRequestsPool.queue_request")
+def test_queue_batches(mock_queue_request,
+                       mock_prepare_batch):
+    mock_client = ClientMock()
+    mock_endpoint_path = 'test_endpoint_path'
+    mock_endpoint_api_method = 'POST'
+    mock_endpoint_api_version = 'v2'
+    mock_endpoint_api_key_type = 'test_endpoint_api_key_type'
+    mock_endpoint_body = {'filterCriteria': {"field": "creationDate",
+                                             "operator": "BETWEEN",
+                                             "value": '2020-01-01T12:00:00.000000Z',
+                                             "secondValue": '2020-02-01T03:01:20.000000Z'},
+                          'sortingCriteria': {"field": "encodedKey",
+                                              "order": "ASC"}
+                          },
+    mock_params = {'paginationDetails': 'OFF',
+                   'detailsLevel': 'FULL'}
+    mock_overlap_window = 20
+    mock_batch_limit = 4000
+    mock_artificial_limit = mock_client.page_size
+
+    mock_queue_request.side_effect = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
+
+    generator = MultithreadedBookmarkGeneratorFake(client=mock_client)
+    generator.overlap_window = mock_overlap_window
+    generator.batch_limit = mock_batch_limit
+    generator.endpoint_path = mock_endpoint_path
+    generator.endpoint_api_method = mock_endpoint_api_method
+    generator.endpoint_api_version = mock_endpoint_api_version
+    generator.endpoint_api_key_type = mock_endpoint_api_key_type
+    generator.endpoint_body = mock_endpoint_body
+    generator.params = mock_params
+    generator.limit = mock_client.page_size + mock_overlap_window
+
+    assert generator.offset == 0
+    features = generator.queue_batches()
+
+    assert len(features) == mock_batch_limit // mock_artificial_limit
+
+    mock_params['offset'] = 0
+    mock_params['limit'] = mock_artificial_limit + mock_overlap_window
+    calls = []
+    for offset in range(0, mock_batch_limit, mock_artificial_limit):
+        calls.append(call(mock_client, 'test_stream', mock_endpoint_path, mock_endpoint_api_method,
+                          mock_endpoint_api_version, mock_endpoint_api_key_type, mock_endpoint_body, dict(mock_params)))
+        mock_params['offset'] += mock_artificial_limit
+
+    # test if the queue_request method is called using the correct offset
+    mock_queue_request.assert_has_calls(calls)
+
+    # test if the methods are called the correct amount of times
+    assert mock_prepare_batch.call_count == mock_batch_limit / mock_client.page_size
+    assert mock_queue_request.call_count == mock_batch_limit / mock_client.page_size
+    assert generator.offset == mock_batch_limit - mock_client.page_size
+
+
+@patch.object(MultithreadedBookmarkGenerator, 'error_check_and_fix',
+              side_effect=MultithreadedBookmarkGenerator.error_check_and_fix,
+              autospec=True)
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator.stop_all_request_threads")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedBookmarkGenerator.transform_batch")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_json")
+def test_collect_batches(mock_transform_json,
+                         mock_transform_batch,
+                         mock_stop_all_request_threads,
+                         mock_error_check_and_fix):
+    mock_batch_limit = 4000
+    mock_artificial_limit = 200
+    mock_overlap_window = 20
+    mock_client = ClientMock(page_size=200)
+
+    generator = MultithreadedBookmarkGeneratorFake(client=mock_client)
+    generator.artificial_limit = mock_artificial_limit
+    generator.batch_limit = mock_batch_limit
+    generator.overlap_window = mock_overlap_window
+
+    # generate fake data as if they were extracted from the API
+    mock_records = [[{'encoded_key': f'0-{record_no}'}
+                     for record_no in range(0, mock_client.page_size + mock_overlap_window)], ]
+    for batch_no in range(1, (mock_batch_limit // mock_artificial_limit) - 1):
+        mock_batch = mock_records[batch_no - 1][-mock_overlap_window:]
+        for record_no in range(0, mock_client.page_size):
+            mock_batch.append({'encoded_key': f'{batch_no}-{record_no}'})
+        mock_records.append(mock_batch)
+    mock_records.append([])
+
+    mock_transform_batch.side_effect = mock_records
+
+    mock_features = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
+    buffer, stop_iteration = generator.collect_batches(mock_features)
+    buffer = [json.loads(record) for record in buffer]
+
+    assert stop_iteration is True
+    assert all(record in buffer for batch in mock_records[:-1] for record in batch)
+
+    assert mock_transform_json.call_count == mock_batch_limit / mock_artificial_limit
+    assert mock_transform_batch.call_count == mock_batch_limit / mock_artificial_limit
+    # -2 because the first call is skipped and the last future value is an empty list
+    assert mock_error_check_and_fix.call_count == (mock_batch_limit / mock_artificial_limit) - 2
+    mock_stop_all_request_threads.assert_called_once()
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_datetime")
+@patch("tap_mambu.tap_generators.multithreaded_offset_generator."
+       "MultithreadedOffsetGenerator.preprocess_record")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator.set_intermediary_bookmark")
+def test_preprocess_record(mock_set_intermediary_bookmark, mock_offset_preprocess_record, mock_transform_datetime):
+    mock_bookmark_field = 'test_field'
+    generator = MultithreadedBookmarkGeneratorFake()
+    generator.endpoint_bookmark_field = mock_bookmark_field
+
+    # test the behaviour with a record that doesn't contain the bookmarked field
+    mock_record = {'encoded_key': 'test'}
+    mock_offset_preprocess_record.return_value = mock_record
+    mock_transform_datetime.return_value = mock_record
+
+    generator.preprocess_record(mock_record)
+    mock_transform_datetime.assert_not_called()
+    mock_set_intermediary_bookmark.assert_not_called()
+
+    # test the behaviour with a record that does contain the bookmarked field
+    mock_record = {'encoded_key': 'test',
+                   'test_field': 'test_value'}
+    mock_offset_preprocess_record.return_value = mock_record
+    mock_transform_datetime.return_value = mock_record
+
+    generator.preprocess_record(mock_record)
+    mock_transform_datetime.assert_called_with(mock_record[mock_bookmark_field])
+    mock_set_intermediary_bookmark.assert_called_with(mock_record)
+
+
+@patch("tap_mambu.tap_generators.multithreaded_offset_generator."
+       "MultithreadedOffsetGenerator.preprocess_batches")
+def test_preprocess_batches(mock_offset_preprocess_batches):
+    mock_buffer = [{'encoded_key': f'value_{no}'} for no in range(100)]
+    mock_offset_preprocess_batches.return_value = mock_buffer
+
+    generator = MultithreadedBookmarkGeneratorFake()
+    generator.preprocess_batches(mock_buffer)
+    assert generator.last_batch_size == len(mock_buffer)
