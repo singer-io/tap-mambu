@@ -1,7 +1,5 @@
 import json
 import threading
-import pytest
-from datetime import datetime
 from mock import Mock, patch, call
 
 from mambu_tests.helpers import ClientMock, MultithreadedBookmarkGeneratorFake
@@ -95,35 +93,6 @@ def test_fetch_batch_continuously_sleep_branch(mock_time_sleep, mock_all_fetch_b
     fetch_batch_thread.join()
 
     assert mock_time_sleep.call_count > generator.batch_limit
-
-
-@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_json")
-@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.time.sleep")
-def test_collect_batches_thread_not_done(mock_time_sleep, mock_transform_json):
-    def create_mock_future_pending():
-        mock_future_pending = Mock()
-        mock_future_pending.done = Mock()
-        mock_future_pending.done.side_effect = [False, False, True]
-        return mock_future_pending
-
-    mock_future_done = Mock()
-    mock_future_done.done = Mock()
-    mock_future_done.done.return_value = True
-
-    generator = MultithreadedBookmarkGeneratorFake()
-
-    mock_futures = [mock_future_done for _ in
-                    range(0, generator.batch_limit - generator.artificial_limit,
-                          generator.artificial_limit)] + \
-                   [create_mock_future_pending()]
-
-    generator.collect_batches(mock_futures)
-
-    # test if the sleep function is called when the request isn't finished
-    assert mock_time_sleep.call_count == 2
-
-    # just a check to make sure the algorithm passed over the while loop
-    mock_transform_json.assert_called()
 
 
 @patch.object(MultithreadedBookmarkGenerator, 'prepare_batch',
@@ -230,6 +199,35 @@ def test_collect_batches(mock_transform_json,
     # -2 because the first call is skipped and the last future value is an empty list
     assert mock_error_check_and_fix.call_count == (mock_batch_limit / mock_artificial_limit) - 2
     mock_stop_all_request_threads.assert_called_once()
+
+
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_json")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.time.sleep")
+def test_collect_batches_thread_not_done(mock_time_sleep, mock_transform_json):
+    def create_mock_future_pending():
+        mock_future_pending = Mock()
+        mock_future_pending.done = Mock()
+        mock_future_pending.done.side_effect = [False, False, True]
+        return mock_future_pending
+
+    mock_future_done = Mock()
+    mock_future_done.done = Mock()
+    mock_future_done.done.return_value = True
+
+    generator = MultithreadedBookmarkGeneratorFake()
+
+    mock_futures = [mock_future_done for _ in
+                    range(0, generator.batch_limit - generator.artificial_limit,
+                          generator.artificial_limit)] + \
+                   [create_mock_future_pending()]
+
+    generator.collect_batches(mock_futures)
+
+    # test if the sleep function is called when the request isn't finished
+    assert mock_time_sleep.call_count == 2
+
+    # just a check to make sure the algorithm passed over the while loop
+    mock_transform_json.assert_called()
 
 
 @patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_datetime")
