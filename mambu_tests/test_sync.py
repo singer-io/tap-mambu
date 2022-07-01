@@ -40,7 +40,9 @@ def test_sync_endpoint(mock_loan_accounts_processor, mock_loan_accounts_ad_gener
 @mock.patch("tap_mambu.sync.singer.get_currently_syncing")
 @mock.patch("tap_mambu.sync.get_generator_processor_for_stream")
 @mock.patch("tap_mambu.sync.get_selected_streams")
-def test_sync_all_streams_flow(mock_get_selected_streams,
+@mock.patch("tap_mambu.sync.get_timezone_info")
+def test_sync_all_streams_flow(mock_get_timezone_info,
+                               mock_get_selected_streams,
                                mock_get_generator_processor_for_stream,
                                mock_singer_get_currently_syncing,
                                mock_update_currently_syncing,
@@ -89,7 +91,10 @@ def test_sync_all_streams_flow(mock_get_selected_streams,
 
 @mock.patch("tap_mambu.sync.singer.get_currently_syncing")
 @mock.patch("tap_mambu.sync.get_selected_streams")
-def test_sync_all_streams_no_selected_streams(mock_get_selected_streams, mock_singer_get_currently_syncing):
+@mock.patch("tap_mambu.sync.get_timezone_info")
+def test_sync_all_streams_no_selected_streams(mock_get_timezone_info,
+                                              mock_get_selected_streams,
+                                              mock_singer_get_currently_syncing):
     mock_get_selected_streams.return_value = set()
     sync_all_streams('client', {}, 'catalog', 'state')
 
@@ -99,7 +104,9 @@ def test_sync_all_streams_no_selected_streams(mock_get_selected_streams, mock_si
 
 @mock.patch("tap_mambu.sync.should_sync_stream")
 @mock.patch("tap_mambu.sync.get_selected_streams")
-def test_sync_all_streams_flow_child_stream(mock_get_selected_streams,
+@mock.patch("tap_mambu.sync.get_timezone_info")
+def test_sync_all_streams_flow_child_stream(mock_get_timezone_info,
+                                            mock_get_selected_streams,
                                             mock_should_sync_stream):
     streams_without_child = []
     child_streams = []

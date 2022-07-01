@@ -6,5 +6,5 @@ config_json = {'username': 'unit',
                'start_date': '2021-06-01T00:00:00Z',
                'lookback_window': 30,
                'user_agent': '',
-               'page_size': '500',
+               'page_size': '200',
                'apikey_audit': 'apikey_audit_test'}

@@ -18,7 +18,7 @@ def test_loan_accounts_generator():
             {
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
-                "value": '2021-06-01'
+                "value": '2021-06-01T00:00:00.000000Z'
             }
         ]
 
@@ -34,6 +34,6 @@ def test_loan_accounts_generator():
         {
             "field": "lastAccountAppraisalDate",
             "operator": "AFTER",
-            "value": '2021-06-01'
+            "value": '2021-06-01T00:00:00.000000Z'
         }
     ]
