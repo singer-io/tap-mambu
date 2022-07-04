@@ -1,5 +1,7 @@
 import json
 import threading
+import time
+
 from mock import Mock, patch, call
 
 from mambu_tests.helpers import ClientMock, MultithreadedBookmarkGeneratorFake
@@ -68,9 +70,7 @@ def test_fetch_batch_continuously_multiple_calls(mock_prepare_batch_params, mock
     generator.fetch_batch_continuously()
 
     # test the flow if multiple while iterations are needed
-    mock_prepare_batch_params.assert_called()
     assert mock_prepare_batch_params.call_count == 2
-    mock_all_fetch_batch_steps.assert_called()
     assert mock_all_fetch_batch_steps.call_count == 3
     assert generator.end_of_file is True
 
@@ -82,13 +82,14 @@ def test_fetch_batch_continuously_sleep_branch(mock_time_sleep, mock_all_fetch_b
     mock_all_fetch_batch_steps.return_value = False
 
     generator = MultithreadedBookmarkGeneratorFake()
-    generator.buffer = [{'encoded_key': f'0-{record_no}-test'} for record_no in range(0, 10)]
+    generator.buffer = [{'encoded_key': f'0-{record_no}-test'} for record_no in range(10)]
     generator.batch_limit = 5
 
     fetch_batch_thread = threading.Thread(target=generator.fetch_batch_continuously)
     fetch_batch_thread.start()
 
     while len(generator.buffer) >= generator.batch_limit:
+        time.sleep(0.1)
         generator.buffer.pop()
     fetch_batch_thread.join()
 

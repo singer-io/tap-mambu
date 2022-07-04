@@ -49,7 +49,7 @@ def test_check_and_get_set_reunion():
        "MultithreadedOffsetGenerator.stop_all_request_threads")
 @patch("tap_mambu.tap_generators.multithreaded_offset_generator."
        "MultithreadedOffsetGenerator.check_and_get_set_reunion",
-       wraps=MultithreadedOffsetGenerator.check_and_get_set_reunion)
+       side_effect=RuntimeError)
 def test_error_check_and_fix(mock_check_and_get_set_reunion, mock_stop_all_request_threads):
     generator = MultithreadedOffsetGeneratorFake()
 
@@ -86,8 +86,8 @@ def test_next_flow():
     generator = MultithreadedOffsetGeneratorFake()
     generator.buffer = list(test_records)
 
-    for idx, record in enumerate(test_records):
-        assert next(generator) == test_records[idx]
+    for record in test_records:
+        assert next(generator) == record
 
     with pytest.raises(StopIteration):
         generator.end_of_file = True
@@ -186,7 +186,7 @@ def test_preprocess_record_multiple_records():
        "MultithreadedOffsetGenerator.preprocess_record")
 def test_preprocess_batches_flow(mock_preprocess_record):
     mock_records = [{'encoded_key': 'test', 'test_field': f'value_{no}'} for no in range(100)]
-    mock_last_batch_set = [set() for _ in range(50)]
+    mock_last_batch_set = set(f'encoded_key:test_value{no}' for no in range(50))
 
     generator = MultithreadedOffsetGeneratorFake()
     assert generator.last_batch_set == set()
@@ -209,22 +209,22 @@ def test_all_fetch_batch_steps_flow(mock_queue_batches, mock_collect_batches, mo
     generator = MultithreadedOffsetGeneratorFake()
 
     # test simple flow
-    mock_collect_batches.return_value = (True, False)
+    mock_collect_batches.return_value = (set('test_value'), False)
     fetch_output = generator._all_fetch_batch_steps()
     assert fetch_output is True
 
     # test when stop_iteration is True
-    mock_collect_batches.return_value = (True, True)
+    mock_collect_batches.return_value = (set('test_value'), True)
     fetch_output = generator._all_fetch_batch_steps()
     assert fetch_output is False
 
     # test when final_buffer is empty
-    mock_collect_batches.return_value = (False, False)
+    mock_collect_batches.return_value = (set(), False)
     fetch_output = generator._all_fetch_batch_steps()
     assert fetch_output is False
 
     # test when stop_iteration is True and final_buffer is empty
-    mock_collect_batches.return_value = (False, True)
+    mock_collect_batches.return_value = (set(), True)
     fetch_output = generator._all_fetch_batch_steps()
     assert fetch_output is False
 
