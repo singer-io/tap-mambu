@@ -186,7 +186,7 @@ def test_preprocess_record_multiple_records():
        "MultithreadedOffsetGenerator.preprocess_record")
 def test_preprocess_batches_flow(mock_preprocess_record):
     mock_records = [{'encoded_key': 'test', 'test_field': f'value_{no}'} for no in range(100)]
-    mock_last_batch_set = set(f'encoded_key:test_value{no}' for no in range(50))
+    mock_last_batch_set = set(f'{{"encoded_key":"test_value{no}"}}' for no in range(50))
 
     generator = MultithreadedOffsetGeneratorFake()
     assert generator.last_batch_set == set()
