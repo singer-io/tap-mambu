@@ -22,7 +22,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.max_threads = 20
         self.batch_limit = self.max_threads * self.client.page_size + self.overlap_window
         self.params = self.static_params
 
@@ -31,6 +30,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.end_of_file = False
         self.fetch_batch_thread = None
         self.last_batch_set = set()
+        self.max_threads = 20
 
     @staticmethod
     def check_and_get_set_reunion(a: set, b: set, lower_limit: int):

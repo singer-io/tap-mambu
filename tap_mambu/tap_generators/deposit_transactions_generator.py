@@ -3,9 +3,9 @@ from ..helpers import get_bookmark, transform_datetime
 
 
 class DepositTransactionsGenerator(MultithreadedBookmarkDayByDayGenerator):
-    def _init_params(self):
-        super(DepositTransactionsGenerator, self)._init_params()
-        self.batch_limit = self.client.page_size * (self.max_threads // 4) + self.overlap_window
+    def _init_config(self):
+        super()._init_config()
+        self.max_threads = 5
 
     def _init_endpoint_config(self):
         super(DepositTransactionsGenerator, self)._init_endpoint_config()
