@@ -54,3 +54,7 @@ def datetime_to_utc_str(dttm: datetime) -> str:
 
 def datetime_to_local_str(dttm: datetime) -> str:
     return dttm.astimezone(_timezone).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def datetime_to_tz(dttm: datetime, tz: str) -> datetime:
+    return dttm.astimezone(timezone(tz))
