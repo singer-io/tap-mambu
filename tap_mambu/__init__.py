@@ -3,6 +3,8 @@
 import sys
 import json
 import singer
+
+from tap_mambu.helpers.constants import DEFAULT_PAGE_SIZE
 from tap_mambu.helpers.client import MambuClient
 from tap_mambu.helpers.discover import discover
 from tap_mambu.sync import sync_all_streams
@@ -15,11 +17,8 @@ REQUIRED_CONFIG_KEYS = [
     'user_agent'
 ]
 
-DEFAULT_PAGE_SIZE = 500
-
 
 def do_discover():
-
     LOGGER.info('Starting discover')
     catalog = discover()
     json.dump(catalog.to_dict(), sys.stdout, indent=2)
@@ -28,7 +27,6 @@ def do_discover():
 
 @singer.utils.handle_top_exception(LOGGER)
 def main():
-
     parsed_args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
 
     with MambuClient(parsed_args.config.get('username'),

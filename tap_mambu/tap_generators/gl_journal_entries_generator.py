@@ -5,9 +5,9 @@ from ..helpers import transform_datetime, get_bookmark
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
-    def _init_params(self):
-        super(GlJournalEntriesGenerator, self)._init_params()
-        self.batch_limit = 1000
+    def _init_config(self):
+        super()._init_config()
+        self.max_threads = 5
 
     def _init_endpoint_config(self):
         super(GlJournalEntriesGenerator, self)._init_endpoint_config()

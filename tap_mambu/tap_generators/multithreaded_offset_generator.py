@@ -7,7 +7,7 @@ import backoff
 from singer import get_logger
 
 from .generator import TapGenerator
-from ..helpers import transform_json, transform_datetime
+from ..helpers import transform_json
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
@@ -22,7 +22,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.overlap_window = 20
         self.artificial_limit = self.client.page_size
         self.limit = self.client.page_size + self.overlap_window
-        self.batch_limit = 10000
+        self.batch_limit = self.max_threads * self.client.page_size + self.overlap_window
         self.params = self.static_params
 
     def _init_config(self):
@@ -30,12 +30,14 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.end_of_file = False
         self.fetch_batch_thread = None
         self.last_batch_set = set()
+        self.max_threads = 20
 
-    def error_check_and_fix(self, a, b):
+    @staticmethod
+    def check_and_get_set_reunion(a: set, b: set, lower_limit: int):
         reunion = a | b
         if len(reunion) == len(a) + len(b):
             raise RuntimeError("Failed to error correct, aborting job.")
-        if len(a) + self.artificial_limit < len(reunion) < len(a) + len(b):
+        if len(a) + lower_limit < len(reunion) < len(a) + len(b):
             LOGGER.warning("Error checking returned errors, but they will be corrected!")
         return reunion
 
@@ -54,8 +56,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.end_of_file = True
             time.sleep(0.1)
 
-    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
-    def _all_fetch_batch_steps(self):
+    def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
         while len(self.buffer) + len(futures) * self.limit <= self.batch_limit:
@@ -68,6 +69,9 @@ class MultithreadedOffsetGenerator(TapGenerator):
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
             self.offset += self.artificial_limit
+        return futures
+
+    def collect_batches(self, futures):
         # wait for responses, and check them for errors
         last_batch = set()
         final_buffer = self.last_batch_set
@@ -75,9 +79,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
-
             result = future.result()
-
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
 
@@ -92,34 +94,51 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 final_buffer = final_buffer | temp_buffer
                 continue
 
-            try:
-                final_buffer = self.error_check_and_fix(final_buffer, temp_buffer)
-            except RuntimeError:  # if errors are found
-                LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
-                                 "Cleaning up...")
-
-                # wait all threads to finish/cancel all threads
-                self.stop_all_request_threads(futures)
-                LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
-                # retry the whole process (using backoff decorator, so we need to propagate the exception)
-                # effectively rerunning this function with the same parameters
-                raise
+            final_buffer = self.error_check_and_fix(final_buffer, temp_buffer, futures)
 
             if stop_iteration:
                 break
-        
+
         final_buffer -= self.last_batch_set
         self.last_batch_set = last_batch
+
+        return final_buffer, stop_iteration
+
+    def preprocess_record(self, raw_record):
+        record = json.loads(raw_record.decode("utf8"))
+        self.buffer.append(record)
+        return record
+
+    def preprocess_batches(self, final_buffer):
         # if no errors found:
         # dump data into buffer
         for raw_record in final_buffer:
-            record = json.loads(raw_record.decode("utf8"))
-            self.buffer.append(record)
-
+            self.preprocess_record(raw_record)
         self.last_batch_size = len(self.last_batch_set)
+
+    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
+    def _all_fetch_batch_steps(self):
+        futures = self.queue_batches()
+        final_buffer, stop_iteration = self.collect_batches(futures)
+        self.preprocess_batches(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def error_check_and_fix(self, final_buffer: set, temp_buffer: set, futures: list):
+        try:
+            final_buffer = self.check_and_get_set_reunion(final_buffer, temp_buffer, self.artificial_limit)
+        except RuntimeError:  # if errors are found
+            LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
+                             "Cleaning up...")
+
+            # wait all threads to finish/cancel all threads
+            self.stop_all_request_threads(futures)
+            LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
+            # retry the whole process (using backoff decorator, so we need to propagate the exception)
+            # effectively rerunning this function with the same parameters
+            raise
+        return final_buffer
 
     def __iter__(self):
         if self.fetch_batch_thread is None:

@@ -3,9 +3,9 @@ from ..helpers import get_bookmark, transform_datetime
 
 
 class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
-    def _init_params(self):
-        super(DepositAccountsGenerator, self)._init_params()
-        self.batch_limit = 5000
+    def _init_config(self):
+        super()._init_config()
+        self.max_threads = 25
 
     def _init_endpoint_config(self):
         super(DepositAccountsGenerator, self)._init_endpoint_config()
