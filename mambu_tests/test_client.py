@@ -3,7 +3,7 @@ import pytest
 import mock
 from mock import Mock
 
-from tap_mambu import MambuClient
+from tap_mambu import MambuClient, DEFAULT_PAGE_SIZE
 from tap_mambu.helpers.client import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
     MambuNoAuditApikeyInConfig, Server5xxError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
 from .constants import config_json
@@ -40,7 +40,7 @@ def test_client_check_access_api_key(mock_requests_session_get):
     base_url = "https://unit.test.mambu.com/api"
     assert client.check_access()
     assert client.base_url == base_url
-    assert client.page_size == 500
+    assert client.page_size == DEFAULT_PAGE_SIZE
 
     mock_requests_session_get.assert_called_once_with(url=f'{base_url}/settings/organization',
                                                       headers={'Accept': 'application/vnd.mambu.v1+json',
