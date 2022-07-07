@@ -11,7 +11,7 @@ class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
         super(DepositAccountsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "deposits:search"
         self.endpoint_sorting_criteria = {
-            "field": "lastModifiedDate",
+            "field": "id",
             "order": "ASC"
         }
         self.endpoint_filter_criteria = [
