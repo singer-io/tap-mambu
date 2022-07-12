@@ -1,5 +1,4 @@
 import datetime
-from threading import Lock
 from urllib.parse import parse_qs
 
 import pytz
@@ -64,8 +63,10 @@ class ClientWithDataMock(ClientMock):
         self.offset_field = offset_field
         self.data_to_serve = custom_data
         if self.data_to_serve is None:
-            self.data_to_serve = [{"id": index, bookmark_field: f"2022-06-06T00:00:00.{index:06d}Z-07:00"}
-                                  for index in range(800)]
+            self.data_to_serve = [{"id": index, bookmark_field: f"2022-06-05T00:00:00.{index:06d}Z-07:00"}
+                                  for index in range(400)] + \
+                                 [{"id": index, bookmark_field: f"2022-06-06T00:00:00.{index:06d}Z-07:00"}
+                                  for index in range(400)]
         self.request.side_effect = self.serve_request
 
     def serve_request(self, *args, **kwargs):

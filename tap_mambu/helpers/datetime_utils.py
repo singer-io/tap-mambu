@@ -58,3 +58,11 @@ def datetime_to_local_str(dttm: datetime) -> str:
 
 def datetime_to_tz(dttm: datetime, tz: str) -> datetime:
     return dttm.astimezone(timezone(tz))
+
+
+def utc_now():
+    return datetime.now(timezone("UTC"))
+
+
+def local_now():
+    return datetime.now(_timezone)

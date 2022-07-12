@@ -1,13 +1,12 @@
 import datetime
 import json
 import time
-import backoff
 
 from copy import deepcopy
 from singer import get_logger
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
-from ..helpers import transform_json, convert, transform_datetime
+from ..helpers import transform_json, convert
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_tz
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 

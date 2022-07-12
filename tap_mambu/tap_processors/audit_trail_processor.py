@@ -1,6 +1,6 @@
 from .processor import TapProcessor
-from singer.utils import strptime_to_utc
 from ..helpers import convert, write_bookmark, get_bookmark
+from ..helpers.datetime_utils import str_to_datetime, datetime_to_utc_str
 
 
 class AuditTrailProcessor(TapProcessor):
@@ -25,14 +25,14 @@ class AuditTrailProcessor(TapProcessor):
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
         if bookmark_field and (bookmark_field in transformed_record):
-            bookmark_dttm = strptime_to_utc(transformed_record[bookmark_field])
-            max_bookmark_value_dttm = strptime_to_utc(self.max_bookmark_value)
+            bookmark_dttm = str_to_datetime(transformed_record[bookmark_field])
+            max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
             if bookmark_dttm > max_bookmark_value_dttm:
-                self.max_bookmark_value = bookmark_dttm.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                self.max_bookmark_value = datetime_to_utc_str(bookmark_dttm)
                 # Reset identical record count
                 self.bookmark_offset = 0
 
-            max_bookmark_value_dttm = strptime_to_utc(self.max_bookmark_value)
+            max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
             if max_bookmark_value_dttm == bookmark_dttm:
                 # Increment identical record count
                 self.bookmark_offset += 1

@@ -1,6 +1,6 @@
-from singer import utils
 from .generator import TapGenerator
-from ..helpers import get_bookmark, transform_datetime
+from ..helpers import get_bookmark
+from ..helpers.datetime_utils import str_to_datetime, datetime_to_utc_str, utc_now
 
 
 class AuditTrailGenerator(TapGenerator):
@@ -24,8 +24,8 @@ class AuditTrailGenerator(TapGenerator):
 
         self.endpoint_params = {
             "sort_order": "asc",
-            "occurred_at[gte]": transform_datetime(audit_trail_bookmark),
-            "occurred_at[lte]": utils.strftime(utils.now()),
+            "occurred_at[gte]": datetime_to_utc_str(str_to_datetime(audit_trail_bookmark)),
+            "occurred_at[lte]": datetime_to_utc_str(utc_now()),
         }
 
     def _init_params(self):

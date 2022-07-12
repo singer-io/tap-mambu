@@ -1,7 +1,6 @@
-from singer import utils
 from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime, utc_now
 
 
 class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
@@ -13,7 +12,7 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
 
         self.endpoint_params["from"] = datetime_to_utc_str(str_to_localized_datetime(
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
-        self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%d")[:10]
+        self.endpoint_params["to"] = datetime_to_utc_str(utc_now())[:10]
         self.endpoint_bookmark_field = "timestamp"
 
     def transform_batch(self, batch):
