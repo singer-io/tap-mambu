@@ -1,14 +1,22 @@
+from datetime import datetime
+
 import mock
 from mock import MagicMock
 from copy import deepcopy
+
+from pytz import timezone
+
 from . import setup_generator_base_test
 from ..constants import config_json
 
 
-@mock.patch("tap_mambu.tap_generators.audit_trail_generator.utils")
-def test_audit_trail_generator_endpoint_config_init(utils_mock):
-    fake_lte_date = "2022-01-01T00:00:00.000000Z"
-    utils_mock.strftime.return_value = fake_lte_date
+@mock.patch("tap_mambu.tap_generators.audit_trail_generator.utc_now")
+def test_audit_trail_generator_endpoint_config_init(utc_now_mock):
+    fake_lte_date = datetime(year=2022, month=1, day=1,
+                             hour=0, minute=0, second=0,
+                             microsecond=0, tzinfo=timezone("UTC"))
+    fake_lte_date_str = "2022-01-01T00:00:00.000000Z"
+    utc_now_mock.return_value = fake_lte_date
 
     generators = setup_generator_base_test("audit_trail")
 
@@ -23,19 +31,22 @@ def test_audit_trail_generator_endpoint_config_init(utils_mock):
     assert generator.endpoint_params == {
         "sort_order": "asc",
         "occurred_at[gte]": "2021-06-01T00:00:00.000000Z",
-        "occurred_at[lte]": fake_lte_date
+        "occurred_at[lte]": fake_lte_date_str
     }
     assert generator.endpoint_bookmark_field == "occurred_at"
     assert generator.audit_trail_offset == 0
 
 
 @mock.patch("tap_mambu.tap_generators.audit_trail_generator.get_bookmark")
-@mock.patch("tap_mambu.tap_generators.audit_trail_generator.utils")
-def test_audit_trail_generator_bookmark(utils_mock, get_bookmark_mock):
-    fake_gte_date = "2021-09-01T00:00:00.000000Z"
-    fake_lte_date = "2022-01-01T00:00:00.000000Z"
-    get_bookmark_mock.return_value = [fake_gte_date, 2]
-    utils_mock.strftime.return_value = fake_lte_date
+@mock.patch("tap_mambu.tap_generators.audit_trail_generator.utc_now")
+def test_audit_trail_generator_bookmark(utc_now_mock, get_bookmark_mock):
+    fake_gte_date_str = "2021-09-01T00:00:00.000000Z"
+    get_bookmark_mock.return_value = [fake_gte_date_str, 2]
+    fake_lte_date = datetime(year=2022, month=1, day=1,
+                             hour=0, minute=0, second=0,
+                             microsecond=0, tzinfo=timezone("UTC"))
+    fake_lte_date_str = "2022-01-01T00:00:00.000000Z"
+    utc_now_mock.return_value = fake_lte_date
 
     generators = setup_generator_base_test("audit_trail")
 
@@ -46,8 +57,8 @@ def test_audit_trail_generator_bookmark(utils_mock, get_bookmark_mock):
     assert generator.audit_trail_offset == 2
     assert generator.endpoint_params == {
         "sort_order": "asc",
-        "occurred_at[gte]": fake_gte_date,
-        "occurred_at[lte]": fake_lte_date
+        "occurred_at[gte]": fake_gte_date_str,
+        "occurred_at[lte]": fake_lte_date_str
     }
 
 
