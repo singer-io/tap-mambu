@@ -77,7 +77,7 @@ class DeduplicationProcessor(TapProcessor):
                 if self.process_record(record, record_key.time_extracted,
                                        record_key.endpoint_bookmark_field):
                     record_count += 1
-                    self._process_child_records_multithreaded(record)
+                    self._process_child_records(record)
                     counter.increment()
 
                 # Remove any record with the same deduplication_key from the list
@@ -85,7 +85,4 @@ class DeduplicationProcessor(TapProcessor):
                 for iterator in self.generator_values.keys():
                     if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
                         self.generator_values[iterator] = None
-
-        for future in futures.as_completed(self.futures):
-            record_count += future.result()
         return record_count
