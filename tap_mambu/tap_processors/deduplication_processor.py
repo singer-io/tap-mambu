@@ -6,6 +6,7 @@ from singer.utils import strptime_to_utc
 from .processor import TapProcessor
 from ..helpers import convert
 from ..helpers.exceptions import NoDeduplicationCapabilityException, NoDeduplicationKeyException
+from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -74,8 +75,12 @@ class DeduplicationProcessor(TapProcessor):
 
                 # Process the record
                 record = self.generator_values[record_key]
-                if self.process_record(record, record_key.time_extracted,
-                                       record_key.endpoint_bookmark_field):
+
+                with PerformanceMetrics(metric_name="processor"):
+                    is_processed = self.process_record(record, record_key.time_extracted,
+                                                       record_key.endpoint_bookmark_field)
+
+                if is_processed:
                     record_count += 1
                     self._process_child_records(record)
                     counter.increment()
