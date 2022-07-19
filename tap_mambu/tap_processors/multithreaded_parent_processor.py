@@ -1,13 +1,26 @@
+from concurrent import futures
+
 from .processor import TapProcessor, LOGGER
 from ..helpers import get_selected_streams
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
 
 class MultithreadedParentProcessor(TapProcessor):
-    def _process_child_records_multithreaded(self, record):
+    def _init_config(self):
+        super(MultithreadedParentProcessor, self)._init_config()
+        self.futures = list()
+
+    def process_records(self):
+        record_count = super(MultithreadedParentProcessor, self).process_records()
+
+        for future in futures.as_completed(self.futures):
+            record_count += future.result()
+        return record_count
+
+    def _process_child_records(self, record):
         from ..sync import sync_endpoint
 
-        super(MultithreadedParentProcessor, self)._process_child_records_multithreaded(record)
+        super(MultithreadedParentProcessor, self)._process_child_records(record)
         for child_stream_name in self.endpoint_child_streams:
             if child_stream_name in get_selected_streams(self.catalog):
                 parent_id = record[self.endpoint_id_field]
