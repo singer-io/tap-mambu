@@ -18,6 +18,6 @@ def test_loan_transactions_generator_endpoint_config_init():
         {
             "field": "creationDate",
             "operator": "AFTER",
-            "value": '2021-06-01'
+            "value": '2021-06-01T00:00:00.000000Z'
         }
     ]

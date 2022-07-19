@@ -1,13 +1,13 @@
 import datetime
 import json
 import time
-import backoff
 
 from copy import deepcopy
 from singer import get_logger
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
-from ..helpers import transform_json, convert, transform_datetime
+from ..helpers import transform_json, convert
+from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_tz
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
 LOGGER = get_logger()
@@ -82,7 +82,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         # increment bookmark
         record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
         if record_bookmark_value is not None:
-            self.set_intermediary_bookmark(transform_datetime(record_bookmark_value))
+            self.set_intermediary_bookmark(datetime_to_tz(str_to_localized_datetime(record_bookmark_value), "UTC"))
 
     def preprocess_batches(self, final_buffer):
         super().preprocess_batches(final_buffer)
@@ -105,5 +105,6 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
 
 class MultithreadedBookmarkDayByDayGenerator(MultithreadedBookmarkGenerator):
-    def set_intermediary_bookmark(self, record_bookmark_value):
-        super().set_intermediary_bookmark(record_bookmark_value[:10])
+    def set_intermediary_bookmark(self, record_bookmark_value: datetime):
+        record_bookmark_value_without_time = record_bookmark_value.replace(hour=0, minute=0, second=0, microsecond=0)
+        super().set_intermediary_bookmark(record_bookmark_value_without_time)

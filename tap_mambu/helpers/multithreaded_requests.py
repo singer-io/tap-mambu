@@ -8,7 +8,7 @@ LOGGER = singer.get_logger()
 
 
 class MultithreadedRequestsPool:
-    _dispatcher = ThreadPoolExecutor(max_workers=100)
+    _dispatcher = ThreadPoolExecutor(max_workers=20)
 
     @classmethod
     def shutdown(cls):

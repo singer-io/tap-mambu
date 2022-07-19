@@ -23,15 +23,14 @@ def test_activities_generator_endpoint_config_init():
 
 
 def test_activities_generator_dict_unpacking():
-    generators = setup_generator_base_test("activities")
+    generators = setup_generator_base_test("activities", with_data=True,
+                                           custom_data=[{
+                                               "client": "N/A", "activity": {"id": index}}
+                                               for index in range(1000)])
 
     assert 1 == len(generators)
 
     generator = generators[0]
-
-    generator.client.request.side_effect = [[
-        {"client": "N/A", "activity": {"id": nr + page*4}}
-        for nr in range(5)] for page in range(3)] + [[] for _ in range(1000)] + [[] * 1000]
 
     for record in generator:
         assert "id" in record, "Record in activity generator were not unpacked " \

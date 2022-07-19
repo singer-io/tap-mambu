@@ -1,8 +1,10 @@
 import json
 import threading
 import time
+from datetime import datetime
 
 from mock import Mock, patch, call
+from pytz import timezone
 
 from mambu_tests.helpers import ClientMock, MultithreadedBookmarkGeneratorFake
 from tap_mambu.tap_generators.multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
@@ -231,12 +233,14 @@ def test_collect_batches_thread_not_done(mock_time_sleep, mock_transform_json):
     mock_transform_json.assert_called()
 
 
-@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.transform_datetime")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.datetime_to_tz")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.str_to_localized_datetime")
 @patch("tap_mambu.tap_generators.multithreaded_offset_generator."
        "MultithreadedOffsetGenerator.preprocess_record")
 @patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
        "MultithreadedBookmarkGenerator.set_intermediary_bookmark")
-def test_preprocess_record(mock_set_intermediary_bookmark, mock_offset_preprocess_record, mock_transform_datetime):
+def test_preprocess_record(mock_set_intermediary_bookmark, mock_offset_preprocess_record,
+                           mock_str_to_localized_datetime, mock_datetime_to_tz):
     mock_bookmark_field = 'test_field'
     generator = MultithreadedBookmarkGeneratorFake()
     generator.endpoint_bookmark_field = mock_bookmark_field
@@ -244,21 +248,28 @@ def test_preprocess_record(mock_set_intermediary_bookmark, mock_offset_preproces
     # test the behaviour with a record that doesn't contain the bookmarked field
     mock_record = {'encoded_key': 'test'}
     mock_offset_preprocess_record.return_value = mock_record
-    mock_transform_datetime.return_value = mock_record
+    mock_datetime_to_tz.return_value = mock_record
+    mock_str_to_localized_datetime.return_value = mock_record
 
     generator.preprocess_record(mock_record)
-    mock_transform_datetime.assert_not_called()
+    mock_str_to_localized_datetime.assert_not_called()
+    mock_datetime_to_tz.assert_not_called()
     mock_set_intermediary_bookmark.assert_not_called()
 
     # test the behaviour with a record that does contain the bookmarked field
     mock_record = {'encoded_key': 'test',
-                   'test_field': 'test_value'}
+                   'test_field': '2022-01-01T00:00:00Z+03:00'}
+    datetime_in_local_tz = datetime.now(timezone("Europe/Bucharest")).replace(year=2022, month=1, day=1, hour=3,
+                                                                              minute=0, second=0, microsecond=0)
+    datetime_in_utc_tz = datetime.utcnow().replace(year=2022, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
     mock_offset_preprocess_record.return_value = mock_record
-    mock_transform_datetime.return_value = mock_record
+    mock_str_to_localized_datetime.return_value = datetime_in_local_tz
+    mock_datetime_to_tz.return_value = datetime_in_utc_tz
 
     generator.preprocess_record(mock_record)
-    mock_transform_datetime.assert_called_with(mock_record[mock_bookmark_field])
-    mock_set_intermediary_bookmark.assert_called_with(mock_record)
+    mock_str_to_localized_datetime.assert_called_with(mock_record[mock_bookmark_field])
+    mock_datetime_to_tz.assert_called_with(datetime_in_local_tz, "UTC")
+    mock_set_intermediary_bookmark.assert_called_with(datetime_in_utc_tz)
 
 
 @patch("tap_mambu.tap_generators.multithreaded_offset_generator."
