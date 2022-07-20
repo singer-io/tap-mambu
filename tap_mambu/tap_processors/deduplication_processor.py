@@ -6,6 +6,7 @@ from singer.utils import strptime_to_utc
 from .processor import TapProcessor
 from ..helpers import convert
 from ..helpers.exceptions import NoDeduplicationCapabilityException, NoDeduplicationKeyException
+from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -57,16 +58,26 @@ class DeduplicationProcessor(TapProcessor):
 
         return min_record_key, min_record_value
 
+    def populate_generator_values(self):
+        # Populate list of values from generators (if any were removed)
+        for iterator in list(self.generator_values):
+            if self.generator_values[iterator] is None:
+                self.generator_values[iterator] = next(iterator, None)
+            if self.generator_values[iterator] is None:
+                self.generator_values.pop(iterator)
+
+    def remove_same_key_values_from_generators(self, value):
+        # Remove any record with the same deduplication_key from the list
+        # (so we don't process the same record twice)
+        for iterator in self.generator_values.keys():
+            if value == self.generator_values[iterator][self.endpoint_deduplication_key]:
+                self.generator_values[iterator] = None
+
     def process_records(self):
         record_count = 0
         with metrics.record_counter(self.stream_name) as counter:
             while True:
-                # Populate list of values from generators (if any were removed)
-                for iterator in list(self.generator_values):
-                    if self.generator_values[iterator] is None:
-                        self.generator_values[iterator] = next(iterator, None)
-                    if self.generator_values[iterator] is None:
-                        self.generator_values.pop(iterator)
+                self.populate_generator_values()
                 if not self.generator_values:
                     break
 
@@ -74,15 +85,15 @@ class DeduplicationProcessor(TapProcessor):
 
                 # Process the record
                 record = self.generator_values[record_key]
-                if self.process_record(record, record_key.time_extracted,
-                                       record_key.endpoint_bookmark_field):
+
+                with PerformanceMetrics(metric_name="processor"):
+                    is_processed = self.process_record(record, record_key.time_extracted,
+                                                       record_key.endpoint_bookmark_field)
+
+                if is_processed:
                     record_count += 1
                     self._process_child_records(record)
                     counter.increment()
 
-                # Remove any record with the same deduplication_key from the list
-                # (so we don't process the same record twice)
-                for iterator in self.generator_values.keys():
-                    if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
-                        self.generator_values[iterator] = None
+                self.remove_same_key_values_from_generators(record_value)
         return record_count

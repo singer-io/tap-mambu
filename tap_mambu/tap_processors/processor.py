@@ -78,6 +78,7 @@ class TapProcessor(ABC):
         self.write_bookmark()
         return record_count
 
+    # This function is provided for processors with child streams, must be overridden if child streams are to be used
     def _process_child_records(self, record):
         pass
 
