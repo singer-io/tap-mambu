@@ -16,7 +16,7 @@ class GroupsGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
-                "value": datetime_to_utc_str(str_to_localized_datetime(
+                "value": datetime_to_local_str(str_to_localized_datetime(
                     get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
             }
         ]
