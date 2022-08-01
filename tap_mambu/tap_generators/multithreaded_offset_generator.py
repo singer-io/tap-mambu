@@ -78,9 +78,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
-
         total_records = self._get_number_of_records()
-        while len(self.buffer) + len(futures) * self.limit <= min(self.batch_limit, total_records):
+
+        max_offset = total_records + self.artificial_limit if self.batch_limit > total_records else self.batch_limit
+        while len(self.buffer) + len(futures) * self.limit <= max_offset:
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
