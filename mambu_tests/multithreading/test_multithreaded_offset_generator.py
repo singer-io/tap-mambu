@@ -235,8 +235,12 @@ def test_all_fetch_batch_steps_flow(mock_queue_batches, mock_collect_batches, mo
 @patch.object(MultithreadedOffsetGenerator, 'prepare_batch',
               side_effect=MultithreadedOffsetGenerator.prepare_batch,
               autospec=True)
-@patch("tap_mambu.tap_generators.multithreaded_offset_generator.MultithreadedRequestsPool.queue_request")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedOffsetGenerator._get_number_of_records")
+@patch("tap_mambu.tap_generators.multithreaded_offset_generator."
+       "MultithreadedRequestsPool.queue_request")
 def test_queue_batches(mock_queue_request,
+                       mock_get_number_of_records,
                        mock_prepare_batch):
     mock_client = ClientMock()
     mock_endpoint_path = 'test_endpoint_path'
@@ -255,6 +259,8 @@ def test_queue_batches(mock_queue_request,
     mock_overlap_window = 20
     mock_batch_limit = 4000
     mock_artificial_limit = mock_client.page_size
+
+    mock_get_number_of_records.return_value = mock_batch_limit + 1
 
     mock_queue_request.side_effect = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
 
