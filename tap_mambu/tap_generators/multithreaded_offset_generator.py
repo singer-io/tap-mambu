@@ -110,7 +110,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
             temp_buffer = set(transformed_batch)
 
             if not temp_buffer:  # We finished the data to extract, time to stop
-                futures.pop()
                 self.stop_all_request_threads(futures)
                 stop_iteration = True
                 break
