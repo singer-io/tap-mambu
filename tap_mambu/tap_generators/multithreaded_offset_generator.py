@@ -1,6 +1,7 @@
 import time
 from copy import deepcopy
 from threading import Thread
+from requests import Response
 
 import backoff
 from singer import get_logger
@@ -59,10 +60,27 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.end_of_file = True
             time.sleep(0.1)
 
+    def _get_number_of_records(self):
+        self.prepare_batch()
+        params = deepcopy(self.params)
+        params["paginationDetails"] = "ON"
+        future_request = MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
+                                                                 self.endpoint_path, self.endpoint_api_method,
+                                                                 self.endpoint_api_version,
+                                                                 self.endpoint_api_key_type,
+                                                                 deepcopy(self.endpoint_body),
+                                                                 params,
+                                                                 True)
+        while not future_request.done():
+            time.sleep(0.1)
+        return int(future_request.result().headers['items-total'])
+
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
-        while len(self.buffer) + len(futures) * self.limit <= self.batch_limit:
+
+        total_records = self._get_number_of_records()
+        while len(self.buffer) + len(futures) * self.limit <= min(self.batch_limit, total_records):
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
@@ -82,11 +100,16 @@ class MultithreadedOffsetGenerator(TapGenerator):
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
+
             result = future.result()
+            if type(result) is Response:
+                result = result.json()
+
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set(transformed_batch)
 
             if not temp_buffer:  # We finished the data to extract, time to stop
+                futures.pop()
                 self.stop_all_request_threads(futures)
                 stop_iteration = True
                 break

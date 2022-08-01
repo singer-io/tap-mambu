@@ -3,6 +3,7 @@ import time
 
 from copy import deepcopy
 from singer import get_logger
+from requests import Response
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
@@ -39,7 +40,10 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
         original_offset = self.offset
-        for offset in range(0, self.batch_limit, self.artificial_limit):
+        total_records = self._get_number_of_records()
+
+        for offset in [offset for offset in
+                       range(0, min(self.batch_limit, total_records), self.artificial_limit)]:
             self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
@@ -58,7 +62,11 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
+
             result = future.result()
+            if type(result) is Response:
+                result = result.json()
+
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set(transformed_batch)
 
