@@ -60,7 +60,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.end_of_file = True
             time.sleep(0.1)
 
-    def _get_number_of_records(self):
+    def _queue_first_batch(self):
         self.prepare_batch()
         params = deepcopy(self.params)
         params["paginationDetails"] = "ON"
@@ -71,14 +71,18 @@ class MultithreadedOffsetGenerator(TapGenerator):
                                                                  deepcopy(self.endpoint_body),
                                                                  params,
                                                                  True)
+        self.offset += self.artificial_limit
+        return future_request
+
+    def _get_number_of_records(self, future_request):
         while not future_request.done():
             time.sleep(0.1)
         return int(future_request.result().headers['items-total'])
 
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
-        futures = list()
-        total_records = self._get_number_of_records()
+        futures = [self._queue_first_batch(), ]
+        total_records = self._get_number_of_records(futures[0])
 
         max_offset = total_records + self.artificial_limit if self.batch_limit > total_records else self.batch_limit
         while len(self.buffer) + len(futures) * self.limit <= max_offset:
