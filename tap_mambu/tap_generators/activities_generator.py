@@ -31,5 +31,5 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
     def compare_bookmark_values(self, a, b):
         return a < b
 
-    def _get_number_of_records(self):
+    def _get_number_of_records(self, future_request):
         return self.batch_limit + 1
