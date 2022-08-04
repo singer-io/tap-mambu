@@ -21,8 +21,9 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
     def prepare_batch_params(self):
         self.offset = self.endpoint_intermediary_bookmark_offset
-        # here we change the date to the new one,
-        # in order to paginate through the data using date, resetting offset to 0
+        # This function should be extended upon in case you wish to change the date to a new one,
+        # in order to paginate through the data using date, resetting offset to 0, or the specific number of records
+        # the next batch needs to skip if there are multiple records with the same date.
 
     def fetch_batch_continuously(self):
         first_run = True
