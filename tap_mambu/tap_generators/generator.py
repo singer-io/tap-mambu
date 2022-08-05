@@ -3,6 +3,7 @@ from typing import List
 from singer import utils, get_logger
 
 from ..helpers import transform_json
+from ..helpers.hashable_dict import HashableDict
 from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
@@ -95,7 +96,10 @@ class TapGenerator(ABC):
         }
 
     def transform_batch(self, batch):
-        return batch
+        # Check if batch is list or dict and convert to Hashable dict accordingly
+        if type(batch) == list:
+            return list(map(HashableDict, batch))
+        return HashableDict(batch)
 
     def fetch_batch(self):
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in self.params.items()])

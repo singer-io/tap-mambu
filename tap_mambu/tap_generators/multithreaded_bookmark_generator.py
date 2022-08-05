@@ -61,7 +61,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 time.sleep(0.1)
             result = future.result()
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
-            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
+            temp_buffer = set(transformed_batch)
 
             if not final_buffer:
                 final_buffer = final_buffer | temp_buffer
@@ -84,6 +84,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
         if record_bookmark_value is not None:
             self.set_intermediary_bookmark(transform_datetime(record_bookmark_value))
+        return record
 
     def preprocess_batches(self, final_buffer):
         super().preprocess_batches(final_buffer)

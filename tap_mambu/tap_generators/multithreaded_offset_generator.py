@@ -85,7 +85,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 time.sleep(0.1)
             result = future.result()
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
-            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
+            temp_buffer = set(transformed_batch)
 
             if not temp_buffer:  # We finished the data to extract, time to stop
                 self.stop_all_request_threads(futures)
@@ -109,9 +109,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
         return final_buffer, stop_iteration
 
     def preprocess_record(self, raw_record):
-        record = json.loads(raw_record.decode("utf8"))
-        self.buffer.append(record)
-        return record
+        self.buffer.append(raw_record)
+        return raw_record
 
     def preprocess_batches(self, final_buffer):
         # if no errors found:
