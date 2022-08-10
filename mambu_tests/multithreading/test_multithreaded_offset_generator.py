@@ -3,6 +3,7 @@ import pytest
 from mock import Mock, patch, call
 
 from mambu_tests.helpers import ClientMock, MultithreadedOffsetGeneratorFake
+from tap_mambu.helpers.hashable_dict import HashableDict
 from tap_mambu.tap_generators.multithreaded_offset_generator import MultithreadedOffsetGenerator
 
 
@@ -159,24 +160,22 @@ def test_fetch_batch_continuously_multiple_calls(mock_time_sleep, mock_all_fetch
 
 def test_preprocess_record_one_record():
     mock_record = {'encoded_key': 'test', 'test_field': 'value'}
-    mock_record_byte = json.dumps(mock_record).encode("utf8")
 
     generator = MultithreadedOffsetGeneratorFake()
     assert generator.buffer == []
 
-    record = generator.preprocess_record(mock_record_byte)
+    record = generator.preprocess_record(mock_record)
     assert record == mock_record
     assert generator.buffer == [mock_record]
 
 
 def test_preprocess_record_multiple_records():
     mock_records = [{'encoded_key': 'test', 'test_field': f'value_{no}'} for no in range(10)]
-    mock_records_byte = [json.dumps(mock_record).encode("utf8") for mock_record in mock_records]
 
     generator = MultithreadedOffsetGeneratorFake()
     assert generator.buffer == []
 
-    for idx, mock_record in enumerate(mock_records_byte):
+    for idx, mock_record in enumerate(mock_records):
         record = generator.preprocess_record(mock_record)
         assert record == mock_records[idx]
     assert generator.buffer == mock_records
@@ -347,12 +346,12 @@ def test_collect_batches(mock_transform_json,
     generator.overlap_window = mock_overlap_window
 
     # generate fake data as if they were extracted from the API
-    mock_records = [[{'encoded_key': f'0-{record_no}'}
+    mock_records = [[HashableDict({'encoded_key': f'0-{record_no}'})
                      for record_no in range(0, mock_client.page_size + mock_overlap_window)], ]
     for batch_no in range(1, (mock_batch_limit // mock_artificial_limit) - 1):
         mock_batch = mock_records[batch_no - 1][-mock_overlap_window:]
         for record_no in range(0, mock_client.page_size):
-            mock_batch.append({'encoded_key': f'{batch_no}-{record_no}'})
+            mock_batch.append(HashableDict({'encoded_key': f'{batch_no}-{record_no}'}))
         mock_records.append(mock_batch)
     mock_records.append([])
 
@@ -360,7 +359,6 @@ def test_collect_batches(mock_transform_json,
 
     mock_features = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
     buffer, stop_iteration = generator.collect_batches(mock_features)
-    buffer = [json.loads(record) for record in buffer]
 
     assert stop_iteration is True
     assert all(record in buffer for batch in mock_records[:-1] for record in batch)
