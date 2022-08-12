@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.0
+  * Implements initial use cases of multithreaded requests for certain streams [#84](https://github.com/singer-io/tap-mambu/pull/84)
+
 ## 3.0.1
   * Added groundwork for metrics collection and multithreading [#81](https://github.com/singer-io/tap-mambu/pull/81)
 
