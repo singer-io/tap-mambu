@@ -1,3 +1,4 @@
+import mock
 from singer import utils
 from . import setup_generator_base_test
 
@@ -14,7 +15,7 @@ def test_activities_generator_endpoint_config_init():
     assert generator.endpoint_api_version == "v1"
     assert generator.endpoint_params == {
         "from": "2021-06-01",
-        "to": utils.now().strftime("%Y-%m-%d")[:10],
+        "to": utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10],
         "detailsLevel": "FULL",
         "paginationDetails": "OFF"
     }
@@ -29,8 +30,8 @@ def test_activities_generator_dict_unpacking():
     generator = generators[0]
 
     generator.client.request.side_effect = [[
-        {"client": "N/A", "activity": {"id": nr + page*5}}
-        for nr in range(5)] for page in range(3)]
+        {"client": "N/A", "activity": {"id": nr + page*4}}
+        for nr in range(5)] for page in range(3)] + [[] for _ in range(1000)] + [[] * 1000]
 
     for record in generator:
         assert "id" in record, "Record in activity generator were not unpacked " \

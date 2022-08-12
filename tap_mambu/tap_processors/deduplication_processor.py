@@ -1,3 +1,5 @@
+from concurrent import futures
+
 from singer import get_logger, metrics
 from singer.utils import strptime_to_utc
 
@@ -75,7 +77,7 @@ class DeduplicationProcessor(TapProcessor):
                 if self.process_record(record, record_key.time_extracted,
                                        record_key.endpoint_bookmark_field):
                     record_count += 1
-                    record_count += self._process_child_records(record)
+                    self._process_child_records_multithreaded(record)
                     counter.increment()
 
                 # Remove any record with the same deduplication_key from the list
@@ -84,4 +86,6 @@ class DeduplicationProcessor(TapProcessor):
                     if record_value == self.generator_values[iterator][self.endpoint_deduplication_key]:
                         self.generator_values[iterator] = None
 
+        for future in futures.as_completed(self.futures):
+            record_count += future.result()
         return record_count

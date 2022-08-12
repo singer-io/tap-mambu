@@ -10,3 +10,6 @@ class TasksGenerator(TapGenerator):
         self.endpoint_params["sortBy"] = "lastModifiedDate:ASC"
         self.endpoint_sorting_criteria = {}
 
+    def _init_params(self):
+        super(TasksGenerator, self)._init_params()
+        self.limit = 1000

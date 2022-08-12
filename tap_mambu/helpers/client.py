@@ -56,6 +56,18 @@ class MambuInternalServiceError(MambuError):
     pass
 
 
+class MambuNoCredInConfig(MambuError):
+    pass
+
+
+class MambuNoSubdomainInConfig(MambuError):
+    pass
+
+
+class MambuNoAuditApikeyInConfig(MambuError):
+    pass
+
+
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: MambuBadRequestError,
     401: MambuUnauthorizedError,
@@ -105,18 +117,18 @@ class MambuClient(object):
                  subdomain,
                  apikey_audit,
                  page_size,
-                 user_agent=None):
+                 user_agent=''):
         self.__username = username
         self.__password = password
         self.__subdomain = subdomain
         base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
         self.page_size = page_size
-        self.__user_agent = user_agent
+        self.__user_agent = f'MambuTap-{user_agent}' if user_agent else 'MambuTap'
         self.__apikey = apikey
         self.__session = requests.Session()
-        # self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=500)
-        # self.__session.mount("https://", self.__adapter)
+        self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=100)
+        self.__session.mount("https://", self.__adapter)
         self.__verified = False
         self.__apikey_audit = apikey_audit
 
@@ -135,20 +147,19 @@ class MambuClient(object):
         use_apikey = False
         if self.__username is None or self.__password is None:
             if self.__apikey is None:
-                raise Exception(
+                raise MambuNoCredInConfig(
                     'Error: Missing username or password, or apikey in config.json.'
                 )
             else:
                 use_apikey = True
         if self.__subdomain is None:
-            raise Exception('Error: Missing subdomain in cofig.json.')
+            raise MambuNoSubdomainInConfig('Error: Missing subdomain in config.json.')
         headers = {}
         # Endpoint: simple API call to return a single record (org settings) to test access
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings
         endpoint = 'settings/organization'
         url = '{}/{}'.format(self.base_url, endpoint)
-        if self.__user_agent:
-            headers['User-Agent'] = self.__user_agent
+        headers['User-Agent'] = self.__user_agent
         headers['Accept'] = 'application/vnd.mambu.v1+json'
         if use_apikey:
             # Api Key API Consumer Authentication: https://support.mambu.com/docs/api-consumers
@@ -194,14 +205,13 @@ class MambuClient(object):
 
         if apikey_type == 'audit':
             if self.__apikey_audit is None:
-                raise Exception(
+                raise MambuNoAuditApikeyInConfig(
                     'Error: Missing apikey_audit in config.json.'
                 )
             else:
                 kwargs['headers']['apikey'] = self.__apikey_audit
 
-        if self.__user_agent:
-            kwargs['headers']['User-Agent'] = self.__user_agent
+        kwargs['headers']['User-Agent'] = self.__user_agent
 
         if method == 'POST':
             kwargs['headers']['Content-Type'] = 'application/json'
@@ -219,6 +229,5 @@ class MambuClient(object):
 
         if response.status_code != 200:
             raise_for_error(response)
-        
-        return response.json()
 
+        return response.json()

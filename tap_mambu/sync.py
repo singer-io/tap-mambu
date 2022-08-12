@@ -1,7 +1,9 @@
 import singer
 
+from .helpers.constants import DEFAULT_PAGE_SIZE
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
 from .helpers.generator_processor_pairs import get_generator_processor_for_stream, get_stream_subtypes
+from .helpers.multithreaded_requests import MultithreadedRequestsPool
 from .helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = singer.get_logger()
@@ -33,7 +35,9 @@ def sync_all_streams(client, config, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
 
-    PerformanceMetrics.set_generator_batch_size(int(config.get("page_size", 500)))
+    # get_timezone_info(client)
+
+    PerformanceMetrics.set_generator_batch_size(int(config.get("page_size", DEFAULT_PAGE_SIZE)))
     
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))
@@ -102,3 +106,5 @@ def sync_all_streams(client, config, catalog, state):
 
                 LOGGER.info(f"Average Records/s: {statistics['records']}")
                 LOGGER.info(f"Total Duration: {statistics['extraction']}")
+
+    MultithreadedRequestsPool.shutdown()

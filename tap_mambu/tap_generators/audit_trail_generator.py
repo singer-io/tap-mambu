@@ -1,6 +1,6 @@
 from singer import utils
 from .generator import TapGenerator
-from ..helpers import transform_datetime, get_bookmark
+from ..helpers import get_bookmark, transform_datetime
 
 
 class AuditTrailGenerator(TapGenerator):

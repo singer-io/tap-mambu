@@ -1,11 +1,13 @@
 from abc import ABC
+from concurrent import futures
 
-from singer import write_record, Transformer, metadata, write_schema, get_logger, metrics
+from singer import write_record, metadata, write_schema, get_logger, metrics, Transformer
 from singer.utils import strptime_to_utc, now as singer_now
 
-from ..helpers import transform_datetime, convert, get_bookmark, write_bookmark
+from ..helpers import convert, get_bookmark, write_bookmark, transform_datetime
 from ..helpers.exceptions import NoDeduplicationCapabilityException
 from ..helpers.perf_metrics import PerformanceMetrics
+# from ..helpers.transformer import Transformer
 
 LOGGER = get_logger()
 
@@ -16,7 +18,7 @@ class TapProcessor(ABC):
         self.generators = generators
         self.generator_values = dict()
         for generator in self.generators:
-            self.generator_values[iter(generator)] = None
+            self.generator_values[generator.__iter__()] = None
         self.catalog = catalog
         self.stream_name = stream_name
         self.client = client
@@ -26,6 +28,7 @@ class TapProcessor(ABC):
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
+        self.futures = list()
         self._init_config()
         self._init_endpoint_config()
         self._init_bookmarks()
@@ -65,8 +68,11 @@ class TapProcessor(ABC):
                                                        self.generators[0].endpoint_bookmark_field)
                 if is_processed:
                     record_count += 1
-                    record_count += self._process_child_records(record)
+                    self._process_child_records_multithreaded(record)
                     counter.increment()
+
+        for future in futures.as_completed(self.futures):
+            record_count += future.result()
         return record_count
 
     def process_streams_from_generators(self):
@@ -76,8 +82,8 @@ class TapProcessor(ABC):
         self.write_bookmark()
         return record_count
 
-    def _process_child_records(self, record):
-        return 0
+    def _process_child_records_multithreaded(self, record):
+        pass
 
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)

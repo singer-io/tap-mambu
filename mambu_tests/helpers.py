@@ -1,7 +1,10 @@
 import datetime
 import pytz
 
-from mock import MagicMock
+from mock import MagicMock, Mock
+
+from tap_mambu.tap_generators.multithreaded_bookmark_generator import MultithreadedOffsetGenerator, \
+    MultithreadedBookmarkGenerator, MultithreadedBookmarkDayByDayGenerator
 
 
 class IsInstanceMatcher:
@@ -40,3 +43,38 @@ class GeneratorMock:
 
     def write_bookmark(self):
         pass
+
+
+class ClientMock:
+    def __init__(self, page_size=100):
+        self.page_size = page_size
+
+
+class MultithreadedOffsetGeneratorFake(MultithreadedOffsetGenerator):
+    def __init__(self, stream_name='test_stream', client=ClientMock(), config=Mock(), state='', sub_type=''):
+        self.stream_name = stream_name
+        self.client = client
+        self.config = config
+        self.state = state
+        self.sub_type = sub_type
+        super().__init__(stream_name, client, config, state, sub_type)
+
+
+class MultithreadedBookmarkGeneratorFake(MultithreadedBookmarkGenerator):
+    def __init__(self, stream_name='test_stream', client=ClientMock(), config=Mock(), state='', sub_type=''):
+        self.stream_name = stream_name
+        self.client = client
+        self.config = config
+        self.state = state
+        self.sub_type = sub_type
+        super().__init__(stream_name, client, config, state, sub_type)
+
+
+class MultithreadedBookmarkDayByDayGeneratorFake(MultithreadedBookmarkDayByDayGenerator):
+    def __init__(self, stream_name='test_stream', client=ClientMock(), config=Mock(), state='', sub_type=''):
+        self.stream_name = stream_name
+        self.client = client
+        self.config = config
+        self.state = state
+        self.sub_type = sub_type
+        super().__init__(stream_name, client, config, state, sub_type)

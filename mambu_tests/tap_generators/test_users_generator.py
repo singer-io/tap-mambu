@@ -11,7 +11,7 @@ def test_users_generator_endpoint_config_init():
     assert generator.endpoint_path == 'users'
     assert generator.endpoint_api_method == "GET"
     assert generator.endpoint_params == {
-        "sortBy": "lastModifiedDate:ASC",
+        "sortBy": "id:ASC",
         "detailsLevel": "FULL",
         "paginationDetails": "OFF"
     }

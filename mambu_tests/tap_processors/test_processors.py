@@ -69,7 +69,7 @@ def test_tap_processor_deduplication(mock_write_bookmark,
     ], "Output should contain mocked records"
 
 
-@mock.patch("tap_mambu.tap_processors.parent_processor.get_selected_streams")
+@mock.patch("tap_mambu.tap_processors.multithreaded_parent_processor.get_selected_streams")
 @mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_schema")
 @mock.patch("tap_mambu.tap_processors.processor.TapProcessor.write_bookmark")
 @mock.patch("tap_mambu.sync.sync_endpoint")
@@ -79,7 +79,7 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                              mock_get_selected_streams,
                                              capsys):
     from tap_mambu import discover
-    from tap_mambu.tap_processors.parent_processor import ParentProcessor
+    from tap_mambu.tap_processors.multithreaded_parent_processor import MultithreadedParentProcessor
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
@@ -108,13 +108,13 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     generator.time_extracted = 0
 
     client_mock = MagicMock()
-    processor = ParentProcessor(catalog=catalog,
-                                stream_name="loan_accounts",
-                                client=client_mock,
-                                config=config_json,
-                                state={'currently_syncing': 'loan_accounts'},
-                                sub_type="self",
-                                generators=[generator])
+    processor = MultithreadedParentProcessor(catalog=catalog,
+                                             stream_name="loan_accounts",
+                                             client=client_mock,
+                                             config=config_json,
+                                             state={'currently_syncing': 'loan_accounts'},
+                                             sub_type="self",
+                                             generators=[generator])
     processor.endpoint_child_streams = ["child_1", "child_2"]
     actual_records_count = processor.process_streams_from_generators()
     # sync_endpoint_refactor called for every record (len(generator_data)) for every child_stream + once for parent
@@ -266,17 +266,21 @@ def test_catalog_automatic_fields():
                 assert convert(generator.endpoint_bookmark_field) in automatic_fields,\
                     f"Generator bookmark field for '{stream}' stream should be set to automatic in catalog!"
 
-        processor = processor_class(catalog=catalog,
-                                    stream_name="loan_accounts",
-                                    client=client_mock,
-                                    config=config_json,
-                                    state={'currently_syncing': 'loan_accounts'},
-                                    sub_type="self",
-                                    generators=[generator],
-                                    **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+        # We need to mock iter, so we don't trigger preloading data
+        # (as the processor would when instantiating the generator)
+        with mock.patch.object(generator, "__iter__") as mock_iter:
+            mock_iter.return_value = generator
+            processor = processor_class(catalog=catalog,
+                                        stream_name="loan_accounts",
+                                        client=client_mock,
+                                        config=config_json,
+                                        state={'currently_syncing': 'loan_accounts'},
+                                        sub_type="self",
+                                        generators=[generator],
+                                        **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
 
-        if isinstance(processor, DeduplicationProcessor):
-            assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
-                        f"Processor deduplication key for '{stream}' stream should be in snake_case!"
-            assert processor.endpoint_deduplication_key in automatic_fields,\
-                        f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"
+            if isinstance(processor, DeduplicationProcessor):
+                assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\
+                            f"Processor deduplication key for '{stream}' stream should be in snake_case!"
+                assert processor.endpoint_deduplication_key in automatic_fields,\
+                            f"Processor deduplication key for '{stream}' stream should be set to automatic in catalog!"

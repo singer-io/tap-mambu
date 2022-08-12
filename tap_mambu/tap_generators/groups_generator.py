@@ -1,8 +1,9 @@
 from .generator import TapGenerator
-from ..helpers import transform_datetime, get_bookmark
+from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
+from ..helpers import get_bookmark, transform_datetime
 
 
-class GroupsGenerator(TapGenerator):
+class GroupsGenerator(MultithreadedBookmarkGenerator):
     def _init_endpoint_config(self):
         super(GroupsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "groups:search"
@@ -16,6 +17,10 @@ class GroupsGenerator(TapGenerator):
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
                 "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))
             }
         ]
+
+    def prepare_batch_params(self):
+        super(GroupsGenerator, self).prepare_batch_params()
+        self.endpoint_filter_criteria[0]["value"] = self.endpoint_intermediary_bookmark_value
