@@ -8,6 +8,7 @@ setup(name='tap-mambu',
       author='jeff.huth@bytecode.io',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
       py_modules=['tap_mambu'],
+      python_requires='>=3.9',
       install_requires=[
           'backoff==1.8.0',
           'requests==2.23.0',
