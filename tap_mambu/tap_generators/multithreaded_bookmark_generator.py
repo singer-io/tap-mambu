@@ -39,11 +39,13 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         original_offset = self.offset
-        futures = [self._queue_first_batch(), ]
-        total_records = self._get_number_of_records(futures[0])
+        futures, total_records = self.get_first_batch_and_total_records()
+        min_offset = 0
+        if futures:
+            min_offset = self.artificial_limit
 
         max_offset = min(total_records + self.artificial_limit, self.batch_limit)
-        for offset in range(self.artificial_limit, max_offset, self.artificial_limit):
+        for offset in range(min_offset, max_offset, self.artificial_limit):
             self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool

@@ -79,10 +79,15 @@ class MultithreadedOffsetGenerator(TapGenerator):
             time.sleep(0.1)
         return int(future_request.result().headers['items-total'])
 
+    def get_first_batch_and_total_records(self):
+        first_batch = self._queue_first_batch()
+        if first_batch:
+            return [first_batch], self._get_number_of_records(first_batch)
+        return [], self.batch_limit
+
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
-        futures = [self._queue_first_batch(), ]
-        total_records = self._get_number_of_records(futures[0])
+        futures, total_records = self.get_first_batch_and_total_records()
 
         max_offset = min(total_records + self.artificial_limit, self.batch_limit)
         while len(self.buffer) + len(futures) * self.limit <= max_offset:

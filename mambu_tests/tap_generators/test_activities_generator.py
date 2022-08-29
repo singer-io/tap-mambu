@@ -1,4 +1,3 @@
-from mock import patch
 from singer import utils
 from . import setup_generator_base_test
 
@@ -22,9 +21,7 @@ def test_activities_generator_endpoint_config_init():
     assert generator.endpoint_bookmark_field == "timestamp"
 
 
-@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
-       "MultithreadedBookmarkDayByDayGenerator._queue_first_batch")
-def test_activities_generator_dict_unpacking(mock_queue_first_batch):
+def test_activities_generator_dict_unpacking():
     generators = setup_generator_base_test("activities", with_data=True,
                                            custom_data=[{
                                                "client": "N/A", "activity": {"id": index}}
