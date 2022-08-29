@@ -7,6 +7,7 @@ from mock import Mock, patch, call
 from pytz import timezone
 
 from mambu_tests.helpers import ClientMock, MultithreadedBookmarkGeneratorFake
+from tap_mambu.helpers.hashable_dict import HashableDict
 from tap_mambu.tap_generators.multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 
 
@@ -179,12 +180,12 @@ def test_collect_batches(mock_transform_json,
     generator.overlap_window = mock_overlap_window
 
     # generate fake data as if they were extracted from the API
-    mock_records = [[{'encoded_key': f'0-{record_no}'}
+    mock_records = [[HashableDict({'encoded_key': f'0-{record_no}'})
                      for record_no in range(0, mock_client.page_size + mock_overlap_window)], ]
     for batch_no in range(1, (mock_batch_limit // mock_artificial_limit) - 1):
         mock_batch = mock_records[batch_no - 1][-mock_overlap_window:]
         for record_no in range(0, mock_client.page_size):
-            mock_batch.append({'encoded_key': f'{batch_no}-{record_no}'})
+            mock_batch.append(HashableDict({'encoded_key': f'{batch_no}-{record_no}'}))
         mock_records.append(mock_batch)
     mock_records.append([])
 
@@ -192,7 +193,6 @@ def test_collect_batches(mock_transform_json,
 
     mock_features = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
     buffer, stop_iteration = generator.collect_batches(mock_features)
-    buffer = [json.loads(record) for record in buffer]
 
     assert stop_iteration is True
     assert all(record in buffer for batch in mock_records[:-1] for record in batch)

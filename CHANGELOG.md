@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.1
+  * Marks Python 3.9 or greater as required to run the tap to support the multithreading pattern [#89](https://github.com/singer-io/tap-mambu/pull/89)
+
+## 3.1.0
+  * Implements initial use cases of multithreaded requests for certain streams [#84](https://github.com/singer-io/tap-mambu/pull/84)
+
 ## 3.0.1
   * Added groundwork for metrics collection and multithreading [#81](https://github.com/singer-io/tap-mambu/pull/81)
 

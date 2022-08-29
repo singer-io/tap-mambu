@@ -1,5 +1,4 @@
 import datetime
-import json
 import time
 
 from copy import deepcopy
@@ -21,8 +20,9 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
     def prepare_batch_params(self):
         self.offset = self.endpoint_intermediary_bookmark_offset
-        # here we change the date to the new one,
-        # in order to paginate through the data using date, resetting offset to 0
+        # This function should be extended upon in case you wish to change the date to a new one,
+        # in order to paginate through the data using date, resetting offset to 0, or the specific number of records
+        # the next batch needs to skip if there are multiple records with the same date.
 
     def fetch_batch_continuously(self):
         first_run = True
@@ -39,7 +39,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
         futures = list()
         original_offset = self.offset
-        for offset in [offset for offset in range(0, self.batch_limit, self.artificial_limit)]:
+        for offset in range(0, self.batch_limit, self.artificial_limit):
             self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
@@ -60,7 +60,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 time.sleep(0.1)
             result = future.result()
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
-            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
+            temp_buffer = set(transformed_batch)
 
             if not final_buffer:
                 final_buffer = final_buffer | temp_buffer
@@ -83,6 +83,7 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         record_bookmark_value = record.get(convert(self.endpoint_bookmark_field))
         if record_bookmark_value is not None:
             self.set_intermediary_bookmark(datetime_to_tz(str_to_localized_datetime(record_bookmark_value), "UTC"))
+        return record
 
     def preprocess_batches(self, final_buffer):
         super().preprocess_batches(final_buffer)

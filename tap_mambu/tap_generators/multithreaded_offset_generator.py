@@ -36,9 +36,13 @@ class MultithreadedOffsetGenerator(TapGenerator):
     def check_and_get_set_reunion(a: set, b: set, lower_limit: int):
         reunion = a | b
         if len(reunion) == len(a) + len(b):
-            raise RuntimeError("Failed to error correct, aborting job.")
+            # Raise a runtime error to be caught at the top level function _all_fetch_batch_steps,
+            # in order to retry extraction or stop trying after a few retries
+            raise RuntimeError("Retrying extraction for last multithreaded batches as a discrepancy has been detected "
+                               "between two consecutive batches. (Records have shifted due to insertions/changes/deletions)")
         if len(a) + lower_limit < len(reunion) < len(a) + len(b):
-            LOGGER.warning("Error checking returned errors, but they will be corrected!")
+            LOGGER.warning("Discrepancies detected for last multithreaded batches extraction, but they are correctable."
+                           " (Records have shifted due to insertions/changes/deletions)")
         return reunion
 
     @staticmethod
@@ -81,7 +85,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 time.sleep(0.1)
             result = future.result()
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
-            temp_buffer = set([json.dumps(record, ensure_ascii=False).encode("utf8") for record in transformed_batch])
+            temp_buffer = set(transformed_batch)
 
             if not temp_buffer:  # We finished the data to extract, time to stop
                 self.stop_all_request_threads(futures)
@@ -105,9 +109,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
         return final_buffer, stop_iteration
 
     def preprocess_record(self, raw_record):
-        record = json.loads(raw_record.decode("utf8"))
-        self.buffer.append(record)
-        return record
+        self.buffer.append(raw_record)
+        return raw_record
 
     def preprocess_batches(self, final_buffer):
         # if no errors found:
@@ -130,11 +133,11 @@ class MultithreadedOffsetGenerator(TapGenerator):
             final_buffer = self.check_and_get_set_reunion(final_buffer, temp_buffer, self.artificial_limit)
         except RuntimeError:  # if errors are found
             LOGGER.exception("Discrepancies found in extracted data, and errors couldn't be corrected."
-                             "Cleaning up...")
+                             "Shutting down all remaining threads for this batch's extraction to retry it.")
 
             # wait all threads to finish/cancel all threads
             self.stop_all_request_threads(futures)
-            LOGGER.info("Cleanup complete! Retrying extraction from last bookmark...")
+            LOGGER.info("Thread shutdown complete! Retrying extraction from last bookmark...")
             # retry the whole process (using backoff decorator, so we need to propagate the exception)
             # effectively rerunning this function with the same parameters
             raise
