@@ -15,12 +15,14 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_params["to"] = datetime_to_utc_str(utc_now())[:10]
         self.endpoint_bookmark_field = "timestamp"
 
+    @staticmethod
+    def unpack_activity(record):
+        record.update(record["activity"])
+        del record["activity"]
+        return record
+
     def transform_batch(self, batch):
-        for record in super(ActivitiesGenerator, self).transform_batch(batch):
-            for key, value in record['activity'].items():
-                record[key] = value
-            del record['activity']
-        return batch
+        return list(map(self.unpack_activity, super(ActivitiesGenerator, self).transform_batch(batch)))
 
     def prepare_batch_params(self):
         super(ActivitiesGenerator, self).prepare_batch_params()
