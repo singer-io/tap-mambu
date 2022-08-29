@@ -3,7 +3,6 @@ from ..helpers import get_bookmark
 from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime, utc_now
 
 
-
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
     def _init_config(self):
         super()._init_config()
