@@ -1,6 +1,6 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime, datetime_to_utc_str
+from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime
 
 
 class GroupsGenerator(MultithreadedBookmarkGenerator):
