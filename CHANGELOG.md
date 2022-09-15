@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.2
+  * Hotfix for deposit_accounts bookmarking issue [#91](https://github.com/singer-io/tap-mambu/pull/91)
+
 ## 3.1.1
   * Marks Python 3.9 or greater as required to run the tap to support the multithreading pattern [#89](https://github.com/singer-io/tap-mambu/pull/89)
 
