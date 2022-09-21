@@ -4,7 +4,7 @@ from ..constants import config_json
 from tap_mambu.helpers.generator_processor_pairs import get_generator_processor_for_stream
 from ..helpers import ClientWithDataMock, ClientMock, ClientWithDataMultithreadedMock
 
-MULTITHREADED_STREAMS_WITHOUT_PAGINATION_DETAILS_ON = ['activities', ]
+MULTITHREADED_STREAMS_WITHOUT_PAGINATION_DETAILS_ON = ['activities', 'interest_accrual_breakdown']
 
 
 def setup_generator_base_test(stream_name, client_mock=None, with_data=False, custom_data=None,
