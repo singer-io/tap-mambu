@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.3
+  * Improve handling of timezones [#85](https://github.com/singer-io/tap-mambu/pull/85)
+
 ## 3.1.2
   * Hotfix for deposit_accounts bookmarking issue [#91](https://github.com/singer-io/tap-mambu/pull/91)
 
