@@ -1,8 +1,9 @@
-from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
-from ..helpers import get_bookmark, transform_datetime
+from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
+from ..helpers import get_bookmark
+from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime
 
 
-class CommunicationsGenerator(MultithreadedBookmarkDayByDayGenerator):
+class CommunicationsGenerator(MultithreadedBookmarkGenerator):
     def _init_endpoint_config(self):
         super(CommunicationsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "communications/messages:search"
@@ -20,8 +21,8 @@ class CommunicationsGenerator(MultithreadedBookmarkDayByDayGenerator):
             {
                 "field": "creationDate",
                 "operator": "AFTER",
-                "value": transform_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))[:10]
+                "value": datetime_to_local_str(str_to_localized_datetime(
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
             }
         ]
 
@@ -30,4 +31,4 @@ class CommunicationsGenerator(MultithreadedBookmarkDayByDayGenerator):
 
     def prepare_batch_params(self):
         super(CommunicationsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[1]["value"] = self.endpoint_intermediary_bookmark_value[:10]
+        self.endpoint_filter_criteria[1]["value"] = datetime_to_local_str(self.endpoint_intermediary_bookmark_value)

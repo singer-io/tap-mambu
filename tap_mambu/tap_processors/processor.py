@@ -1,20 +1,20 @@
 from abc import ABC
 from concurrent import futures
 
-from singer import write_record, metadata, write_schema, get_logger, metrics, Transformer
-from singer.utils import strptime_to_utc, now as singer_now
+from singer import write_record, metadata, write_schema, get_logger, metrics
 
-from ..helpers import convert, get_bookmark, write_bookmark, transform_datetime
+from ..helpers import convert, get_bookmark, write_bookmark
+from ..helpers.transformer import Transformer
 from ..helpers.exceptions import NoDeduplicationCapabilityException
 from ..helpers.perf_metrics import PerformanceMetrics
-# from ..helpers.transformer import Transformer
+from ..helpers.datetime_utils import utc_now, str_to_datetime, datetime_to_utc_str, str_to_localized_datetime
 
 LOGGER = get_logger()
 
 
 class TapProcessor(ABC):
     def __init__(self, catalog, stream_name, client, config, state, sub_type, generators):
-        self.start_time = singer_now()
+        self.start_time = utc_now()
         self.generators = generators
         self.generator_values = dict()
         for generator in self.generators:
@@ -28,7 +28,6 @@ class TapProcessor(ABC):
         self.stream = self.catalog.get_stream(stream_name)
         self.schema = self.stream.schema.to_dict()
         self.stream_metadata = metadata.to_map(self.stream.metadata)
-        self.futures = list()
         self._init_config()
         self._init_endpoint_config()
         self._init_bookmarks()
@@ -68,11 +67,8 @@ class TapProcessor(ABC):
                                                        self.generators[0].endpoint_bookmark_field)
                 if is_processed:
                     record_count += 1
-                    self._process_child_records_multithreaded(record)
+                    self._process_child_records(record)
                     counter.increment()
-
-        for future in futures.as_completed(self.futures):
-            record_count += future.result()
         return record_count
 
     def process_streams_from_generators(self):
@@ -82,17 +78,17 @@ class TapProcessor(ABC):
         self.write_bookmark()
         return record_count
 
-    def _process_child_records_multithreaded(self, record):
+    # This function is provided for processors with child streams, must be overridden if child streams are to be used
+    def _process_child_records(self, record):
         pass
 
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
         if bookmark_field and (bookmark_field in transformed_record):
-            bookmark_dttm = strptime_to_utc(transformed_record[bookmark_field])
-            max_bookmark_value_dttm = strptime_to_utc(self.max_bookmark_value)
+            bookmark_dttm = str_to_datetime(transformed_record[bookmark_field])
+            max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
             if bookmark_dttm > max_bookmark_value_dttm:
-                self.max_bookmark_value = min(bookmark_dttm,
-                                              self.start_time).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                self.max_bookmark_value = datetime_to_utc_str(min(bookmark_dttm, self.start_time))
 
     def _is_record_past_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
@@ -102,7 +98,8 @@ class TapProcessor(ABC):
             return True
 
         # Keep only records whose bookmark is after the last_datetime
-        if transform_datetime(transformed_record[bookmark_field]) >= transform_datetime(self.last_bookmark_value):
+        if str_to_localized_datetime(transformed_record[bookmark_field]) >= \
+                str_to_localized_datetime(self.last_bookmark_value):
             return True
         return False
 

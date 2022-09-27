@@ -18,6 +18,6 @@ def test_clients_generator():
             {
                 "field": "lastModifiedDate",
                 "operator": "AFTER",
-                "value": '2021-06-01'
+                "value": '2021-05-31T17:00:00.000000Z'
             }
         ]

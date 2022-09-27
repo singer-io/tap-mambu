@@ -23,5 +23,10 @@ def pytest_collection(session):
     MultithreadedRequestsPool.shutdown = MagicMock()
 
 
+    from pytz import timezone
+    from tap_mambu.helpers import datetime_utils
+    datetime_utils._timezone = timezone("US/Pacific")
+
+
 def pytest_sessionfinish(session, exitstatus):
     _threads_original_shutdown()
