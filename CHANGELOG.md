@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.4
+  * Use v1 API endpoint to get a user's timezone since v2 requires extra privileges [#96](https://github.com/singer-io/tap-mambu/pull/96)
+
 ## 3.1.3
   * Improve handling of timezones [#85](https://github.com/singer-io/tap-mambu/pull/85)
 
