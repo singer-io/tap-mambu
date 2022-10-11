@@ -1,7 +1,6 @@
 from abc import ABC
-from concurrent import futures
 
-from singer import write_record, metadata, write_schema, get_logger, metrics
+from singer import write_record, metadata, write_schema, get_logger, metrics, utils
 
 from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer
@@ -63,7 +62,7 @@ class TapProcessor(ABC):
             for record in self.generators[0]:
                 # Process the record
                 with PerformanceMetrics(metric_name="processor"):
-                    is_processed = self.process_record(record, self.generators[0].time_extracted,
+                    is_processed = self.process_record(record, utils.now(),
                                                        self.generators[0].endpoint_bookmark_field)
                 if is_processed:
                     record_count += 1
