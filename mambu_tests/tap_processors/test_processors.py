@@ -132,6 +132,11 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
 
     captured = capsys.readouterr()
     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
+
+    for record in stdout_list:
+        assert record['time_extracted']
+        record.pop('time_extracted')
+
     # noinspection PyTypeChecker
     assert stdout_list == [
         {"type": "RECORD", "stream": "loan_accounts", "record": record} for record in generator_data
