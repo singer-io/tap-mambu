@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.1.5
-  * Calulate `time_extracted` field on multithreaded streams directly before a record is written to stdout to fix an issue where the field was not was not populating
+  * Calulate `time_extracted` field on multithreaded streams directly before a record is written to stdout to fix an issue where the field was not was not populating [#98](https://github.com/singer-io/tap-mambu/pull/98)
 
 ## 3.1.4
   * Use v1 API endpoint to get a user's timezone since v2 requires extra privileges [#96](https://github.com/singer-io/tap-mambu/pull/96)
