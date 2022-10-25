@@ -180,7 +180,8 @@ class MambuClient(object):
                           (Server5xxError, ConnectionError, Server429Error),
                           max_tries=7,
                           factor=3)
-    def request(self, method, path=None, url=None, json=None, version=None, apikey_type=None, **kwargs):
+    def request(self, method, path=None, url=None, json=None,
+                version=None, apikey_type=None, full_response=False, **kwargs):
         if not self.__verified:
             self.__verified = self.check_access()
 
@@ -230,4 +231,4 @@ class MambuClient(object):
         if response.status_code != 200:
             raise_for_error(response)
 
-        return response.json()
+        return response if full_response else response.json()

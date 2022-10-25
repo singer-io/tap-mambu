@@ -11,7 +11,7 @@ def test_queue_request(mock_thread_pool_exec_submit):
 
     # test if the submit params are the same as queue_request params
     mock_thread_pool_exec_submit.assert_called_once_with(MultithreadedRequestsPool.run, 'client', 'stream_name',
-                                                         'stream_path', 'GET', 'v2', '', {}, {})
+                                                         'stream_path', 'GET', 'v2', '', {}, {}, False)
 
 
 @patch("tap_mambu.helpers.client.MambuClient.request")
@@ -73,7 +73,7 @@ def test_run(mock_multithreaded_request_pool_run, mock_performance_metrics, mock
         mock_multithreaded_request_pool_run.assert_any_call(client, stream_name,
                                                             endpoint_paths[idx], api_methods[idx],
                                                             endpoint_api_version, endpoint_api_key_type,
-                                                            endpoint_body, endpoint_params[idx])
+                                                            endpoint_body, endpoint_params[idx], False)
         # test if the client request method is called with the correct params
         mock_client_request.assert_any_call(method=api_methods[idx],
                                             path=endpoint_paths[idx],
@@ -81,7 +81,8 @@ def test_run(mock_multithreaded_request_pool_run, mock_performance_metrics, mock
                                             apikey_type=endpoint_api_key_type,
                                             params=f'offset={endpoint_params[idx]["offset"]}&limit={endpoint_params[idx]["limit"]}',
                                             endpoint=stream_name,
-                                            json=endpoint_body)
+                                            json=endpoint_body,
+                                            full_response=False)
 
     # test if the performance metrics collector is called
     mock_performance_metrics.assert_called_with(metric_name='generator')

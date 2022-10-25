@@ -1,5 +1,6 @@
 import datetime
 from urllib.parse import parse_qs
+from requests import Response
 
 import pytz
 
@@ -53,6 +54,18 @@ class ClientMock:
         self.request = MagicMock()
 
 
+def generate_full_response(bookmark_field):
+    response = Response()
+
+    response.status_code = 200
+    response.headers = {'items-total': 1200}
+    response.json = MagicMock()
+    response.json.return_value = [{"id": index, bookmark_field: f"2022-06-05T00:00:00.{index:06d}Z-07:00"}
+                                  for index in range(400)]
+
+    return response
+
+
 class ClientWithDataMock(ClientMock):
     def __init__(self, page_size=100, bookmark_field="creationDate",
                  limit_field="limit", offset_field="offset", custom_data=None):
@@ -74,7 +87,23 @@ class ClientWithDataMock(ClientMock):
         split_params = parse_qs(params)
         limit = int(split_params.get(self.limit_field, [None])[0])
         offset = int(split_params.get(self.offset_field, [None])[0])
-        return self.data_to_serve[offset:limit+offset]
+        return self.data_to_serve[offset: (limit + offset)]
+
+
+class ClientWithDataMultithreadedMock(ClientWithDataMock):
+    def __init__(self, page_size=100, bookmark_field="creationDate",
+                 limit_field="limit", offset_field="offset", custom_data=None):
+        super().__init__(page_size=page_size, bookmark_field=bookmark_field,
+                         limit_field=limit_field, offset_field=offset_field,
+                         custom_data=custom_data)
+        self._bookmark_field = bookmark_field
+        self.first_request_call = True
+
+    def serve_request(self, *args, **kwargs):
+        if self.first_request_call:
+            self.first_request_call = False
+            return generate_full_response(self._bookmark_field)
+        return super().serve_request(*args, **kwargs)
 
 
 class MultithreadedOffsetGeneratorFake(MultithreadedOffsetGenerator):
