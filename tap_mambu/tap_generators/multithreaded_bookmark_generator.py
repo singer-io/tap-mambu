@@ -6,6 +6,7 @@ from singer import get_logger
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
+from ..helpers.client import Server5xxError
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_tz
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
@@ -58,7 +59,14 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
-            result = future.result()
+
+            try:
+                result = future.result()
+            except Server5xxError:
+                self.stop_all_request_threads(futures)
+                self.end_of_file = True
+                raise
+
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set(transformed_batch)
 
