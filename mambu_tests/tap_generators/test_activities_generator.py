@@ -1,4 +1,3 @@
-import mock
 from singer import utils
 from . import setup_generator_base_test
 

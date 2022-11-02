@@ -1,15 +1,12 @@
-import inspect
-import logging
 import os
+import inspect
+
 from copy import deepcopy
 from datetime import datetime
-
 from unittest.mock import MagicMock
-
 from pytz import timezone
 
 from tap_mambu.helpers import transform_json, convert
-from tap_mambu.helpers.generator_processor_pairs import get_available_streams
 from tap_mambu.tap_generators.generator import TapGenerator
 from tap_mambu.tap_generators.multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator, \
     MultithreadedBookmarkGenerator
@@ -150,24 +147,8 @@ def test_generator_bookmark_flow():
             "client": "N/A", "activity": {
                 "id": index, "timestamp": f"2022-06-07T00:00:00.{index:06d}Z-07:00"}
         } for index in range(400)],
-        # "branches": ["lastModifiedDate"],
-        # "centres": ["lastModifiedDate"],
-        # "clients": ["lastModifiedDate"],
-        # "communications": ["creationDate"],
-        # "credit_arrangements": ["lastModifiedDate"],
-        # "deposit_accounts": ["lastModifiedDate"],
-        # "deposit_products": ["lastModifiedDate"],
-        # "gl_accounts": ["lastModifiedDate"],
-        # "gl_journal_entries": ["creationDate"],
-        # "groups": ["lastModifiedDate"],
-        # "deposit_transactions": ["creationDate"],
-        # "installments": ["lastPaidDate"],
-        # "interest_accrual_breakdown": ["creationDate"],
-        # "loan_products": ["lastModifiedDate"],
-        # "loan_transactions": ["creationDate"],
-        # "tasks": ["lastModifiedDate"],
-        # "users": ["lastModifiedDate"],
     }
+
     for stream_name in stream_bookmarks:
         generators = setup_generator_base_test(stream_name, with_data=True,
                                                bookmark_field=stream_bookmarks[stream_name],
