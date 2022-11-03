@@ -7,6 +7,7 @@ from requests import Response
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
+from ..helpers.client import Server5xxError
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_tz
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
@@ -65,7 +66,13 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
             while not future.done():
                 time.sleep(0.1)
 
-            result = future.result()
+            try:
+                result = future.result()
+            except Server5xxError:
+                self.stop_all_request_threads(futures)
+                self.end_of_file = True
+                raise
+
             if type(result) is Response:
                 result = result.json()
 

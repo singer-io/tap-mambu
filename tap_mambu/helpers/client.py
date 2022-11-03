@@ -178,8 +178,8 @@ class MambuClient(object):
 
     @backoff.on_exception(backoff.expo,
                           (Server5xxError, ConnectionError, Server429Error),
-                          max_tries=7,
-                          factor=3)
+                          max_tries=3,
+                          factor=4)
     def request(self, method, path=None, url=None, json=None,
                 version=None, apikey_type=None, full_response=False, **kwargs):
         if not self.__verified:
