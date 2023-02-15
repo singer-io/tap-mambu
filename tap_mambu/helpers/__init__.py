@@ -59,37 +59,16 @@ def convert_json(this_json):
     return out
 
 
-def remove_custom_nodes(this_json):
-    if not isinstance(this_json, (dict, list)):
-        return this_json
-    if isinstance(this_json, list):
-        return [remove_custom_nodes(vv) for vv in this_json]
-    return {kk: remove_custom_nodes(vv) for kk, vv in this_json.items()
-            if not kk[:1] == '_'}
-
-
-def add_custom_field(key, record, custom_field_sets):
-    for cf_key, cf_value in record.items():
-        field = {
-            'field_set_id': key,
-            'id': cf_key,
-            'value': cf_value,
-        }
-        custom_field_sets.append(field)
-
-
-# Convert custom fields and sets
-# Generalize/Abstract custom fields to key/value pairs
+# Move Custom Fields objects under custom_fields key
 def convert_custom_fields(this_json):
     for record in this_json:
         cust_field_sets = []
         for key, value in record.items():
             if key.startswith('_'):
                 if isinstance(value, dict):
-                    add_custom_field(key, value, cust_field_sets)
+                    cust_field_sets.append({key: value})
                 elif isinstance(value, list):
-                    for element in value:
-                        add_custom_field(key, element, cust_field_sets)
+                    cust_field_sets.append({key: value})
         record['custom_fields'] = cust_field_sets
     return this_json
 
@@ -97,7 +76,7 @@ def convert_custom_fields(this_json):
 # Run all transforms: denests _embedded, removes _embedded/_links, and
 #  convert camelCase to snake_case for fieldname keys.
 def transform_json(this_json, path):
-    new_json = remove_custom_nodes(convert_custom_fields(this_json))
+    new_json = convert_custom_fields(this_json)
     out = dict()
     out[path] = new_json
     transformed_json = convert_json(out)
