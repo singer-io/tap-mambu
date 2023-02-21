@@ -15,6 +15,7 @@ class TestTransformJson(unittest.TestCase):
         expected = [{'custom_fields': [{"_custom_1" : {"id": '1'},
                                         "_custom_2" : [{"id": '2', "index": '0'},
                                                        {"id": '3', "index": '1'}],
+                                        }],
                      'id': '1'}]
 
         actual = transform_json([{"_custom_1" : {"id": '1'},
