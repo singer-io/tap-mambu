@@ -102,9 +102,17 @@ def test_fetch_batch_continuously_sleep_branch(mock_time_sleep, mock_all_fetch_b
 @patch.object(MultithreadedBookmarkGenerator, 'prepare_batch',
               side_effect=MultithreadedBookmarkGenerator.prepare_batch,
               autospec=True)
-@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator.MultithreadedRequestsPool.queue_request")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator._queue_first_batch")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedBookmarkGenerator._get_number_of_records")
+@patch("tap_mambu.tap_generators.multithreaded_bookmark_generator."
+       "MultithreadedRequestsPool.queue_request")
 def test_queue_batches(mock_queue_request,
+                       mock_get_number_of_records,
+                       mock_queue_first_batch,
                        mock_prepare_batch):
+
     mock_client = ClientMock()
     mock_endpoint_path = 'test_endpoint_path'
     mock_endpoint_api_method = 'POST'
@@ -123,7 +131,9 @@ def test_queue_batches(mock_queue_request,
     mock_batch_limit = 4000
     mock_artificial_limit = mock_client.page_size
 
-    mock_queue_request.side_effect = [Mock() for _ in range(0, mock_batch_limit, mock_artificial_limit)]
+    mock_get_number_of_records.return_value = mock_batch_limit + 1
+
+    mock_queue_request.side_effect = [Mock() for _ in range(mock_artificial_limit, mock_batch_limit, mock_artificial_limit)]
 
     generator = MultithreadedBookmarkGeneratorFake(client=mock_client)
     generator.overlap_window = mock_overlap_window
@@ -141,10 +151,10 @@ def test_queue_batches(mock_queue_request,
 
     assert len(features) == mock_batch_limit // mock_artificial_limit
 
-    mock_params['offset'] = 0
+    mock_params['offset'] = mock_artificial_limit
     mock_params['limit'] = mock_artificial_limit + mock_overlap_window
     calls = []
-    for offset in range(0, mock_batch_limit, mock_artificial_limit):
+    for _ in range(mock_artificial_limit, mock_batch_limit, mock_artificial_limit):
         calls.append(call(mock_client, 'test_stream', mock_endpoint_path, mock_endpoint_api_method,
                           mock_endpoint_api_version, mock_endpoint_api_key_type, mock_endpoint_body, dict(mock_params)))
         mock_params['offset'] += mock_artificial_limit
@@ -153,8 +163,8 @@ def test_queue_batches(mock_queue_request,
     mock_queue_request.assert_has_calls(calls)
 
     # test if the methods are called the correct amount of times
-    assert mock_prepare_batch.call_count == mock_batch_limit / mock_client.page_size
-    assert mock_queue_request.call_count == mock_batch_limit / mock_client.page_size
+    assert mock_prepare_batch.call_count == mock_batch_limit / mock_client.page_size - 1
+    assert mock_queue_request.call_count == mock_batch_limit / mock_client.page_size - 1
     assert generator.offset == mock_batch_limit - mock_client.page_size
 
 

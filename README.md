@@ -76,7 +76,7 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**custom_field_sets (GET v1)**](https://support.mambu.com/docs/custom-fields-api)
+[**custom_field_sets (GET v2)**](https://api.mambu.com/#custom-field-sets-getall)
 - Endpoint: https://instance.sandbox.mambu.com/api/customfieldsets
 - Primary keys: id
 - Foreign keys: None
@@ -100,8 +100,8 @@ This tap:
 - Replication strategy: Full table (ALL for parent deposit_id)
 - Transformations: Fields camelCase to snake_case
 
-[**deposit_products (GET v1)**](https://support.mambu.com/docs/savings-products-api)
-- Endpoint: https://instance.sandbox.mambu.com/api/savingsproducts/DSP
+[**deposit_products (GET v2)**](https://api.mambu.com/#deposit-products-getall)
+- Endpoint: https://instance.sandbox.mambu.com/api/depositproducts
 - Primary keys: id
 - Foreign keys: None
 - Replication strategy: Incremental (query all, filter results)
@@ -137,7 +137,7 @@ This tap:
   - Bookmark query field: lastModifiedDate
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**loan_products (GET v1)**](https://support.mambu.com/docs/loan-products-api)
+[**loan_products (GET v2)**](https://api.mambu.com/#loan-products-getall)
 - Endpoint: https://instance.sandbox.mambu.com/api/loanproducts
 - Primary keys: id
 - Foreign keys: None
@@ -174,18 +174,19 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**gl_accounts (GET v1)**](https://support.mambu.com/docs/gl-accounts-api)
+[**gl_accounts (GET v2)**](https://api.mambu.com/#gl-accounts-getall)
 - Endpoint: https://instance.sandbox.mambu.com/api/glaccounts
 - Primary keys: gl_code
 - Replication strategy: Incremental (query filtered based on date and account type)
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**gl_journal_entries (POST v1)**](https://support.mambu.com/docs/en/gl-journal-entries-api#post-search)
-- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries/search
+[**gl_journal_entries (POST v2)**](https://api.mambu.com/#journal-entries-search)
+- Endpoint: https://instance.sandbox.mambu.com/api/gljournalentries:search
 - Primary keys: entry_id
 - Replication strategy: Incremental (query filtered based on date)
   - Bookmark: creation_date (date-time)
+  - Sort by: entry_id:ASC
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**activities (GET v1)**](https://support.mambu.com/docs/activities-api)
@@ -225,26 +226,20 @@ This tap:
     Clone this repository, and then install using setup.py. We recommend using a virtualenv:
 
     ```bash
-    virtualenv -p python3 venv
+    python3 -m venv venv
     source venv/bin/activate
-    python setup.py install
-    OR
-    cd .../tap-mambu
     pip install .
     ```
-2. Dependent libraries
-    The following dependent libraries were installed.
+   
+    For easier development (including testing packages):
     ```bash
-    pip install singer-python
-    pip install singer-tools
-    pip install target-stitch
-    pip install target-json
-    
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -e ".[mambu-tests]"
     ```
-    - [singer-tools](https://github.com/singer-io/singer-tools)
-    - [target-stitch](https://github.com/singer-io/target-stitch)
 
-3. Create your tap's `config.json` file. The `subdomain` is everything before `.mambu.com` in the Mambu instance URL.  For the URL: `https://stitch.sandbox.mambu.com`, the subdomain would be `stitch.sandbox`. Lookback window applies only to `loan transactions` stream.
+
+2. Create your tap's `config.json` file. The `subdomain` is everything before `.mambu.com` in the Mambu instance URL.  For the URL: `https://stitch.sandbox.mambu.com`, the subdomain would be `stitch.sandbox`. 
 
     ```json
     {
@@ -253,7 +248,6 @@ This tap:
         "apikey": "YOUR_APIKEY",
         "subdomain": "YOUR_SUBDOMAIN",
         "start_date": "2019-01-01T00:00:00Z",
-        "lookback_window": 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
         "page_size": "500",
         "apikey_audit": "AUDIT_TRAIL_APIKEY"
@@ -295,8 +289,8 @@ This tap:
     }
     ```
 
-4. Run the Tap in Discovery Mode
-    This creates a catalog.json for selecting objects/fields to integrate:
+3. Run the Tap in Discovery Mode.  
+    This creates a catalog.json for selecting objects/ fields to integrate:
     ```bash
     tap-mambu --config config.json --discover > catalog.json
     ```
@@ -324,7 +318,7 @@ This tap:
       }
     ```
 
-5. Run the Tap in Sync Mode (with catalog) and [write out to state file](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#running-a-singer-tap-with-a-singer-target)
+4. Run the Tap in Sync Mode (with catalog) and [write out to state file](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#running-a-singer-tap-with-a-singer-target)
 
     For Sync mode:
     ```bash
@@ -342,7 +336,7 @@ This tap:
     tail -1 state.json > state.json.tmp && mv state.json.tmp state.json
     ```
 
-6. Test the Tap
+5. Test the Tap
     
     While developing the Mambu tap, the following utilities were run in accordance with Singer.io best practices:
     Pylint to improve [code quality](https://github.com/singer-io/getting-started/blob/master/docs/BEST_PRACTICES.md#code-quality):
@@ -392,6 +386,10 @@ This tap:
     | deposit_products     | 4       | 1       |
     +----------------------+---------+---------+
     ```
+   
+6. Optional, useful tools:
+    - [singer-tools](https://github.com/singer-io/singer-tools)
+    - [target-stitch](https://github.com/singer-io/target-stitch)
 ---
 
 Copyright &copy; 2019 Stitch

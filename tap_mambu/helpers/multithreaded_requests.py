@@ -17,7 +17,7 @@ class MultithreadedRequestsPool:
     @staticmethod
     def run(client, stream_name,
             endpoint_path, endpoint_api_method, endpoint_api_version,
-            endpoint_api_key_type, endpoint_body, endpoint_params) -> List[dict]:
+            endpoint_api_key_type, endpoint_body, endpoint_params, full_response=False) -> List[dict]:
         endpoint_querystring = '&'.join([f'{key}={value}' for (key, value) in endpoint_params.items()])
 
         LOGGER.info(f'(generator) Stream {stream_name} - URL for {stream_name} ({endpoint_api_method}, '
@@ -32,18 +32,20 @@ class MultithreadedRequestsPool:
                 apikey_type=endpoint_api_key_type,
                 params=endpoint_querystring,
                 endpoint=stream_name,
-                json=endpoint_body
+                json=endpoint_body,
+                full_response=full_response
             )
 
-        LOGGER.info(f'(generator) Stream {stream_name} - extracted records: {len(response)}')
+        LOGGER.info(f'(generator) Stream {stream_name} - extracted records: {len(response.json()) if full_response else len(response)}')
         return response
 
     @classmethod
     def queue_request(cls, client, stream_name,
                       endpoint_path, endpoint_api_method, endpoint_api_version,
-                      endpoint_api_key_type, endpoint_body, endpoint_params) -> Future:
-        return cls._dispatcher.submit(cls.run, client, stream_name, endpoint_path, endpoint_api_method,
-                                      endpoint_api_version, endpoint_api_key_type, endpoint_body, endpoint_params)
+                      endpoint_api_key_type, endpoint_body, endpoint_params, full_response=False) -> Future:
+        return cls._dispatcher.submit(cls.run, client, stream_name, endpoint_path,
+                                      endpoint_api_method, endpoint_api_version, endpoint_api_key_type,
+                                      endpoint_body, endpoint_params, full_response)
 
     @classmethod
     def queue_function(cls, func, *args, **kwargs):

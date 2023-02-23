@@ -3,9 +3,11 @@ import time
 
 from copy import deepcopy
 from singer import get_logger
+from requests import Response
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
+from ..helpers.client import Server5xxError
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_tz
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
@@ -37,9 +39,14 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
     def queue_batches(self):
         # prepare batches (with self.limit for each of them until we reach batch_limit)
-        futures = list()
         original_offset = self.offset
-        for offset in range(0, self.batch_limit, self.artificial_limit):
+        futures, total_records = self.get_first_batch_and_total_records()
+        min_offset = 0
+        if futures:
+            min_offset = self.artificial_limit
+
+        max_offset = min(total_records + self.artificial_limit, self.batch_limit)
+        for offset in range(min_offset, max_offset, self.artificial_limit):
             self.offset = original_offset + offset
             self.prepare_batch()
             # send batches to multithreaded_requests_pool
@@ -58,7 +65,17 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
-            result = future.result()
+
+            try:
+                result = future.result()
+            except Server5xxError:
+                self.stop_all_request_threads(futures)
+                self.end_of_file = True
+                raise
+
+            if type(result) is Response:
+                result = result.json()
+
             transformed_batch = self.transform_batch(transform_json(result, self.stream_name))
             temp_buffer = set(transformed_batch)
 

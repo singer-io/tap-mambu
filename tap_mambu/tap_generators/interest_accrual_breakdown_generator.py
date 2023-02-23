@@ -25,3 +25,6 @@ class InterestAccrualBreakdownGenerator(MultithreadedBookmarkDayByDayGenerator):
         super(InterestAccrualBreakdownGenerator, self).prepare_batch_params()
         # look in db for the reason DateTimes don't work, but Dates do
         self.endpoint_filter_criteria[0]["value"] = datetime_to_utc_str(self.endpoint_intermediary_bookmark_value)[:10]
+
+    def get_first_batch_and_total_records(self):
+        return [], self.batch_limit

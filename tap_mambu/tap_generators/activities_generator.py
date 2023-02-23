@@ -11,7 +11,7 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_api_version = "v1"
 
         self.endpoint_params["from"] = datetime_to_utc_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
+            get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
         self.endpoint_params["to"] = datetime_to_utc_str(utc_now())[:10]
         self.endpoint_bookmark_field = "timestamp"
 
@@ -30,3 +30,6 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
 
     def compare_bookmark_values(self, a, b):
         return a < b
+
+    def get_first_batch_and_total_records(self):
+        return [], self.batch_limit
