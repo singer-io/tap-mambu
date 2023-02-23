@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0
+  * Update `custom_fields` formatting to handle grouped custom field sets correctly [#102](https://github.com/singer-io/tap-mambu/pull/102)
+
 ## 3.1.5
   * Calulate `time_extracted` field on multithreaded streams directly before a record is written to stdout to fix an issue where the field was not was not populating [#98](https://github.com/singer-io/tap-mambu/pull/98)
 
