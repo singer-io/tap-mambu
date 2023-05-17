@@ -19,6 +19,7 @@ setup(name='tap-mambu',
           'dev': [
               'ipdb',
               'pylint==2.5.3',
+              "mock==5.0.2",
               'pytest==6.2.4'
           ],
           'mambu-tests': [
