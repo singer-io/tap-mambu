@@ -322,3 +322,30 @@ def test_raise_for_error_known_error_codes(mock_requests_raise_for_status):
             with pytest.raises(ERROR_CODE_EXCEPTION_MAPPING[status_code]):
                 raise_for_error(response)
         response.json.assert_called_once()
+
+
+@pytest.mark.parametrize("status_code, verify_message", [
+    (400, "400: Unable to process request"),
+    (401, "401: Invalid credentials provided"),
+    (402, "402: Unable to process request"),
+    (403, "403: Insufficient permission to access resource"),
+    (404, "404: Resource not found"),
+    (405, "405: Method Not Allowed"),
+    (409, "409: Conflict"),
+    (422, "422: Unable to process request"),
+    (500, "500: Server Error")
+    ])
+@mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
+def test_error_messages(mock_requests_raise_for_status,status_code,verify_message):
+    mock_requests_raise_for_status.side_effect = Mock(side_effect=requests.HTTPError())
+
+    response = Mock()
+    response.status_code = status_code
+    response.raise_for_status = mock_requests_raise_for_status
+
+    with pytest.raises(ERROR_CODE_EXCEPTION_MAPPING[status_code]):
+        try: 
+            raise_for_error(response)
+        except ERROR_CODE_EXCEPTION_MAPPING[status_code] as err:
+            assert str(err) == verify_message
+            raise err

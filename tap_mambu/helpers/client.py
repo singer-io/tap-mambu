@@ -30,56 +30,64 @@ class MambuError(ClientError):
 
 class MambuBadRequestError(MambuError):
    
-    message = "Unable to process request"
+    message = "400: Unable to process request"
 
 class MambuUnauthorizedError(MambuError):
 
-    message = "Invalid credentials provided"
+    message = "401: Invalid credentials provided"
 
 class MambuRequestFailedError(MambuError):
 
-    message = "Unable to process request"
+    message = "402: Unable to process request"
 
 
 
 class MambuNotFoundError(MambuError):
     
-    message = "Resource not found"
+    message = "404: Resource not found"
 
 
 class MambuMethodNotAllowedError(MambuError):
 
-    message = "Method Not Allowed"
+    message = "405: Method Not Allowed"
 
 
 class MambuConflictError(MambuError):
 
-    message = "Unable to process request, conflict"
+    message = "409: Conflict"
 
 
 class MambuForbiddenError(MambuError):
 
-    message = "Insufficient permission to access resource"
+    message = "403: Insufficient permission to access resource"
 
 
 class MambuUnprocessableEntityError(MambuError):
-    pass
+
+    message = "422: Unable to process request"
 
 
 class MambuInternalServiceError(MambuError):
-    pass
+
+    message = "500: Server Error"
+
 
 
 class MambuNoCredInConfig(MambuError):
-    pass
+    
+    message = "Creds Not Provided"
+
 
 
 class MambuNoSubdomainInConfig(MambuError):
-    pass
+    
+    message = "Subdomain not Configured"
+
 
 
 class MambuNoAuditApikeyInConfig(MambuError):
-    pass
+
+    message = "API Key not provided"
 
 
 ERROR_CODE_EXCEPTION_MAPPING = {
@@ -112,7 +120,7 @@ def raise_for_error(response):
                         message = '%s: %s' % (response.get('error', str(error)),
                                             response.get('message', 'Unknown Error'))
             except (ValueError, TypeError):
-                message = "Mambu Error, Unable to parse error message"
+                pass
             raise exc(message, response) from None
         except (ValueError, TypeError) as exap:
             raise MambuError(error) from None
