@@ -335,28 +335,30 @@ def test_raise_for_error_known_error_codes(mock_requests_raise_for_status):
         response.json.assert_called_once()
 
 
-@pytest.mark.parametrize("status_code, verify_message", [
-    (400, "400: Unable to process request"),
-    (401, "401: Invalid credentials provided"),
-    (402, "402: Unable to process request"),
-    (403, "403: Insufficient permission to access resource"),
-    (404, "404: Resource not found"),
-    (405, "405: Method Not Allowed"),
-    (409, "409: Conflict"),
-    (422, "422: Unable to process request"),
-    (500, "500: Server Error")
+@pytest.mark.parametrize("status_code, verify_message, expected_exception", [
+    (400, "400: Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[400]),
+    (401, "401: Invalid credentials provided",ERROR_CODE_EXCEPTION_MAPPING[401]),
+    (402, "402: Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[402]),
+    (403, "403: Insufficient permission to access resource",ERROR_CODE_EXCEPTION_MAPPING[403]),
+    (404, "404: Resource not found",ERROR_CODE_EXCEPTION_MAPPING[404]),
+    (405, "405: Method Not Allowed",ERROR_CODE_EXCEPTION_MAPPING[405]),
+    (409, "409: Conflict",ERROR_CODE_EXCEPTION_MAPPING[409]),
+    (422, "422: Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[422]),
+    (500, "500: Server Fault, Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[500]),
+    (503, "503: Server Fault, Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[500]),
+    (504, "504: Server Fault, Unable to process request",ERROR_CODE_EXCEPTION_MAPPING[500])
     ])
 @mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
-def test_error_messages(mock_requests_raise_for_status,status_code,verify_message):
+def test_error_messages(mock_requests_raise_for_status, status_code, verify_message, expected_exception):
     mock_requests_raise_for_status.side_effect = Mock(side_effect=requests.HTTPError())
 
     response = Mock()
     response.status_code = status_code
     response.raise_for_status = mock_requests_raise_for_status
 
-    with pytest.raises(ERROR_CODE_EXCEPTION_MAPPING[status_code]):
+    with pytest.raises(expected_exception):
         try: 
             raise_for_error(response)
-        except ERROR_CODE_EXCEPTION_MAPPING[status_code] as err:
+        except expected_exception as err:
             assert str(err) == verify_message
             raise err

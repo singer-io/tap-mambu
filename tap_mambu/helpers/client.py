@@ -16,10 +16,6 @@ class ClientError(Exception):
         super().__init__(message or self.message)
         self.response = response
 
-class Server5xxError(ClientError):
-
-    message = "Server Fault, Unable to process request"
-
 class Server429Error(ClientError):
     
     message = "The API limit exceeded"
@@ -69,7 +65,7 @@ class MambuUnprocessableEntityError(MambuError):
 
 class MambuInternalServiceError(MambuError):
 
-    message = "500: Server Error"
+    message = "Server Fault, Unable to process request"
 
 
 
@@ -111,8 +107,12 @@ def raise_for_error(response):
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
-            error_code = 500 if response.status_code > 500 else response.status_code
-            exc, message = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError), None
+            error_code = response.status_code
+            if response.status_code >= 500:
+                exc = MambuInternalServiceError
+                message = f"{response.status_code}: {MambuInternalServiceError.message}"
+            else:
+                exc, message = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError), None
             try:
                 if len(response.content) != 0:
                     response = response.json()
@@ -157,7 +157,7 @@ class MambuClient(object):
         self.__session.close()
 
     @backoff.on_exception(backoff.expo,
-                          Server5xxError,
+                          MambuInternalServiceError,
                           max_tries=5,
                           factor=2)
     def check_access(self):
@@ -194,7 +194,7 @@ class MambuClient(object):
             return True
 
     @backoff.on_exception(backoff.expo,
-                          (Server5xxError, ConnectionError, Server429Error),
+                          (MambuInternalServiceError, ConnectionError, Server429Error),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, json=None, version=None, apikey_type=None, **kwargs):
