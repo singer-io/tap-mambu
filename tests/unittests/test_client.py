@@ -6,7 +6,18 @@ from mock import Mock
 from tap_mambu import MambuClient, DEFAULT_PAGE_SIZE
 from tap_mambu.helpers.client import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
     MambuNoAuditApikeyInConfig, MambuInternalServiceError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
-from .constants import config_json
+
+
+config_json = {'username': 'unit',
+               'password': 'test',
+               'apikey': '',
+               'subdomain': 'unit.test',
+               'test_full_url': 'http://127.0.0.1:1080/test',
+               'start_date': '2021-06-01T00:00:00Z',
+               'lookback_window': 30,
+               'user_agent': '',
+               'page_size': '200',
+               'apikey_audit': 'apikey_audit_test'}
 
 
 @mock.patch("tap_mambu.helpers.client.MambuClient.check_access")
