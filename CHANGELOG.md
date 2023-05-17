@@ -1,5 +1,7 @@
 # Changelog
 
+## 4.0.1
+  * Improve Exception Handling [#105](https://github.com/singer-io/tap-mambu/pull/105)
 ## 4.0.0
   * Update `custom_fields` formatting to handle grouped custom field sets correctly [#102](https://github.com/singer-io/tap-mambu/pull/102)
 
