@@ -2,9 +2,10 @@ import backoff
 import requests
 import requests.adapters
 from requests.exceptions import ConnectionError
-import singer
-from singer import metrics
+from singer import metrics, get_logger
 
+
+LOGGER = get_logger()
 class ClientError(Exception):
     """class representing Generic Http error."""
 
@@ -14,14 +15,12 @@ class ClientError(Exception):
         super().__init__(message or self.message)
         self.response = response
 
-
-
 class MambuError(ClientError):
 
     message = "Unable to process request"
 
 class MambuBadRequestError(MambuError):
-   
+
     message = "400: Unable to process request"
 
 class MambuUnauthorizedError(MambuError):
@@ -33,7 +32,7 @@ class MambuRequestFailedError(MambuError):
     message = "402: Unable to process request"
 
 class MambuNotFoundError(MambuError):
-    
+   
     message = "404: Resource not found"
 
 class MambuMethodNotAllowedError(MambuError):
@@ -51,7 +50,6 @@ class MambuForbiddenError(MambuError):
 class MambuUnprocessableEntityError(MambuError):
 
     message = "422: Unable to process request"
-
 
 class MambuApiLimitError(ClientError):
     
@@ -85,7 +83,6 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     429: MambuApiLimitError,
     500: MambuInternalServiceError}
 
-
 def raise_for_error(response):
     """
     Raises the associated response exception.
@@ -112,8 +109,6 @@ def raise_for_error(response):
             raise exc(message, response) from None
         except (ValueError, TypeError) as exap:
             raise MambuError(error) from None
-
-LOGGER = singer.get_logger()
 
 class MambuClient(object):
     def __init__(self,
