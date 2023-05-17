@@ -32,7 +32,7 @@ class MambuRequestFailedError(MambuError):
     message = "402: Unable to process request"
 
 class MambuNotFoundError(MambuError):
-   
+
     message = "404: Resource not found"
 
 class MambuMethodNotAllowedError(MambuError):
@@ -52,7 +52,7 @@ class MambuUnprocessableEntityError(MambuError):
     message = "422: Unable to process request"
 
 class MambuApiLimitError(ClientError):
-    
+
     message = "429: The API limit exceeded"
 
 class MambuInternalServiceError(MambuError):
@@ -60,11 +60,11 @@ class MambuInternalServiceError(MambuError):
     message = "Server Fault, Unable to process request"
 
 class MambuNoCredInConfig(MambuError):
-    
+
     message = "Creds Not Provided"
 
 class MambuNoSubdomainInConfig(MambuError):
-    
+
     message = "Subdomain not Configured"
 
 class MambuNoAuditApikeyInConfig(MambuError):
@@ -107,8 +107,8 @@ def raise_for_error(response):
             except (ValueError, TypeError):
                 pass
             raise exc(message, response) from None
-        except (ValueError, TypeError) as exap:
-            raise MambuError(error) from None
+        except (ValueError, TypeError):
+            raise MambuError(error) from error
 
 class MambuClient(object):
     def __init__(self,
