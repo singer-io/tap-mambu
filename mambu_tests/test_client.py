@@ -5,7 +5,7 @@ from mock import Mock
 
 from tap_mambu import MambuClient, DEFAULT_PAGE_SIZE
 from tap_mambu.helpers.client import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
-    MambuNoAuditApikeyInConfig, Server5xxError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
+    MambuNoAuditApikeyInConfig, MambuInternalServiceError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
 from .constants import config_json
 
 
@@ -220,29 +220,22 @@ def test_client_request_no_audit_apikey(mock_check_access):
         client.request(method='GET', apikey_type='audit')
 
 
-@mock.patch("tap_mambu.helpers.client.backoff._decorator._sync.time.sleep")
-@mock.patch("tap_mambu.helpers.client.metrics.http_request_timer")
-@mock.patch("tap_mambu.helpers.client.requests.Session.request")
-@mock.patch("tap_mambu.helpers.client.MambuClient.check_access")
-def test_client_request_500_error(mock_check_access,
-                                  mock_requests_session_request,
-                                  mock_metrics_http_request_timer,
-                                  mock_backoff_on_exception, ):
-    client = MambuClient(username=config_json.get('username'),
-                         password=config_json.get('password'),
-                         subdomain=config_json['subdomain'],
-                         page_size=int(config_json.get('page_size', 500)),
-                         user_agent=config_json['user_agent'],
-                         apikey='',
-                         apikey_audit='')
+@mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
+def test_client_request_500_error(mock_requests_raise_for_status):
+    mock_requests_raise_for_status.side_effect = Mock(side_effect=requests.HTTPError('test'))
 
     for status_code in range(500, 600):
+        content = {'error': status_code,
+                   'status': status_code,
+                   'message': 'test'}
         response = Mock()
+        response.content = content
+        response.json.return_value = content
         response.status_code = status_code
-        mock_requests_session_request.return_value = response
-
-        with pytest.raises(Server5xxError):
-            client.request(method='GET')
+        response.raise_for_status = mock_requests_raise_for_status
+        with pytest.raises(MambuInternalServiceError):
+            raise_for_error(response)
+        response.json.assert_called_once()
 
 
 @mock.patch("tap_mambu.helpers.client.raise_for_error")
@@ -288,12 +281,6 @@ def test_raise_for_error_no_content(mock_requests_raise_for_status):
     response.content = []
     response.raise_for_status = mock_requests_raise_for_status
 
-    func_response = raise_for_error(response)
-
-    # test case: when response content is empty -> the function should just return and do nothing
-    assert func_response is None
-    response.json.assert_not_called()
-
     # test case: when something from the try/except HTTPError block throws ValueError, TypeError ->
     # it should raise MambuError
     response.content = None
@@ -309,7 +296,6 @@ def test_raise_for_error_no_content(mock_requests_raise_for_status):
     response.json.return_value = {}
     with pytest.raises(MambuError):
         raise_for_error(response)
-    response.json.assert_called_once()
 
 
 @mock.patch("tap_mambu.helpers.client.requests.models.Response.raise_for_status")
@@ -323,6 +309,7 @@ def test_raise_for_error_known_error_codes(mock_requests_raise_for_status):
         response = Mock()
         response.content = content
         response.json.return_value = content
+        response.status_code = status_code
         response.raise_for_status = mock_requests_raise_for_status
 
         # test if the exceptions are handled correctly, meaning ->

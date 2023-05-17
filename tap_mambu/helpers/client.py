@@ -7,45 +7,59 @@ import singer
 
 LOGGER = singer.get_logger()
 
+class ClientError(Exception):
+    """class representing Generic Http error."""
 
-class Server5xxError(Exception):
-    pass
+    message = None
 
+    def __init__(self, message=None, response=None):
+        super().__init__(message or self.message)
+        self.response = response
 
-class Server429Error(Exception):
-    pass
+class Server5xxError(ClientError):
 
+    message = "Server Fault, Unable to process request"
 
-class MambuError(Exception):
-    pass
+class Server429Error(ClientError):
+    
+    message = "The API limit exceeded"
 
+class MambuError(ClientError):
+
+    message = "Unable to process request"
 
 class MambuBadRequestError(MambuError):
-    pass
-
+   
+    message = "Unable to process request"
 
 class MambuUnauthorizedError(MambuError):
-    pass
 
+    message = "Invalid credentials provided"
 
 class MambuRequestFailedError(MambuError):
-    pass
+
+    message = "Unable to process request"
+
 
 
 class MambuNotFoundError(MambuError):
-    pass
+    
+    message = "Resource not found"
 
 
 class MambuMethodNotAllowedError(MambuError):
-    pass
+
+    message = "Method Not Allowed"
 
 
 class MambuConflictError(MambuError):
-    pass
+
+    message = "Unable to process request, conflict"
 
 
 class MambuForbiddenError(MambuError):
-    pass
+
+    message = "Insufficient permission to access resource"
 
 
 class MambuUnprocessableEntityError(MambuError):
@@ -80,33 +94,28 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     500: MambuInternalServiceError}
 
 
-def get_exception_for_error_code(error_code):
-    return ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError)
-
-
 def raise_for_error(response):
-    LOGGER.error('ERROR {}: {}, REASON: {}'.format(response.status_code,
-                                                   response.text, response.reason))
+    """
+    Raises the associated response exception.
+    :param resp: requests.Response object
+    """
     try:
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
-            content_length = len(response.content)
-            if content_length == 0:
-                # There is nothing we can do here since Mambu has neither sent
-                # us a 2xx response nor a response content.
-                return
-            response = response.json()
-            if ('error' in response) or ('errorCode' in response):
-                message = '%s: %s' % (response.get('error', str(error)),
-                                      response.get('message', 'Unknown Error'))
-                error_code = response.get('status')
-                ex = get_exception_for_error_code(error_code)
-                raise ex(message)
-            else:
-                raise MambuError(error)
-        except (ValueError, TypeError):
-            raise MambuError(error)
+            error_code = 500 if response.status_code > 500 else response.status_code
+            exc, message = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, MambuError), None
+            try:
+                if len(response.content) != 0:
+                    response = response.json()
+                    if ('error' in response) or ('errorCode' in response):
+                        message = '%s: %s' % (response.get('error', str(error)),
+                                            response.get('message', 'Unknown Error'))
+            except (ValueError, TypeError):
+                message = "Mambu Error, Unable to parse error message"
+            raise exc(message, response) from None
+        except (ValueError, TypeError) as exap:
+            raise MambuError(error) from None
 
 
 class MambuClient(object):
@@ -224,8 +233,6 @@ class MambuClient(object):
                 **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 
-        if response.status_code >= 500:
-            raise Server5xxError()
 
         if response.status_code != 200:
             raise_for_error(response)
