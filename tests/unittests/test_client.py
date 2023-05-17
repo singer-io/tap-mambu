@@ -4,7 +4,7 @@ import mock
 from mock import Mock
 
 from tap_mambu import MambuClient, DEFAULT_PAGE_SIZE
-from tap_mambu.helpers.client import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
+from tap_mambu.helpers.exceptions import MambuError, MambuNoCredInConfig, MambuNoSubdomainInConfig, \
     MambuNoAuditApikeyInConfig, MambuInternalServiceError, raise_for_error, ERROR_CODE_EXCEPTION_MAPPING
 
 
