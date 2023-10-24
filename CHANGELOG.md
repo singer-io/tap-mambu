@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.2
+  * Dependabot update [#106](https://github.com/singer-io/tap-mambu/pull/106)
+
 ## 4.0.1
   * Improve Exception Handling and error messages [#105](https://github.com/singer-io/tap-mambu/pull/105)
 
