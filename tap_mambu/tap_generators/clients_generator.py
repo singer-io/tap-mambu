@@ -6,7 +6,7 @@ from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_loca
 class ClientsGenerator(MultithreadedBookmarkGenerator):
     def _init_config(self):
         super()._init_config()
-        self.max_threads = 10
+        self.max_threads = 1
 
     def _init_endpoint_config(self):
         super(ClientsGenerator, self)._init_endpoint_config()

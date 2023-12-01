@@ -29,7 +29,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.end_of_file = False
         self.fetch_batch_thread = None
         self.last_batch_set = set()
-        self.max_threads = 20
+        self.max_threads = 1
 
     @staticmethod
     def check_and_get_set_reunion(a: set, b: set, lower_limit: int):

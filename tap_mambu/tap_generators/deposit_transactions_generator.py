@@ -6,7 +6,7 @@ from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datet
 class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
     def _init_config(self):
         super()._init_config()
-        self.max_threads = 5
+        self.max_threads = 1
 
     def _init_endpoint_config(self):
         super(DepositTransactionsGenerator, self)._init_endpoint_config()
