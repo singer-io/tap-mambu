@@ -1,4 +1,5 @@
 import json
+import math
 
 
 class HashableDict(dict):
@@ -8,7 +9,7 @@ class HashableDict(dict):
         if type(value) in [dict, HashableDict]:
             return HashableDict(value).__key()
         if type(value) == list:
-            return tuple(sorted(map(HashableDict._recur_hash, value)))
+            return tuple(sorted(map(HashableDict._recur_hash, value), key=lambda x: x if x is not None else -math.inf))
         return value
 
     def __key(self):
