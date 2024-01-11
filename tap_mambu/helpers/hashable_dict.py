@@ -1,7 +1,3 @@
-import json
-import math
-
-
 class HashableDict(dict):
 
     @staticmethod
@@ -9,7 +5,11 @@ class HashableDict(dict):
         if type(value) in [dict, HashableDict]:
             return HashableDict(value).__key()
         if type(value) == list:
-            return tuple(sorted(map(HashableDict._recur_hash, value), key=lambda x: x if x is not None else -math.inf))
+            # None values are not sortable, but they are appended to the end of
+            # the list so that they are still hashed
+            sortable_values = [x for x in map(HashableDict._recur_hash, value) if x is not None]
+            none_values = [x for x in map(HashableDict._recur_hash, value) if x is None]
+            return tuple(sorted(sortable_values) + none_values)
         return value
 
     def __key(self):
