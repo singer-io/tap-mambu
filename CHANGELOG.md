@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.4
+  * Handle `None` values in `users.access.permissions` list [#110](https://github.com/singer-io/tap-mambu/pull/110)
+
+## 4.0.3
+  * Handle `None` values in `HashableDict` [#109](https://github.com/singer-io/tap-mambu/pull/109)
+
 ## 4.0.2
   * Dependabot update [#106](https://github.com/singer-io/tap-mambu/pull/106)
 
