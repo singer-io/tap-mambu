@@ -13,7 +13,8 @@ setup(name='tap-mambu',
           'backoff==1.8.0',
           'requests==2.31.0',
           'singer-python==5.12.2',
-          'pytz==2022.1'
+          'pytz==2022.1',
+          'requests-ratelimiter==0.5.1'
       ],
       extras_require={
           'dev': [
