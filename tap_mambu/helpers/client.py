@@ -3,6 +3,7 @@ import requests
 import requests.adapters
 from requests.exceptions import ConnectionError
 from singer import metrics, get_logger
+import os
 from requests_ratelimiter import LimiterAdapter
 
 
@@ -130,7 +131,7 @@ class MambuClient(object):
         self.__apikey = apikey
         self.__session = requests.Session()
         # self.__adapter = requests.adapters.HTTPAdapter(pool_maxsize=100)
-        self.__adapter = LimiterAdapter(per_minute=os.environ.get('LIMIT_PER_MINUTE', 1))
+        self.__adapter = LimiterAdapter(per_minute=os.environ.get('LIMIT_PER_SECOND', 1))
         self.__session.mount("https://", self.__adapter)
         self.__verified = False
         self.__apikey_audit = apikey_audit
