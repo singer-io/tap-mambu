@@ -1,6 +1,6 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime, add_days
 
 
 class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
@@ -13,12 +13,15 @@ class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_path = "deposits/transactions:search"
         self.endpoint_bookmark_field = "creationDate"
         self.endpoint_sorting_criteria["field"] = "id"
+        self.dt_start_date = datetime_to_utc_str(str_to_localized_datetime(
+                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
+        self.dt_end_date = add_days(self.dt_start_date, self.days_to_process)
         self.endpoint_filter_criteria = [
             {
                 "field": "creationDate",
-                "operator": "AFTER",
-                "value": datetime_to_utc_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
+                "operator": "BETWEEN",
+                "value": self.dt_start_date,
+                "secondValue" : self.dt_end_date
             }
         ]
 

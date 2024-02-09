@@ -1,5 +1,5 @@
 from pytz import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 from tap_mambu import MambuClient
 import dateutil.parser
 
@@ -68,3 +68,6 @@ def utc_now():
 
 def local_now():
     return datetime.now(_timezone)
+
+def add_days(start_date: datetime, days_to_add: int) -> datetime:
+    return (start_date+ timedelta(days=days_to_add))

@@ -31,6 +31,7 @@ class TapGenerator(ABC):
 
     def _init_config(self):
         self.start_date = self.config.get('start_date')
+        self.days_to_process = self.config.get('days_to_process')
 
     def _init_endpoint_config(self):
         self.endpoint_path = ""
