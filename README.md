@@ -58,13 +58,11 @@ This tap:
   - Bookmark: last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
-[**clients (GET v2)**](https://api.mambu.com/?http#clients-search)
+[**clients (GET v2)**](https://api.mambu.com/?http#clients-getall)
 - Endpoint: https://instance.sandbox.mambu.com/api/clients
 - Primary keys: id
 - Foreign keys: assigned_user_key (users), assigned_centre_key (centres), custom_field_set_id, custom_field_id (custom_field_sets)
-- Replication strategy: Incremental (query all, filter results)
-  - Sort by: lastModifiedDate:ASC
-  - Bookmark: last_modified_date (date-time)
+- Replication strategy: Full table
 - Transformations: Fields camelCase to snake_case, Abstract/generalize custom_field_sets
 
 [**credit_arrangements (GET v2)**](https://api.mambu.com/?http#creditarrangements-getAll)
@@ -270,7 +268,6 @@ This tap:
             "branches": "2019-06-11T13:37:51Z",
             "communications": "2019-06-19T19:48:42Z",
             "centres": "2019-06-18T18:23:53Z",
-            "clients": "2019-06-20T00:52:44Z",
             "credit_arrangements": "2019-06-19T19:48:45Z",
             "custom_field_sets": "2019-06-11T13:37:56Z",
             "deposit_accounts": "2019-06-19T19:48:47Z",
