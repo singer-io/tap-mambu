@@ -1,7 +1,7 @@
 # Changelog
 
 ## 4.1.0
-  * Change clients stream to full sync [#111](https://github.com/singer-io/tap-mambu/pull/111)
+  * Change clients stream to full table sync [#111](https://github.com/singer-io/tap-mambu/pull/111)
 
 ## 4.0.4
   * Handle `None` values in `users.access.permissions` list [#110](https://github.com/singer-io/tap-mambu/pull/110)
