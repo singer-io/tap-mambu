@@ -1,8 +1,10 @@
 import datetime
 import time
+import backoff
 
 from copy import deepcopy
 from singer import get_logger
+from datetime import datetime, timedelta
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
@@ -50,6 +52,30 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
         return futures
+
+    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
+    def _all_fetch_batch_steps(self):
+        futures = []
+        if self.date_windowing:
+            start = datetime.strptime(self.params["from"], '%Y-%m-%d').date()
+            end = datetime.strptime(self.params["to"], '%Y-%m-%d').date()
+            temp = start + timedelta(days=self.date_window_size)
+            while temp < end:
+                self.endpoint_intermediary_bookmark_offset = 0
+                self.params["from"] = datetime.strftime(start, '%Y-%m-%d')
+                self.params["to"] = datetime.strftime(temp, '%Y-%m-%d')
+                futures += self.queue_batches()
+                start = temp
+                temp = start + timedelta(days=self.date_window_size)
+            self.endpoint_intermediary_bookmark_offset = 0
+            self.params["from"] = datetime.strftime(start, '%Y-%m-%d')
+            self.params["to"] = datetime.strftime(end, '%Y-%m-%d')
+        futures += self.queue_batches()
+        final_buffer, stop_iteration = self.collect_batches(futures)
+        self.preprocess_batches(final_buffer)
+        if not final_buffer or stop_iteration:
+            return False
+        return True
 
     def collect_batches(self, futures):
         # wait for responses, and check them for errors
