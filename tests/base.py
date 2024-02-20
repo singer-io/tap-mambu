@@ -82,10 +82,7 @@ class MambuBaseTest(unittest.TestCase):
                 self.PRIMARY_KEYS: {
                     "id"
                 },
-                self.REPLICATION_METHOD: "INCREMENTAL",
-                self.REPLICATION_KEYS: {
-                    "last_modified_date"
-                }
+                self.REPLICATION_METHOD: "FULL_TABLE"
             },
             "credit_arrangements": {
                 self.PRIMARY_KEYS: {

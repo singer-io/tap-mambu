@@ -26,8 +26,7 @@ STREAMS = {
     },
     'clients': {
         'key_properties': ['id'],
-        'replication_method': 'INCREMENTAL',
-        'replication_keys': ['last_modified_date']
+        'replication_method': 'FULL_TABLE'
     },
     'credit_arrangements': {
         'key_properties': ['id'],
