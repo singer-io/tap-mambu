@@ -1,10 +1,8 @@
 import datetime
 import time
-import backoff
 
 from copy import deepcopy
 from singer import get_logger
-from datetime import datetime, timedelta
 
 from .multithreaded_offset_generator import MultithreadedOffsetGenerator
 from ..helpers import transform_json, convert
@@ -52,32 +50,6 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                                                                    deepcopy(self.endpoint_body),
                                                                    deepcopy(self.params)))
         return futures
-
-    @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
-    def _all_fetch_batch_steps(self):
-        if self.date_windowing:
-            start = datetime.strptime(self.params["from"], '%Y-%m-%d').date()
-            end = datetime.strptime(self.params["to"], '%Y-%m-%d').date()
-            temp = start + timedelta(days=self.date_window_size)
-            stop_iteration = True
-            while temp < end:
-                if stop_iteration:
-                    self.offset = 0
-                self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')
-                self.static_params["to"] = datetime.strftime(temp, '%Y-%m-%d')
-                final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
-                self.preprocess_batches(final_buffer)
-                if not final_buffer or stop_iteration:
-                    start = temp
-                    temp = start + timedelta(days=self.date_window_size)
-            self.offset = 0
-            self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')
-            self.static_params["to"] = datetime.strftime(end, '%Y-%m-%d')
-        final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
-        self.preprocess_batches(final_buffer)
-        if not final_buffer or stop_iteration:
-            return False
-        return True
 
     def collect_batches(self, futures):
         # wait for responses, and check them for errors

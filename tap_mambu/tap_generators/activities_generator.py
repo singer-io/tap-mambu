@@ -13,10 +13,6 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_path = "activities"
         self.endpoint_api_method = "GET"
         self.endpoint_api_version = "v1"
-
-        self.endpoint_params["from"] = datetime_to_utc_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
-        self.endpoint_params["to"] = datetime_to_utc_str(utc_now())[:10]
         self.endpoint_bookmark_field = "timestamp"
 
     @staticmethod

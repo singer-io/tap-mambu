@@ -4,9 +4,11 @@ from threading import Thread
 
 import backoff
 from singer import get_logger
+from datetime import datetime, timedelta
 
 from .generator import TapGenerator
-from ..helpers import transform_json
+from ..helpers import transform_json, get_bookmark
+from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str, utc_now
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 from ..helpers.perf_metrics import PerformanceMetrics
 
@@ -120,12 +122,34 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
-        futures = self.queue_batches()
-        final_buffer, stop_iteration = self.collect_batches(futures)
+        if self.date_windowing:
+            start_datetime = datetime_to_utc_str(str_to_localized_datetime(
+                get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
+            end_datetime = datetime_to_utc_str(utc_now())[:10]
+            start = datetime.strptime(start_datetime, '%Y-%m-%d').date()
+            end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
+            temp = start + timedelta(days=self.date_window_size)
+            stop_iteration = True
+            while temp < end:
+                if stop_iteration:
+                    self.offset = 0
+                self.modify_request_params(start, temp)
+                final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+                self.preprocess_batches(final_buffer)
+                if not final_buffer or stop_iteration:
+                    start = temp
+                    temp = start + timedelta(days=self.date_window_size)
+            self.offset = 0
+            self.modify_request_params(start, end)
+        final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
         self.preprocess_batches(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def modify_request_params(self, start, end):
+        self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')
+        self.static_params["to"] = datetime.strftime(end, '%Y-%m-%d')
 
     def error_check_and_fix(self, final_buffer: set, temp_buffer: set, futures: list):
         try:
