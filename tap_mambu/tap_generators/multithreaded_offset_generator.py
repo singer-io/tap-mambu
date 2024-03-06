@@ -31,7 +31,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.end_of_file = False
         self.fetch_batch_thread = None
         self.last_batch_set = set()
-        self.max_threads = 1
+        self.max_threads = 20
 
     @staticmethod
     def check_and_get_set_reunion(a: set, b: set, lower_limit: int):
@@ -130,7 +130,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
             end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
             temp = start + timedelta(days=self.date_window_size)
             stop_iteration = True
-            while temp < end:
+            while start < end:
                 if stop_iteration:
                     self.offset = 0
                 self.modify_request_params(start, temp)
@@ -139,10 +139,9 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 if not final_buffer or stop_iteration:
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
-            self.offset = 0
-            self.modify_request_params(start, end)
-        final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
-        self.preprocess_batches(final_buffer)
+        else:
+            final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+            self.preprocess_batches(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
