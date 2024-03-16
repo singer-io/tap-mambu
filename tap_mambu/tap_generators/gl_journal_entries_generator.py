@@ -1,12 +1,12 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime, utc_now
+from ..helpers.datetime_utils import datetime_to_utc_str
+from datetime import datetime
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
-    def _init_config(self):
-        super()._init_config()
-        self.max_threads = 5
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(GlJournalEntriesGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = True
 
     def _init_endpoint_config(self):
         super(GlJournalEntriesGenerator, self)._init_endpoint_config()
@@ -16,13 +16,18 @@ class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
             "field": "entryId",
             "order": "ASC"
         }
-        self.endpoint_filter_criteria = [
+
+    def modify_request_params(self, start, end):
+        self.endpoint_body['filterCriteria'] = [
             {
                 "field": "creationDate",
-                "operator": "BETWEEN",
-                "value": datetime_to_utc_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date))),
-                "secondValue": datetime_to_utc_str(utc_now())
+                "operator": "AFTER",
+                "value": datetime.strftime(start, '%Y-%m-%dT00:00:00.000000Z')
+            },
+            {
+                "field": "creationDate",
+                "operator": "BEFORE",
+                "value": datetime.strftime(end, '%Y-%m-%dT23:59:59.000000Z')
             }
         ]
 
