@@ -10,7 +10,6 @@ from .generator import TapGenerator
 from ..helpers import transform_json, get_bookmark
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str, utc_now
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
-from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -172,9 +171,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     def next(self):
         if not self.buffer and not self.end_of_file:
-            with PerformanceMetrics(metric_name="processor_wait"):
-                while not self.buffer and not self.end_of_file:
-                    time.sleep(0.01)
+            while not self.buffer and not self.end_of_file:
+                time.sleep(0.01)
         if not self.buffer and self.end_of_file:
             raise StopIteration()
         return self.buffer.pop(0)

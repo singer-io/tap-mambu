@@ -5,7 +5,6 @@ from singer import write_record, metadata, write_schema, get_logger, metrics, ut
 from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer
 from ..helpers.exceptions import NoDeduplicationCapabilityException
-from ..helpers.perf_metrics import PerformanceMetrics
 from ..helpers.datetime_utils import utc_now, str_to_datetime, datetime_to_utc_str, str_to_localized_datetime
 
 LOGGER = get_logger()
@@ -61,9 +60,8 @@ class TapProcessor(ABC):
         with metrics.record_counter(self.stream_name) as counter:
             for record in self.generators[0]:
                 # Process the record
-                with PerformanceMetrics(metric_name="processor"):
-                    is_processed = self.process_record(record, utils.now(),
-                                                       self.generators[0].endpoint_bookmark_field)
+                is_processed = self.process_record(record, utils.now(),
+                                                    self.generators[0].endpoint_bookmark_field)
                 if is_processed:
                     record_count += 1
                     self._process_child_records(record)
