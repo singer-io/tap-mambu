@@ -1,7 +1,6 @@
 import singer
 from concurrent.futures import Future, ThreadPoolExecutor
 from typing import List
-from .perf_metrics import PerformanceMetrics
 
 
 LOGGER = singer.get_logger()
@@ -24,16 +23,15 @@ class MultithreadedRequestsPool:
                     f'{endpoint_api_version}): {client.base_url}/{endpoint_path}?{endpoint_querystring}'
                     f' - body = {endpoint_body}')
 
-        with PerformanceMetrics(metric_name="generator"):
-            response = client.request(
-                method=endpoint_api_method,
-                path=endpoint_path,
-                version=endpoint_api_version,
-                apikey_type=endpoint_api_key_type,
-                params=endpoint_querystring,
-                endpoint=stream_name,
-                json=endpoint_body
-            )
+        response = client.request(
+            method=endpoint_api_method,
+            path=endpoint_path,
+            version=endpoint_api_version,
+            apikey_type=endpoint_api_key_type,
+            params=endpoint_querystring,
+            endpoint=stream_name,
+            json=endpoint_body
+        )
 
         LOGGER.info(f'(generator) Stream {stream_name} - extracted records: {len(response)}')
         return response
