@@ -129,6 +129,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
             end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
             temp = start + timedelta(days=self.date_window_size)
             stop_iteration = True
+            final_buffer = []
             while start < end:
                 self.modify_request_params(start, temp)
                 final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
