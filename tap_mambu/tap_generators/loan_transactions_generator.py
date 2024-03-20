@@ -24,7 +24,7 @@ class LoanTransactionsGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": "creationDate",
                 "operator": "BEFORE",
-                "value": datetime.strftime(end, '%Y-%m-%dT23:59:59.000000Z')
+                "value": datetime.strftime(end, '%Y-%m-%dT00:00:00.000000Z')
             }
         ]
 
