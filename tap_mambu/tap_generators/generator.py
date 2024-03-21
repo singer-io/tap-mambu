@@ -55,6 +55,7 @@ class TapGenerator(ABC):
 
     def _init_buffers(self):
         self.buffer: List = list()
+        self.max_buffer_size = 100000
 
     def _init_params(self):
         self.time_extracted = None

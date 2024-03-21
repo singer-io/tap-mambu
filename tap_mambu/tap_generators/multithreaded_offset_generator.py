@@ -131,6 +131,9 @@ class MultithreadedOffsetGenerator(TapGenerator):
             stop_iteration = True
             final_buffer = []
             while start < end:
+                # Limit the buffer size by holding generators from creating new batches
+                while len(self.buffer) > 100000:
+                    time.sleep(1)
                 self.modify_request_params(start, temp)
                 final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
                 self.preprocess_batches(final_buffer)
