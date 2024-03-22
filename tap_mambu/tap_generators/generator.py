@@ -16,7 +16,7 @@ class TapGenerator(ABC):
         self.state = state
         self.sub_type = sub_type
         self.date_windowing = False
-        self.date_window_size = 3
+        self.date_window_size = 5
 
         # Define parameters inside init
         self.params = dict()
