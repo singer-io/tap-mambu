@@ -1,6 +1,6 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
-from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datetime, utc_now
+from ..helpers.datetime_utils import datetime_to_utc_str
+from datetime import datetime
 
 
 class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
@@ -14,6 +14,10 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_api_method = "GET"
         self.endpoint_api_version = "v1"
         self.endpoint_bookmark_field = "timestamp"
+
+    def modify_request_params(self, start, end):
+        self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')
+        self.static_params["to"] = datetime.strftime(end, '%Y-%m-%d')
 
     @staticmethod
     def unpack_activity(record):
