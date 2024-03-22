@@ -3,10 +3,6 @@ from ..helpers.datetime_utils import datetime_to_utc_str
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
-    def __init__(self, stream_name, client, config, state, sub_type):
-        super(GlJournalEntriesGenerator, self).__init__(stream_name, client, config, state, sub_type)
-        self.date_windowing = True
-
     def _init_endpoint_config(self):
         super(GlJournalEntriesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "gljournalentries:search"

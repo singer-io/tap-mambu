@@ -3,10 +3,6 @@ from ..helpers.datetime_utils import datetime_to_utc_str
 
 
 class DepositTransactionsGenerator(MultithreadedBookmarkGenerator):
-    def _init_config(self):
-        super()._init_config()
-        self.max_threads = 5
-
     def _init_endpoint_config(self):
         super(DepositTransactionsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "deposits/transactions:search"

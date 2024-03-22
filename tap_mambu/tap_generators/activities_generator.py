@@ -4,10 +4,6 @@ from datetime import datetime
 
 
 class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
-    def __init__(self, stream_name, client, config, state, sub_type):
-        super(ActivitiesGenerator, self).__init__(stream_name, client, config, state, sub_type)
-        self.date_windowing = True
-
     def _init_endpoint_config(self):
         super(ActivitiesGenerator, self)._init_endpoint_config()
         self.endpoint_path = "activities"
