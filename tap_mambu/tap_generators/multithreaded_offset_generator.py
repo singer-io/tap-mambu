@@ -15,6 +15,10 @@ LOGGER = get_logger()
 
 
 class MultithreadedOffsetGenerator(TapGenerator):
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(MultithreadedOffsetGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = True
+
     def _init_params(self):
         self.time_extracted = None
         self.static_params = dict(self.endpoint_params)
@@ -149,8 +153,18 @@ class MultithreadedOffsetGenerator(TapGenerator):
         return True
 
     def modify_request_params(self, start, end):
-        self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')
-        self.static_params["to"] = datetime.strftime(end, '%Y-%m-%d')
+        self.endpoint_body['filterCriteria'] = [
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "AFTER",
+                "value": datetime.strftime(start, '%Y-%m-%dT00:00:00.000000Z')
+            },
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "BEFORE",
+                "value": datetime.strftime(end, '%Y-%m-%dT00:00:01.000000Z')
+            }
+        ]
 
     def error_check_and_fix(self, final_buffer: set, temp_buffer: set, futures: list):
         try:
