@@ -1,5 +1,6 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers.datetime_utils import datetime_to_local_str
+from datetime import datetime
 
 
 class CommunicationsGenerator(MultithreadedBookmarkGenerator):
@@ -13,12 +14,23 @@ class CommunicationsGenerator(MultithreadedBookmarkGenerator):
         self.endpoint_bookmark_field = "creationDate"
 
     def modify_request_params(self, start, end):
-        super().modify_request_params(start, end)
-        self.endpoint_body['filterCriteria'].append({
-            "field": "state",
-            "operator": "EQUALS",
-            "value": "SENT"
-        })
+        self.endpoint_body = [
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "AFTER",
+                "value": datetime.strftime(start, '%Y-%m-%dT00:00:00.000000Z')
+            },
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "BEFORE",
+                "value": datetime.strftime(end, '%Y-%m-%dT00:00:01.000000Z')
+            },
+            {
+                "field": "state",
+                "operator": "EQUALS",
+                "value": "SENT"
+            }
+        ]
 
     def _init_endpoint_body(self):
         self.endpoint_body = self.endpoint_filter_criteria
