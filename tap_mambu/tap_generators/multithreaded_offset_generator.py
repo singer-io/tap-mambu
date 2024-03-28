@@ -10,6 +10,7 @@ from .generator import TapGenerator
 from ..helpers import transform_json, get_bookmark
 from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str, utc_now
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
+from ..helpers.exceptions import MambuGeneratorThreadNotAlive
 
 LOGGER = get_logger()
 
@@ -190,6 +191,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
     def next(self):
         if not self.buffer and not self.end_of_file:
             while not self.buffer and not self.end_of_file:
+                if not self.fetch_batch_thread.is_alive():
+                    raise MambuGeneratorThreadNotAlive("Generator stopped running premaurely")
                 time.sleep(0.01)
         if not self.buffer and self.end_of_file:
             raise StopIteration()

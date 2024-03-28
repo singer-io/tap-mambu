@@ -66,6 +66,11 @@ class TapProcessor(ABC):
                     record_count += 1
                     self._process_child_records(record)
                     counter.increment()
+                
+                # Write bookmark after thousand records
+                if record_count%1000 == 0:
+                    self.write_bookmark()
+
         return record_count
 
     def process_streams_from_generators(self):
