@@ -4,16 +4,22 @@ from threading import Thread
 
 import backoff
 from singer import get_logger
+from datetime import datetime, timedelta
 
 from .generator import TapGenerator
-from ..helpers import transform_json
+from ..helpers import transform_json, get_bookmark
+from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str, utc_now
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
-from ..helpers.perf_metrics import PerformanceMetrics
+from ..helpers.exceptions import MambuGeneratorThreadNotAlive
 
 LOGGER = get_logger()
 
 
 class MultithreadedOffsetGenerator(TapGenerator):
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(MultithreadedOffsetGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = True
+
     def _init_params(self):
         self.time_extracted = None
         self.static_params = dict(self.endpoint_params)
@@ -120,12 +126,46 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
-        futures = self.queue_batches()
-        final_buffer, stop_iteration = self.collect_batches(futures)
-        self.preprocess_batches(final_buffer)
+        if self.date_windowing:
+            start_datetime = datetime_to_utc_str(str_to_localized_datetime(
+                get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
+            end_datetime = datetime_to_utc_str(utc_now())[:10]
+            start = datetime.strptime(start_datetime, '%Y-%m-%d').date()
+            end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
+            temp = start + timedelta(days=self.date_window_size)
+            stop_iteration = True
+            final_buffer = []
+            while start < end:
+                # Limit the buffer size by holding generators from creating new batches
+                while len(self.buffer) > self.max_buffer_size:
+                    time.sleep(1)
+                self.modify_request_params(start, temp)
+                final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+                self.preprocess_batches(final_buffer)
+                if not final_buffer or stop_iteration:
+                    self.offset = 0
+                    start = temp
+                    temp = start + timedelta(days=self.date_window_size)
+        else:
+            final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+            self.preprocess_batches(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def modify_request_params(self, start, end):
+        self.endpoint_body['filterCriteria'] = [
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "AFTER",
+                "value": datetime.strftime(start, '%Y-%m-%dT00:00:00.000000Z')
+            },
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "BEFORE",
+                "value": datetime.strftime(end, '%Y-%m-%dT00:00:01.000000Z')
+            }
+        ]
 
     def error_check_and_fix(self, final_buffer: set, temp_buffer: set, futures: list):
         try:
@@ -150,9 +190,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     def next(self):
         if not self.buffer and not self.end_of_file:
-            with PerformanceMetrics(metric_name="processor_wait"):
-                while not self.buffer and not self.end_of_file:
-                    time.sleep(0.01)
+            while not self.buffer and not self.end_of_file:
+                if not self.fetch_batch_thread.is_alive():
+                    raise MambuGeneratorThreadNotAlive("Generator stopped running premaurely")
+                time.sleep(0.01)
         if not self.buffer and self.end_of_file:
             raise StopIteration()
         return self.buffer.pop(0)

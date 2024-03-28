@@ -4,6 +4,7 @@ import requests.adapters
 from requests.exceptions import ConnectionError
 from singer import metrics, get_logger
 
+from urllib3.exceptions import ProtocolError
 
 LOGGER = get_logger()
 class ClientError(Exception):
@@ -178,7 +179,7 @@ class MambuClient(object):
             return True
 
     @backoff.on_exception(backoff.expo,
-                          (MambuInternalServiceError, ConnectionError, MambuApiLimitError),
+                          (MambuInternalServiceError, ConnectionError, MambuApiLimitError, ProtocolError),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, json=None, version=None, apikey_type=None, **kwargs):

@@ -1,44 +1,23 @@
-import abc
-
-from .generator import TapGenerator
-from ..helpers import get_bookmark
-from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_local_str
+from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
+from ..helpers.datetime_utils import datetime_to_utc_str
 
 
-class LoanAccountsGenerator(TapGenerator):
-    @abc.abstractmethod
+class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
     def _init_endpoint_config(self):
-        super(LoanAccountsGenerator, self)._init_endpoint_config()
+        super(LoanAccountsLMGenerator, self)._init_endpoint_config()
         self.endpoint_path = "loans:search"
+        self.endpoint_bookmark_field = "lastModifiedDate"
         self.endpoint_sorting_criteria = {
             "field": "id",
             "order": "ASC"
         }
 
+    def prepare_batch_params(self):
+        super(LoanAccountsLMGenerator, self).prepare_batch_params()
+        self.endpoint_filter_criteria[0]["value"] = datetime_to_utc_str(self.endpoint_intermediary_bookmark_value)
 
-class LoanAccountsLMGenerator(LoanAccountsGenerator):
+
+class LoanAccountsADGenerator(LoanAccountsLMGenerator):
     def _init_endpoint_config(self):
-        super()._init_endpoint_config()
-        self.endpoint_bookmark_field = "lastModifiedDate"
-        self.endpoint_filter_criteria = [
-            {
-                "field": "lastModifiedDate",
-                "operator": "AFTER",
-                "value": datetime_to_local_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
-            }
-        ]
-
-
-class LoanAccountsADGenerator(LoanAccountsGenerator):
-    def _init_endpoint_config(self):
-        super()._init_endpoint_config()
+        super(LoanAccountsADGenerator, self)._init_endpoint_config()
         self.endpoint_bookmark_field = "lastAccountAppraisalDate"
-        self.endpoint_filter_criteria = [
-            {
-                "field": "lastAccountAppraisalDate",
-                "operator": "AFTER",
-                "value": datetime_to_local_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
-            }
-        ]
