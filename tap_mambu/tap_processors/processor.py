@@ -67,8 +67,8 @@ class TapProcessor(ABC):
                     self._process_child_records(record)
                     counter.increment()
                 
-                # Write bookmark after thousand records
-                if record_count%1000 == 0:
+                # Write bookmark after hundred records
+                if record_count%100 == 0:
                     self.write_bookmark()
 
         return record_count

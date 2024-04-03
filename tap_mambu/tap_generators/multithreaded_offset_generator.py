@@ -163,7 +163,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
             {
                 "field": self.endpoint_bookmark_field,
                 "operator": "BEFORE",
-                "value": datetime.strftime(end, '%Y-%m-%dT00:00:01.000000Z')
+                "value": datetime.strftime(end, '%Y-%m-%dT00:10:00.000000Z')
             }
         ]
 
