@@ -1,3 +1,5 @@
+import time
+
 from abc import ABC
 from typing import List
 from singer import utils, get_logger
@@ -16,7 +18,7 @@ class TapGenerator(ABC):
         self.state = state
         self.sub_type = sub_type
         self.date_windowing = False
-        self.date_window_size = 3
+        self.date_window_size = 5
 
         # Define parameters inside init
         self.params = dict()
@@ -65,6 +67,9 @@ class TapGenerator(ABC):
         self.params = self.static_params
 
     def _all_fetch_batch_steps(self):
+        if len(self.buffer) > self.max_buffer_size:
+            return
+
         self.prepare_batch()
         raw_batch = self.fetch_batch()
         self.buffer = transform_json(raw_batch, self.stream_name)
