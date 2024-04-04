@@ -3,6 +3,10 @@ from ..helpers.datetime_utils import datetime_to_utc_str, str_to_localized_datet
 
 
 class InstallmentsGenerator(MultithreadedOffsetGenerator):
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(InstallmentsGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = False
+
     def _init_endpoint_config(self):
         super(InstallmentsGenerator, self)._init_endpoint_config()
         self.endpoint_path = "installments"
