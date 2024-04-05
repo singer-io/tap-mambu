@@ -3,6 +3,10 @@ from ..helpers.datetime_utils import datetime_to_utc_str
 
 
 class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(LoanAccountsLMGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.max_threads = 5
+
     def _init_endpoint_config(self):
         super(LoanAccountsLMGenerator, self)._init_endpoint_config()
         self.endpoint_path = "loans:search"
