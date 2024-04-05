@@ -129,7 +129,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
         if self.date_windowing:
             start_datetime = datetime_to_utc_str(str_to_localized_datetime(
                 get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
-            end_datetime = datetime_to_utc_str(utc_now())[:10]
+            end_datetime = datetime_to_utc_str(utc_now() + timedelta(days=1))[:10]
             start = datetime.strptime(start_datetime, '%Y-%m-%d').date()
             end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
             temp = start + timedelta(days=self.date_window_size)
