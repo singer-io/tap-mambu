@@ -1,7 +1,7 @@
 import backoff
 import requests
 import requests.adapters
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, ChunkedEncodingError
 from singer import metrics, get_logger
 
 from urllib3.exceptions import ProtocolError
@@ -179,7 +179,8 @@ class MambuClient(object):
             return True
 
     @backoff.on_exception(backoff.expo,
-                          (MambuInternalServiceError, ConnectionError, MambuApiLimitError, ProtocolError),
+                          (MambuInternalServiceError, ConnectionError,
+                           ChunkedEncodingError, MambuApiLimitError, ProtocolError),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, json=None, version=None, apikey_type=None, **kwargs):
