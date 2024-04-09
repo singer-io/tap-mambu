@@ -16,6 +16,7 @@ class TapGenerator(ABC):
         self.client = client
         self.config = config
         self.state = state
+        self.state_changed = True
         self.sub_type = sub_type
         self.date_windowing = False
         self.date_window_size = 5

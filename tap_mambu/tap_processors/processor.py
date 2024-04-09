@@ -1,6 +1,7 @@
 from abc import ABC
 
 from singer import write_record, metadata, write_schema, get_logger, metrics, utils
+from copy import deepcopy
 
 from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer
@@ -66,10 +67,14 @@ class TapProcessor(ABC):
                     record_count += 1
                     self._process_child_records(record)
                     counter.increment()
-                
+
                 # Write bookmark after hundred records
-                if record_count%100 == 0:
+                if record_count % 1000 == 0:
                     self.write_bookmark()
+
+                if self.generators[0].state_changed:
+                    self.write_bookmark()
+                    self.generators[0].state_changed = False
 
         return record_count
 

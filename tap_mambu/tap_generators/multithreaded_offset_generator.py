@@ -124,28 +124,49 @@ class MultithreadedOffsetGenerator(TapGenerator):
             self.preprocess_record(raw_record)
         self.last_batch_size = len(self.last_batch_set)
 
+    def set_last_sync_window_start(self, start):
+        self.state["last_sync_windows_start"] = start
+        self.state_changed = True
+
+    def get_last_sync_window_start(self):
+        return self.state.get("last_sync_windows_start")
+
+    def remove_last_sync_window_start(self):
+        if "last_sync_windows_start_ad" in self.state:
+            del self.state["last_sync_windows_start_ad"]
+
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         if self.date_windowing:
+            last_sync_window_start = self.get_last_sync_window_start()
             start_datetime = datetime_to_utc_str(str_to_localized_datetime(
-                get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))[:10]
-            end_datetime = datetime_to_utc_str(utc_now() + timedelta(days=1))[:10]
-            start = datetime.strptime(start_datetime, '%Y-%m-%d').date()
-            end = datetime.strptime(end_datetime, '%Y-%m-%d').date()
+                get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)) - timedelta(days=self.date_window_size))
+
+            if last_sync_window_start:
+                start = str_to_localized_datetime(last_sync_window_start)
+            else:
+                start = str_to_localized_datetime(start_datetime)
+
+            end_datetime = datetime_to_utc_str(utc_now() + timedelta(days=1))
+            end = str_to_localized_datetime(end_datetime)
             temp = start + timedelta(days=self.date_window_size)
             stop_iteration = True
             final_buffer = []
             while start < end:
+                self.set_last_sync_window_start(datetime_to_utc_str(start))
                 # Limit the buffer size by holding generators from creating new batches
-                while len(self.buffer) > self.max_buffer_size:
-                    time.sleep(1)
+                if len(self.buffer) > self.max_buffer_size:
+                    while len(self.buffer):
+                        time.sleep(1)
                 self.modify_request_params(start, temp)
-                final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+                final_buffer, stop_iteration = self.collect_batches(
+                    self.queue_batches())
                 self.preprocess_batches(final_buffer)
                 if not final_buffer or stop_iteration:
                     self.offset = 0
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
+            self.remove_last_sync_window_start()
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)
