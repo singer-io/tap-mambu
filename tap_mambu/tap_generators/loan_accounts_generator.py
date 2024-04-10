@@ -25,7 +25,6 @@ class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
     def set_last_sync_window_start(self, start):
         if "bookmarks" not in self.state:
             self.state["bookmarks"] = {}
-        # self.state["bookmarks"]["lmg_last_sync_windows_start"] = start
         write_bookmark(self.state, "lmg_last_sync_windows_start", self.sub_type, start)
 
     def get_last_sync_window_start(self):
@@ -34,7 +33,7 @@ class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
         return self.state.get("bookmarks", {}).get("lmg_last_sync_windows_start", last_bookmark)
 
     def remove_last_sync_window_start(self):
-        if "lmg_last_sync_windows_start" in self.state["bookmarks"]:
+        if "lmg_last_sync_windows_start" in self.state.get("bookmarks", {}):
             del self.state["bookmarks"]["lmg_last_sync_windows_start"]
 
     def get_default_start_value(self):
@@ -68,7 +67,7 @@ class LoanAccountsADGenerator(LoanAccountsLMGenerator):
         return self.state.get("bookmarks", {}).get("ad_last_sync_windows_start", last_bookmark)
 
     def remove_last_sync_window_start(self):
-        if "ad_last_sync_windows_start" in self.state["bookmarks"]:
+        if "ad_last_sync_windows_start" in self.state.get("bookmarks", {}):
             del self.state["bookmarks"]["ad_last_sync_windows_start"]
             self.state_changed = True
 
