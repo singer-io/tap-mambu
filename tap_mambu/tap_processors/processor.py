@@ -1,7 +1,6 @@
 from abc import ABC
 
 from singer import write_record, metadata, write_schema, get_logger, metrics, utils
-from copy import deepcopy
 
 from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer

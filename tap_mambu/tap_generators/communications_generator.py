@@ -18,12 +18,12 @@ class CommunicationsGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": self.endpoint_bookmark_field,
                 "operator": "AFTER",
-                "value": datetime.strftime(start, '%Y-%m-%dT00:00:00.000000Z')
+                "value": datetime.strftime(start)
             },
             {
                 "field": self.endpoint_bookmark_field,
                 "operator": "BEFORE",
-                "value": datetime.strftime(end, '%Y-%m-%dT00:00:01.000000Z')
+                "value": datetime.strftime(end)
             },
             {
                 "field": "state",

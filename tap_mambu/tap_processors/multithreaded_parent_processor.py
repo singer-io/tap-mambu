@@ -15,6 +15,10 @@ class MultithreadedParentProcessor(TapProcessor):
 
         for future in futures.as_completed(self.futures):
             record_count += future.result()
+
+        for generator in self.generators:
+            generator.set_last_sync_completed(self.generators[0].start_windows_datetime_str)
+            generator.remove_last_sync_window_start()
         return record_count
 
     def _process_child_records(self, record):

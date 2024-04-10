@@ -20,6 +20,7 @@ class TapGenerator(ABC):
         self.sub_type = sub_type
         self.date_windowing = False
         self.date_window_size = 5
+        self.start_windows_datetime_str = None
 
         # Define parameters inside init
         self.params = dict()
@@ -128,3 +129,12 @@ class TapGenerator(ABC):
         self.time_extracted = utils.now()
         LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')
         return self.transform_batch(response)
+
+    def get_default_start_value(self):
+        return None
+
+    def set_default_start_value(self, end_time):
+        pass
+
+    def set_last_sync_completed(self, end_time):
+        pass
