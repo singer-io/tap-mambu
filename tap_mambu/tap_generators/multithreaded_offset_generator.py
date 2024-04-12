@@ -142,6 +142,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
                            self.sub_type, datetime_to_utc_str(end_time))
 
     def wait_for_slibling_to_catchup(self):
+        if not self.sibling_sub_stream:
+            return
         keep_waiting = True
         while keep_waiting:
             current_bookmark = self.get_default_start_value()

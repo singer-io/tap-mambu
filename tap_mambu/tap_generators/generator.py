@@ -20,6 +20,8 @@ class TapGenerator(ABC):
         self.date_windowing = False
         self.date_window_size = 1
         self.start_windows_datetime_str = None
+        self.sub_stream_name = stream_name
+        self.sibling_sub_stream = None
 
         # Define parameters inside init
         self.params = dict()

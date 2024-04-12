@@ -1,5 +1,5 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers.datetime_utils import datetime_to_local_str
+from ..helpers.datetime_utils import datetime_to_local_str, datetime_to_utc_str
 from datetime import datetime
 
 
@@ -18,12 +18,12 @@ class CommunicationsGenerator(MultithreadedBookmarkGenerator):
             {
                 "field": self.endpoint_bookmark_field,
                 "operator": "AFTER",
-                "value": datetime.strftime(start)
+                "value": datetime_to_utc_str(start)
             },
             {
                 "field": self.endpoint_bookmark_field,
                 "operator": "BEFORE",
-                "value": datetime.strftime(end)
+                "value": datetime_to_utc_str(start)
             },
             {
                 "field": "state",

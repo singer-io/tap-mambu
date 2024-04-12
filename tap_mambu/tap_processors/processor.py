@@ -78,10 +78,6 @@ class TapProcessor(ABC):
                 if record_count % 1000 == 0:
                     self.write_bookmark()
 
-                if self.generators[0].state_changed:
-                    self.write_bookmark()
-                    self.generators[0].state_changed = False
-
         return record_count
 
     def process_streams_from_generators(self):
