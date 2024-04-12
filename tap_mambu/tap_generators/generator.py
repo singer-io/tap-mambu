@@ -16,10 +16,9 @@ class TapGenerator(ABC):
         self.client = client
         self.config = config
         self.state = state
-        self.state_changed = True
         self.sub_type = sub_type
         self.date_windowing = False
-        self.date_window_size = 5
+        self.date_window_size = 1
         self.start_windows_datetime_str = None
 
         # Define parameters inside init
@@ -59,7 +58,7 @@ class TapGenerator(ABC):
 
     def _init_buffers(self):
         self.buffer: List = list()
-        self.max_buffer_size = 20000
+        self.max_buffer_size = 10000
 
     def _init_params(self):
         self.time_extracted = None
@@ -69,6 +68,8 @@ class TapGenerator(ABC):
         self.params = self.static_params
 
     def _all_fetch_batch_steps(self):
+        # Large buffer size can impact memory utilization of connector
+        # so empty the buffer once it reaches default max limit
         if len(self.buffer) > self.max_buffer_size:
             return
 
@@ -133,8 +134,8 @@ class TapGenerator(ABC):
     def get_default_start_value(self):
         return None
 
-    def set_default_start_value(self, end_time):
+    def set_last_sync_completed(self, end_time):
         pass
 
-    def set_last_sync_completed(self, end_time):
+    def wait_for_slibling_to_catchup(self):
         pass

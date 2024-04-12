@@ -43,7 +43,14 @@ class TapProcessor(ABC):
                                                      "you need to use the deduplication processor")
 
     def _init_bookmarks(self):
-        self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+        # Since we have date window implementation in multithreaded genrators,
+        # we can't rely on bookmark value since if case of interruption we may miss some of the records
+        # lesser bookmark value record by lagging threads than bookmark written by faster thread
+        # Because of which in next sync we will miss parent as well as corresponding child records.
+        # In such scenario we should resume extraction from the last date window where extration interrupted
+        last_bookmark = self.generators[0].get_default_start_value()
+
+        self.last_bookmark_value = last_bookmark or get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
         self.max_bookmark_value = self.last_bookmark_value
 
     def write_schema(self):
@@ -67,7 +74,7 @@ class TapProcessor(ABC):
                     self._process_child_records(record)
                     counter.increment()
 
-                # Write bookmark after hundred records
+                # Write bookmark after thousand records
                 if record_count % 1000 == 0:
                     self.write_bookmark()
 
@@ -107,6 +114,9 @@ class TapProcessor(ABC):
         if str_to_localized_datetime(transformed_record[bookmark_field]) >= \
                 str_to_localized_datetime(self.last_bookmark_value):
             return True
+        else:
+            LOGGER.info(
+                f"Skipped record older than bookmark: {self.stream_name} {transformed_record.get('id')}")
         return False
 
     def process_record(self, record, time_extracted, bookmark_field):

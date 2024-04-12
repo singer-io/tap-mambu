@@ -19,7 +19,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
     def __init__(self, stream_name, client, config, state, sub_type):
         super(MultithreadedOffsetGenerator, self).__init__(stream_name, client, config, state, sub_type)
         self.date_windowing = True
-        self.start_windows_datetime_str = None
+        self.start_windows_datetime_str = self.start_date
 
     def _init_params(self):
         self.time_extracted = None
@@ -125,16 +125,14 @@ class MultithreadedOffsetGenerator(TapGenerator):
             self.preprocess_record(raw_record)
         self.last_batch_size = len(self.last_batch_set)
 
-    def set_last_sync_window_start(self, start):
-        self.state["bookmarks"]["last_sync_windows_start"] = start
-        self.state_changed = True
+    def write_sub_stream_bookmark(self, start):
+        write_bookmark(self.state, self.sub_stream_name, self.sub_type, start)
 
-    def get_last_sync_window_start(self):
-        return self.state.get("bookmarks", {}).get("last_sync_windows_start")
+    def get_default_start_value(self):
+        return get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
 
-    def remove_last_sync_window_start(self):
-        if "last_sync_windows_start" in self.state:
-            del self.state["ad_last_sync_windows_start"]
+    def remove_sub_stream_bookmark(self):
+        pass
 
     def set_last_sync_completed(self, end_time):
         # self.state["bookmarks"]["ad_last_multithrad_sync_completed"] = datetime_to_utc_str(end_time)
@@ -143,10 +141,24 @@ class MultithreadedOffsetGenerator(TapGenerator):
             write_bookmark(self.state, self.stream_name,
                            self.sub_type, datetime_to_utc_str(end_time))
 
+    def wait_for_slibling_to_catchup(self):
+        keep_waiting = True
+        while keep_waiting:
+            current_bookmark = self.get_default_start_value()
+            for sibling in self.sibling_sub_stream:
+                sibling_bookmark = get_bookmark(self.state, sibling, self.sub_type, self.get_default_start_value())
+                if str_to_datetime(current_bookmark) > str_to_datetime(sibling_bookmark):
+                    keep_waiting = True
+                    LOGGER.info(f"Waiting for sibling {sibling} thread to catch-up!")
+                    time.sleep(5)
+                else:
+                    keep_waiting = False
+                    break
+
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
         if self.date_windowing:
-            last_sync_window_start = self.get_last_sync_window_start()
+            last_sync_window_start = self.get_default_start_value()
 
             if last_sync_window_start:
                 truncated_start_date = str_to_datetime(
@@ -162,8 +174,8 @@ class MultithreadedOffsetGenerator(TapGenerator):
             stop_iteration = True
             final_buffer = []
             while start < end:
-                self.remove_last_sync_window_start()
-                self.set_last_sync_window_start(datetime_to_utc_str(start))
+                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
+                self.wait_for_slibling_to_catchup()
                 # Limit the buffer size by holding generators from creating new batches
                 if len(self.buffer) > self.max_buffer_size:
                     while len(self.buffer):
@@ -177,6 +189,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                     self.start_windows_datetime_str = start
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
+
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)
