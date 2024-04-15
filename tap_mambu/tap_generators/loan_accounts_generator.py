@@ -1,5 +1,5 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers.datetime_utils import datetime_to_utc_str
+from ..helpers.datetime_utils import datetime_to_utc_str, str_to_datetime
 from ..helpers import get_bookmark, write_bookmark
 
 
@@ -8,7 +8,6 @@ class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
         super(LoanAccountsLMGenerator, self).__init__(stream_name, client, config, state, sub_type)
         self.max_threads = 3
         self.sub_stream_name = "loan_accounts_lmg"
-        self.sibling_sub_stream = ["loan_accounts_adg"]
 
     def _init_endpoint_config(self):
         super(LoanAccountsLMGenerator, self)._init_endpoint_config()
@@ -32,7 +31,13 @@ class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
         # Increamental syncs will use last stream bookmark value
         # Interrupted syncs will use last winodow of sub-stream as first date window
         stream_bookmark = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
-        return get_bookmark(self.state, self.sub_stream_name, self.sub_type, stream_bookmark)
+        sub_stream_bookmark = get_bookmark(self.state, self.sub_stream_name, self.sub_type, stream_bookmark)
+        if self.compare_bookmark_values(sub_stream_bookmark, stream_bookmark):
+            start_value = stream_bookmark
+        else:
+            start_value = sub_stream_bookmark
+        truncated_start_date = datetime_to_utc_str(str_to_datetime(start_value).replace(hour=0, minute=0, second=0))
+        return truncated_start_date
 
     def remove_sub_stream_bookmark(self):
         # Remove sub-stream bookmark once we finish extraction till current date
@@ -55,7 +60,6 @@ class LoanAccountsADGenerator(LoanAccountsLMGenerator):
     def __init__(self, stream_name, client, config, state, sub_type):
         super(LoanAccountsADGenerator, self).__init__(stream_name, client, config, state, sub_type)
         self.sub_stream_name = "loan_accounts_adg"
-        self.sibling_sub_stream = ["loan_accounts_lmg"]
 
     def _init_endpoint_config(self):
         super(LoanAccountsADGenerator, self)._init_endpoint_config()

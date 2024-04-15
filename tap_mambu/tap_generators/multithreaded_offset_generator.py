@@ -160,11 +160,11 @@ class MultithreadedOffsetGenerator(TapGenerator):
             stop_iteration = True
             final_buffer = []
             while start < end:
+                # Empty the current buffer before moving to next window to make sure all records
+                # of current date window are processed to reduce memory pressure and improve bookmarking
+                while len(self.buffer):
+                    time.sleep(1)
                 self.write_sub_stream_bookmark(datetime_to_utc_str(start))
-                # Limit the buffer size by holding generators from creating new batches
-                if len(self.buffer) > self.max_buffer_size:
-                    while len(self.buffer):
-                        time.sleep(1)
                 self.modify_request_params(start - timedelta(minutes=5), temp)
                 final_buffer, stop_iteration = self.collect_batches(
                     self.queue_batches())
