@@ -23,7 +23,6 @@ class MultithreadedParentProcessor(TapProcessor):
 
     def _process_child_records(self, record):
         from ..sync import sync_endpoint
-        self.write_bookmark()
 
         super(MultithreadedParentProcessor, self)._process_child_records(record)
         for child_stream_name in self.endpoint_child_streams:
