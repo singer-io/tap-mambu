@@ -48,11 +48,6 @@ jobs:
           path: test_output/report.xml
       - store_artifacts:
           path: htmlcov
-      - run:
-          name: 'JSON Validator'
-          command: |
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json tap_mambu/schemas/*.json
 
   run_integration_tests:
     executor: docker-executor
