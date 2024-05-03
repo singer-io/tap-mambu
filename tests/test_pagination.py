@@ -16,6 +16,7 @@ class PaginationTest(MambuBaseTest):
 
     def untestable_streams(self):
         return set([
+            "clients", # Stream does not have enough records to test pagination
             "communications", # Need to set up Twilio or email server to send stuff
         ])
 
