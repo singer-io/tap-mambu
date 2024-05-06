@@ -119,13 +119,15 @@ class MambuClient(object):
                  subdomain,
                  apikey_audit,
                  page_size,
-                 user_agent=''):
+                 user_agent='',
+                 window_size=1):
         self.__username = username
         self.__password = password
         self.__subdomain = subdomain
         base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
         self.page_size = page_size
+        self.window_size=window_size
         self.__user_agent = f'MambuTap-{user_agent}' if user_agent else 'MambuTap'
         self.__apikey = apikey
         self.__session = requests.Session()
