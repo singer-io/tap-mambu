@@ -20,12 +20,10 @@ class StartDateTest(MambuBaseTest):
         return "tap_tester_mambu_start_date_test"
 
     def setUp(self):
-        self.first_sync_start_date = self.get_properties(
-            original_properties=False
-        )['start_date']
+        self.first_sync_start_date = self.get_properties()['start_date']
 
         self.second_sync_start_date = self.get_properties(
-            original_properties=True
+            original_properties=False
         )['start_date']
 
     def untestable_streams(self):

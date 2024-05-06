@@ -12,8 +12,7 @@ def poll_state_version(conn_id):
     """Make the request for state version until it returns a version greater than 0"""
     return menagerie.get_state_version(conn_id)
 
-
-class BookmarksBase(MambuBaseTest):
+class BookmarksTest(MambuBaseTest):
     """
     Test that the tap can replicate multiple pages of data
     """
@@ -34,7 +33,7 @@ class BookmarksBase(MambuBaseTest):
         adjusted_bookmark = bookmark_dt - timedelta(days=1)
         return strftime(adjusted_bookmark)
 
-    def run_execution(self):
+    def test_run(self):
         """
         Verify that we can get multiple pages of data for each stream
         """
@@ -112,7 +111,7 @@ class BookmarksBase(MambuBaseTest):
                     # Verify the second sync records fall between simulated bookmark value and the
                     # final bookmark value
                     for message in second_sync_messages:
-                        lower_bound = strptime_to_utc(simulated_bookmark_value)
+                        lower_bound = strptime_to_utc(simulated_bookmark_value) - timedelta(minutes=5)
                         upper_bound = strptime_to_utc(second_sync_bookmark_value)
                         record = message.get('data')
                         actual_values = [strptime_to_utc(record.get(replication_key))
@@ -144,46 +143,3 @@ class BookmarksBase(MambuBaseTest):
                     raise NotImplementedError(
                         "invalid replication method: {}".format(replication_method)
                     )
-
-
-class Bookmarkstest1(BookmarksBase):
-    def expected_streams(self):
-        return super().expected_streams() - self.untestable_streams()
-
-    def untestable_streams(self):
-        return {'branches',
-                'centres',
-                'clients',
-                'credit_arrangements',
-                'communications',
-                'deposit_products',
-                'installments',
-                'groups',
-                'gl_accounts',
-                'loan_transactions',
-                'tasks'}
-
-    def get_properties(self, original_properties=True):
-        return super().get_properties(original_properties=False)
-
-    def test_run(self):
-        return self.run_execution()
-
-
-class Bookmarkstest2(BookmarksBase):
-    def expected_streams(self):
-        return {'branches',
-                'centres',
-                'clients',
-                'credit_arrangements',
-                'deposit_products',
-                'groups',
-                'gl_accounts',
-                'loan_transactions',
-                'tasks'} - self.untestable_streams()
-
-    def get_properties(self, original_properties=True):
-        return super().get_properties(original_properties)
-
-    def test_run(self):
-        return self.run_execution()

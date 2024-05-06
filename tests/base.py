@@ -246,14 +246,15 @@ class MambuBaseTest(unittest.TestCase):
 
     def get_properties(self, original_properties=True):
         properties = {
-            'start_date': '2021-01-07T00:00:00Z',
+            'start_date': '2017-01-01T00:00:00Z',
             'username': os.environ['TAP_MAMBU_USERNAME'],
             'subdomain': os.environ['TAP_MAMBU_SUBDOMAIN'],
-            'page_size': '100'
+            'page_size': '90',
+            'window_size': 30
         }
 
         if not original_properties:
-            properties['start_date'] = '2019-01-01T00:00:00Z'
+            properties['start_date'] = '2021-01-01T00:00:00Z'
 
         return properties
 
