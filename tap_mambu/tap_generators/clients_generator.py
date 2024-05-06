@@ -19,3 +19,6 @@ class ClientsGenerator(MultithreadedBookmarkGenerator):
     def prepare_batch_params(self):
         super(ClientsGenerator, self).prepare_batch_params()
         self.endpoint_filter_criteria[0]["value"] = datetime_to_local_str(self.endpoint_intermediary_bookmark_value)
+
+    def write_sub_stream_bookmark(self, start):
+        pass

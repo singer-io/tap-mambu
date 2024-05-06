@@ -6,6 +6,7 @@ from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer
 from ..helpers.exceptions import NoDeduplicationCapabilityException
 from ..helpers.datetime_utils import utc_now, str_to_datetime, datetime_to_utc_str, str_to_localized_datetime
+from ..helpers.schema import STREAMS
 
 LOGGER = get_logger()
 
@@ -80,7 +81,9 @@ class TapProcessor(ABC):
         self.write_schema()
 
         record_count = self.process_records()
-        self.write_bookmark()
+        if STREAMS.get(self.stream_name).get("replication_method") == "INCREMENTAL":
+            self.write_bookmark()
+
         return record_count
 
     # This function is provided for processors with child streams, must be overridden if child streams are to be used

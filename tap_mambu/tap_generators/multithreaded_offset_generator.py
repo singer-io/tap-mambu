@@ -135,7 +135,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
         pass
 
     def set_last_sync_completed(self, end_time):
-        # self.state["bookmarks"]["ad_last_multithrad_sync_completed"] = datetime_to_utc_str(end_time)
         last_bookmark = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
         if end_time < str_to_datetime(last_bookmark):
             write_bookmark(self.state, self.stream_name,
