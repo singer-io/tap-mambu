@@ -18,7 +18,7 @@ class TapGenerator(ABC):
         self.state = state
         self.sub_type = sub_type
         self.date_windowing = False
-        self.date_window_size = client.window_size
+        self.date_window_size = int(client.window_size) or 1
         self.start_windows_datetime_str = None
         self.sub_stream_name = stream_name
 

@@ -36,7 +36,7 @@ def main():
                      parsed_args.config.get('apikey_audit'),
                      int(parsed_args.config.get('page_size', DEFAULT_PAGE_SIZE)),
                      user_agent=parsed_args.config['user_agent'],
-                     window_size=parsed_args.config['window_size']) as client:
+                     window_size=parsed_args.config.get('window_size')) as client:
 
         state = {}
         if parsed_args.state:
