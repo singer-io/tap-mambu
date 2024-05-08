@@ -5,6 +5,7 @@ from requests.exceptions import ConnectionError, ChunkedEncodingError
 from singer import metrics, get_logger
 
 from urllib3.exceptions import ProtocolError
+from tap_mambu.helpers.constants import DEFAULT_DATE_WINDOW_SIZE
 
 LOGGER = get_logger()
 class ClientError(Exception):
@@ -120,14 +121,20 @@ class MambuClient(object):
                  apikey_audit,
                  page_size,
                  user_agent='',
-                 window_size=1):
+                 window_size=DEFAULT_DATE_WINDOW_SIZE):
         self.__username = username
         self.__password = password
         self.__subdomain = subdomain
         base_url = "https://{}.mambu.com/api".format(subdomain)
         self.base_url = base_url
         self.page_size = page_size
-        self.window_size=window_size
+        try:
+            self.window_size = int(float(window_size)) if window_size else DEFAULT_DATE_WINDOW_SIZE
+            if self.window_size <= 0:
+                raise ValueError()
+        except ValueError:
+            raise Exception("The entered window size '{}' is invalid; it should be a valid non-zero integer.".format(window_size))
+
         self.__user_agent = f'MambuTap-{user_agent}' if user_agent else 'MambuTap'
         self.__apikey = apikey
         self.__session = requests.Session()
