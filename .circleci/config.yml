@@ -43,6 +43,7 @@ jobs:
           name: 'Unit Tests'
           command: |
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
+            pip install parameterized
             pytest tests/unittests
       - store_test_results:
           path: test_output/report.xml
