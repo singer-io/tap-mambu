@@ -1,5 +1,3 @@
-import time
-
 from abc import ABC
 from typing import List
 from singer import utils, get_logger
