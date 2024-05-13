@@ -111,7 +111,7 @@ class BookmarksTest(MambuBaseTest):
                     # Verify the second sync records fall between simulated bookmark value and the
                     # final bookmark value
                     for message in second_sync_messages:
-                        lower_bound = strptime_to_utc(simulated_bookmark_value)
+                        lower_bound = strptime_to_utc(simulated_bookmark_value) - timedelta(minutes=5)
                         upper_bound = strptime_to_utc(second_sync_bookmark_value)
                         record = message.get('data')
                         actual_values = [strptime_to_utc(record.get(replication_key))

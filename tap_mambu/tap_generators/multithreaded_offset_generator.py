@@ -4,16 +4,23 @@ from threading import Thread
 
 import backoff
 from singer import get_logger
+from datetime import datetime, timedelta
 
 from .generator import TapGenerator
-from ..helpers import transform_json
+from ..helpers import transform_json, get_bookmark, write_bookmark
+from ..helpers.datetime_utils import str_to_localized_datetime, datetime_to_utc_str, utc_now, str_to_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
-from ..helpers.perf_metrics import PerformanceMetrics
+from ..helpers.exceptions import MambuGeneratorThreadNotAlive
 
 LOGGER = get_logger()
 
 
 class MultithreadedOffsetGenerator(TapGenerator):
+    def __init__(self, stream_name, client, config, state, sub_type):
+        super(MultithreadedOffsetGenerator, self).__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = True
+        self.start_windows_datetime_str = self.start_date
+
     def _init_params(self):
         self.time_extracted = None
         self.static_params = dict(self.endpoint_params)
@@ -118,14 +125,74 @@ class MultithreadedOffsetGenerator(TapGenerator):
             self.preprocess_record(raw_record)
         self.last_batch_size = len(self.last_batch_set)
 
+    def write_sub_stream_bookmark(self, start):
+        write_bookmark(self.state, self.sub_stream_name, self.sub_type, start)
+
+    def get_default_start_value(self):
+        return get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+
+    def remove_sub_stream_bookmark(self):
+        pass
+
+    def set_last_sync_completed(self, end_time):
+        last_bookmark = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+        if end_time < str_to_datetime(last_bookmark):
+            write_bookmark(self.state, self.stream_name,
+                           self.sub_type, datetime_to_utc_str(end_time))
+
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
-        futures = self.queue_batches()
-        final_buffer, stop_iteration = self.collect_batches(futures)
-        self.preprocess_batches(final_buffer)
+        if self.date_windowing:
+            last_sync_window_start = self.get_default_start_value()
+
+            if last_sync_window_start:
+                truncated_start_date = str_to_datetime(
+                    last_sync_window_start).replace(hour=0, minute=0, second=0)
+                start = str_to_localized_datetime(
+                    datetime_to_utc_str(truncated_start_date))
+            else:
+                start = str_to_localized_datetime(self.get_default_start_value())
+
+            end_datetime = datetime_to_utc_str(utc_now() + timedelta(days=1))
+            end = str_to_localized_datetime(end_datetime)
+            temp = start + timedelta(days=self.date_window_size)
+            stop_iteration = True
+            final_buffer = []
+            while start < end:
+                # Empty the current buffer before moving to next window to make sure all records
+                # of current date window are processed to reduce memory pressure and improve bookmarking
+                while len(self.buffer):
+                    time.sleep(1)
+                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
+                self.modify_request_params(start - timedelta(minutes=5), temp)
+                final_buffer, stop_iteration = self.collect_batches(
+                    self.queue_batches())
+                self.preprocess_batches(final_buffer)
+                if not final_buffer or stop_iteration:
+                    self.offset = 0
+                    self.start_windows_datetime_str = start
+                    start = temp
+                    temp = start + timedelta(days=self.date_window_size)
+        else:
+            final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
+            self.preprocess_batches(final_buffer)
         if not final_buffer or stop_iteration:
             return False
         return True
+
+    def modify_request_params(self, start, end):
+        self.endpoint_body['filterCriteria'] = [
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "AFTER",
+                "value": datetime_to_utc_str(start)
+            },
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "BEFORE",
+                "value": datetime_to_utc_str(end)
+            }
+        ]
 
     def error_check_and_fix(self, final_buffer: set, temp_buffer: set, futures: list):
         try:
@@ -150,9 +217,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
     def next(self):
         if not self.buffer and not self.end_of_file:
-            with PerformanceMetrics(metric_name="processor_wait"):
-                while not self.buffer and not self.end_of_file:
-                    time.sleep(0.01)
+            while not self.buffer and not self.end_of_file:
+                if not self.fetch_batch_thread.is_alive():
+                    raise MambuGeneratorThreadNotAlive("Generator stopped running premaurely")
+                time.sleep(0.01)
         if not self.buffer and self.end_of_file:
             raise StopIteration()
         return self.buffer.pop(0)

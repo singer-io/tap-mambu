@@ -254,10 +254,13 @@ This tap:
         "lookback_window": 30,
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
         "page_size": "500",
-        "apikey_audit": "AUDIT_TRAIL_APIKEY"
+        "apikey_audit": "AUDIT_TRAIL_APIKEY",
+        "window_size": 7
     }
     ```
-    
+
+    Note: The `window_size` parameter defaults to 1 day, which may cause slowdowns in historical sync for streams utilizing multi-threaded implementation. Conversely, using a larger `window_size` could lead to potential `out-of-memory` issues. It is advisable to select an optimal `window_size` based on the `start_date` and volume of data to mitigate these concerns.
+
     Optionally, also create a `state.json` file. `currently_syncing` is an optional attribute used for identifying the last object to be synced in case the job is interrupted mid-stream. The next run would begin where the last job left off.
 
     ```json

@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.0
+  * Perfomance improvements [#113](https://github.com/singer-io/tap-mambu/pull/113)
+    * Implement date windowing (default size = 1 day) and pagination for multi-threaded streams
+    * Limit generator buffer growth to finite boundaries
+    * Revise bookmark strategy for multi-threaded generators to address data discrepancies
+    * Segregate LoanAccounts sub-stream bookmarking to rectify data inconsistencies
+    * Eliminate performance metrics to reduce performance overheads
+
 ## 4.1.0
   * Change clients stream to full table sync [#111](https://github.com/singer-io/tap-mambu/pull/111)
 

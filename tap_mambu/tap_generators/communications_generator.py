@@ -1,6 +1,6 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers import get_bookmark
-from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime
+from ..helpers.datetime_utils import datetime_to_local_str, datetime_to_utc_str
+from datetime import datetime
 
 
 class CommunicationsGenerator(MultithreadedBookmarkGenerator):
@@ -12,17 +12,23 @@ class CommunicationsGenerator(MultithreadedBookmarkGenerator):
             "paginationDetails": "OFF"
         }
         self.endpoint_bookmark_field = "creationDate"
-        self.endpoint_filter_criteria = [
+
+    def modify_request_params(self, start, end):
+        self.endpoint_body = [
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "AFTER",
+                "value": datetime_to_utc_str(start)
+            },
+            {
+                "field": self.endpoint_bookmark_field,
+                "operator": "BEFORE",
+                "value": datetime_to_utc_str(start)
+            },
             {
                 "field": "state",
                 "operator": "EQUALS",
                 "value": "SENT"
-            },
-            {
-                "field": "creationDate",
-                "operator": "AFTER",
-                "value": datetime_to_local_str(str_to_localized_datetime(
-                    get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)))
             }
         ]
 
@@ -31,4 +37,4 @@ class CommunicationsGenerator(MultithreadedBookmarkGenerator):
 
     def prepare_batch_params(self):
         super(CommunicationsGenerator, self).prepare_batch_params()
-        self.endpoint_filter_criteria[1]["value"] = datetime_to_local_str(self.endpoint_intermediary_bookmark_value)
+        self.endpoint_filter_criteria[0]["value"] = datetime_to_local_str(self.endpoint_intermediary_bookmark_value)

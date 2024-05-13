@@ -5,8 +5,8 @@ from singer import write_record, metadata, write_schema, get_logger, metrics, ut
 from ..helpers import convert, get_bookmark, write_bookmark
 from ..helpers.transformer import Transformer
 from ..helpers.exceptions import NoDeduplicationCapabilityException
-from ..helpers.perf_metrics import PerformanceMetrics
 from ..helpers.datetime_utils import utc_now, str_to_datetime, datetime_to_utc_str, str_to_localized_datetime
+from ..helpers.schema import STREAMS
 
 LOGGER = get_logger()
 
@@ -44,7 +44,14 @@ class TapProcessor(ABC):
                                                      "you need to use the deduplication processor")
 
     def _init_bookmarks(self):
-        self.last_bookmark_value = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
+        # Since we have date window implementation in multithreaded genrators,
+        # we can't rely on bookmark value since if case of interruption we may miss some of the records
+        # lesser bookmark value record by lagging threads than bookmark written by faster thread
+        # Because of which in next sync we will miss parent as well as corresponding child records.
+        # In such scenario we should resume extraction from the last date window where extration interrupted
+        last_bookmark = self.generators[0].get_default_start_value()
+
+        self.last_bookmark_value = last_bookmark or get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
         self.max_bookmark_value = self.last_bookmark_value
 
     def write_schema(self):
@@ -61,20 +68,22 @@ class TapProcessor(ABC):
         with metrics.record_counter(self.stream_name) as counter:
             for record in self.generators[0]:
                 # Process the record
-                with PerformanceMetrics(metric_name="processor"):
-                    is_processed = self.process_record(record, utils.now(),
-                                                       self.generators[0].endpoint_bookmark_field)
+                is_processed = self.process_record(record, utils.now(),
+                                                    self.generators[0].endpoint_bookmark_field)
                 if is_processed:
                     record_count += 1
                     self._process_child_records(record)
                     counter.increment()
+
         return record_count
 
     def process_streams_from_generators(self):
         self.write_schema()
 
         record_count = self.process_records()
-        self.write_bookmark()
+        if STREAMS.get(self.stream_name).get("replication_method") == "INCREMENTAL":
+            self.write_bookmark()
+
         return record_count
 
     # This function is provided for processors with child streams, must be overridden if child streams are to be used
@@ -100,6 +109,9 @@ class TapProcessor(ABC):
         if str_to_localized_datetime(transformed_record[bookmark_field]) >= \
                 str_to_localized_datetime(self.last_bookmark_value):
             return True
+        else:
+            LOGGER.info(
+                f"Skipped record older than bookmark: {self.stream_name} {transformed_record.get('id')}")
         return False
 
     def process_record(self, record, time_extracted, bookmark_field):

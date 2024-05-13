@@ -4,7 +4,6 @@ from singer import utils, get_logger
 
 from ..helpers import transform_json
 from ..helpers.hashable_dict import HashableDict
-from ..helpers.perf_metrics import PerformanceMetrics
 
 LOGGER = get_logger()
 
@@ -16,6 +15,10 @@ class TapGenerator(ABC):
         self.config = config
         self.state = state
         self.sub_type = sub_type
+        self.date_windowing = False
+        self.date_window_size = client.window_size
+        self.start_windows_datetime_str = None
+        self.sub_stream_name = stream_name
 
         # Define parameters inside init
         self.params = dict()
@@ -54,6 +57,7 @@ class TapGenerator(ABC):
 
     def _init_buffers(self):
         self.buffer: List = list()
+        self.max_buffer_size = 10000
 
     def _init_params(self):
         self.time_extracted = None
@@ -63,6 +67,11 @@ class TapGenerator(ABC):
         self.params = self.static_params
 
     def _all_fetch_batch_steps(self):
+        # Large buffer size can impact memory utilization of connector
+        # so empty the buffer once it reaches default max limit
+        if len(self.buffer) > self.max_buffer_size:
+            return
+
         self.prepare_batch()
         raw_batch = self.fetch_batch()
         self.buffer = transform_json(raw_batch, self.stream_name)
@@ -85,7 +94,6 @@ class TapGenerator(ABC):
         return self.buffer.pop(0)
 
     def __next__(self):
-        # with PerformanceMetrics(metric_name="processor_wait"):
         return self.next()
 
     def prepare_batch(self):
@@ -108,17 +116,25 @@ class TapGenerator(ABC):
                     f'{self.endpoint_api_version}): {self.client.base_url}/{self.endpoint_path}?{endpoint_querystring}')
         LOGGER.info(f'(generator) Stream {self.stream_name} - body = {self.endpoint_body}')
 
-        with PerformanceMetrics(metric_name="generator"):
-            response = self.client.request(
-                method=self.endpoint_api_method,
-                path=self.endpoint_path,
-                version=self.endpoint_api_version,
-                apikey_type=self.endpoint_api_key_type,
-                params=endpoint_querystring,
-                endpoint=self.stream_name,
-                json=self.endpoint_body
-            )
+        response = self.client.request(
+            method=self.endpoint_api_method,
+            path=self.endpoint_path,
+            version=self.endpoint_api_version,
+            apikey_type=self.endpoint_api_key_type,
+            params=endpoint_querystring,
+            endpoint=self.stream_name,
+            json=self.endpoint_body
+        )
 
         self.time_extracted = utils.now()
         LOGGER.info(f'(generator) Stream {self.stream_name} - extracted records: {len(response)}')
         return self.transform_batch(response)
+
+    def get_default_start_value(self):
+        return None
+
+    def set_last_sync_completed(self, end_time):
+        pass
+
+    def wait_for_slibling_to_catchup(self):
+        pass

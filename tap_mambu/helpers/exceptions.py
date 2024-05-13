@@ -3,3 +3,6 @@ class NoDeduplicationCapabilityException(Exception):
 
 class NoDeduplicationKeyException(Exception):
     pass
+
+class MambuGeneratorThreadNotAlive(Exception):
+    pass
