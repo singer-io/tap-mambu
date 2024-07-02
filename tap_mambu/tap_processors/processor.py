@@ -109,9 +109,6 @@ class TapProcessor(ABC):
         if str_to_localized_datetime(transformed_record[bookmark_field]) >= \
                 str_to_localized_datetime(self.last_bookmark_value):
             return True
-        else:
-            LOGGER.info(
-                f"Skipped record older than bookmark: {self.stream_name} {transformed_record.get('id')}")
         return False
 
     def process_record(self, record, time_extracted, bookmark_field):
