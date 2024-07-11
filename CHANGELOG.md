@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.1
+  * Fix the bookmarking for multi-threaded streams [#117](https://github.com/singer-io/tap-mambu/pull/117)
+
 ## 4.2.0
   * Perfomance improvements [#113](https://github.com/singer-io/tap-mambu/pull/113)
     * Implement date windowing (default size = 1 day) and pagination for multi-threaded streams
