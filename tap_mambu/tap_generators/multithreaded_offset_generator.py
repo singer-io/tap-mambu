@@ -147,7 +147,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
 
             if last_sync_window_start:
                 truncated_start_date = str_to_datetime(
-                    last_sync_window_start).replace(hour=0, minute=0, second=0)
+                    last_sync_window_start).replace(hour=0, minute=0, second=0, microsecond=0)
                 start = str_to_localized_datetime(
                     datetime_to_utc_str(truncated_start_date))
             else:
@@ -163,7 +163,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 # of current date window are processed to reduce memory pressure and improve bookmarking
                 while len(self.buffer):
                     time.sleep(1)
-                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
                 self.modify_request_params(start - timedelta(minutes=5), temp)
                 final_buffer, stop_iteration = self.collect_batches(
                     self.queue_batches())
@@ -173,6 +172,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                     self.start_windows_datetime_str = start
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
+                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)
