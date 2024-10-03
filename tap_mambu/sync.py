@@ -51,6 +51,10 @@ def sync_all_streams(client, config, catalog, state):
     if last_stream in selected_streams:
         selected_streams = selected_streams[selected_streams.index(last_stream):] +\
                            selected_streams[:selected_streams.index(last_stream)]
+    else:
+        # Remove currently_syncing stream if not selected
+        update_currently_syncing(state, None)
+        last_stream = None
 
     # For each endpoint (above), determine if the stream should be streamed
     #   (based on the catalog and last_stream), then sync those streams.
