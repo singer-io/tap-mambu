@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.2
+  * Fix dependabot issue [#118](https://github.com/singer-io/tap-mambu/pull/118)
+
 ## 4.2.1
   * Fix the bookmarking for multi-threaded streams [#117](https://github.com/singer-io/tap-mambu/pull/117)
 
