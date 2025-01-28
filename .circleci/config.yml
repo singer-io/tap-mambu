@@ -78,8 +78,8 @@ jobs:
       - store_artifacts:
           path: /tmp/tap-mambu
 
-workflows:
-  version: 2
+# workflows:
+#   version: 2
   # commit: &commit_jobs
   #   jobs:
   #     - ensure_env:
