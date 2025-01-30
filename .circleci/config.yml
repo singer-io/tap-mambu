@@ -78,39 +78,39 @@ jobs:
       - store_artifacts:
           path: /tmp/tap-mambu
 
-# workflows:
-#   version: 2
-  # commit: &commit_jobs
-  #   jobs:
-  #     - ensure_env:
-  #         context:
-  #           - circleci-user
-  #           - tier-1-tap-user
-  #     - run_unit_tests:
-  #         context:
-  #           - circleci-user
-  #           - tier-1-tap-user
-  #         requires:
-  #           - ensure_env
-  #     - run_integration_tests:
-  #         context:
-  #           - circleci-user
-  #           - tier-1-tap-user
-  #         requires:
-  #           - ensure_env
-  #     - build:
-  #         context:
-  #           - circleci-user
-  #           - tier-1-tap-user
-  #         requires:
-  #           - run_unit_tests
-  #           - run_integration_tests
-  # build_daily:
-  #   <<: *commit_jobs
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 1 * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
+workflows:
+  version: 2
+  commit: &commit_jobs
+    jobs:
+      - ensure_env:
+          context:
+            - circleci-user
+            - tier-1-tap-user
+      - run_unit_tests:
+          context:
+            - circleci-user
+            - tier-1-tap-user
+          requires:
+            - ensure_env
+      - run_integration_tests:
+          context:
+            - circleci-user
+            - tier-1-tap-user
+          requires:
+            - ensure_env
+      - build:
+          context:
+            - circleci-user
+            - tier-1-tap-user
+          requires:
+            - run_unit_tests
+            - run_integration_tests
+  build_daily:
+    <<: *commit_jobs
+    triggers:
+      - schedule:
+          cron: "0 1 * * *"
+          filters:
+            branches:
+              only:
+                - master
