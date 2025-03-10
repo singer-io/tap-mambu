@@ -1,11 +1,6 @@
-from gettext import install
-import sys
-from urllib import response
 from .child_generator import ChildGenerator
-from typing import List
-from singer import utils, get_logger
+from singer import get_logger
 
-from ..helpers import transform_json
 from ..helpers.hashable_dict import HashableDict
 
 LOGGER = get_logger()
