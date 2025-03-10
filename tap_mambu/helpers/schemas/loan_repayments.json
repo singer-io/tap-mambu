@@ -2,303 +2,230 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "assigned_branch_key": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "dueDate": {
+      "type": "string",
+      "format": "date-time"
     },
-    "assigned_centre_key": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "encodedKey": {
+      "type": "string"
     },
-    "assigned_user_key": {
-      "type": [
-        "null",
-        "string"
-      ]
+    "expectedClosingBalance": {
+      "type": "number"
     },
-    "custom_settings": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "loan_transaction_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "source": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "type": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              }
+    "fee": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "expectedUnapplied": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
             }
           }
         },
-        {
-          "type": "null"
+        "tax": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
         }
-      ]
+      }
     },
-    "due_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "encoded_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "fees_applied_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "fees_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "fees_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "fees_unapplied_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "funders_interest_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "index": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "interest_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "interest_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "last_paid_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "last_penalty_applied_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "notes": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "organization_commission_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "parent_account_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "penalty_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "penalty_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "principal_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "principal_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "repaid_date": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "date-time"
-    },
-    "repayment_unapplied_fee_details": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
+    "feeDetails": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+              "due": {
+                "type": "number"
               },
-              "fee_due": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
+              "expected": {
+                "type": "number"
               },
-              "index_in_list": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
+              "paid": {
+                "type": "number"
               },
-              "predefined_fee_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+              "reduced": {
+                "type": "number"
+              }
+            }
+          },
+          "encodedKey": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tax": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "due": {
+                "type": "number"
               },
-              "repayment_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+              "expected": {
+                "type": "number"
               },
-              "tax_on_fee_due": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
+              "paid": {
+                "type": "number"
+              },
+              "reduced": {
+                "type": "number"
               }
             }
           }
-        },
-        {
-          "type": "null"
         }
-      ]
+      }
+    },
+    "interest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
+        },
+        "tax": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "interestAccrued": {
+      "type": "number"
+    },
+    "isPaymentHoliday": {
+      "type": "boolean"
+    },
+    "lastPaidDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "number": {
+      "type": "string"
+    },
+    "parentAccountKey": {
+      "type": "string"
+    },
+    "penalty": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
+        },
+        "tax": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": "number"
+            },
+            "expected": {
+              "type": "number"
+            },
+            "paid": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "repaidDate": {
+      "type": "string",
+      "format": "date-time"
     },
     "state": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": "string"
     },
-    "tax_fees_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
+    "code": {
+      "type": "string"
     },
-    "tax_fees_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_interest_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_interest_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_penalty_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_penalty_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
+    "currencyCode": {
+      "type": "string"
     }
   }
 }
