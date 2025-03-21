@@ -39,7 +39,7 @@
     "expectedClosingBalance": {
       "type": [
         "null",
-        "number"
+        "string"
       ],
       "format": "singer.decimal"
     },
@@ -60,28 +60,28 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expectedUnapplied": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -97,21 +97,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -137,28 +137,28 @@
                   "due": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "expected": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "paid": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "reduced": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   }
@@ -192,28 +192,28 @@
                   "due": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "expected": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "paid": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   },
                   "reduced": {
                     "type": [
                       "null",
-                      "number"
+                      "string"
                     ],
                     "format": "singer.decimal"
                   }
@@ -244,21 +244,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -274,21 +274,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -299,7 +299,7 @@
     "interestAccrued": {
       "type": [
         "null",
-        "number"
+        "string"
       ],
       "format": "singer.decimal"
     },
@@ -316,7 +316,7 @@
       ],
       "format": "date-time"
     },
-    "number": {
+    "string": {
       "type": [
         "null",
         "string"
@@ -345,21 +345,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -375,21 +375,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
@@ -414,21 +414,21 @@
             "due": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "expected": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             },
             "paid": {
               "type": [
                 "null",
-                "number"
+                "string"
               ],
               "format": "singer.decimal"
             }
