@@ -10,4 +10,4 @@ def test_repayments_generator_endpoint_config_init():
 
     assert generator.endpoint_api_key_type is None
     assert generator.endpoint_parent_id == "TEST"
-    assert generator.endpoint_api_version == "v1"
+    assert generator.endpoint_api_version == "v2"
