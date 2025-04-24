@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.0
+  * Upgrades audit_trail and loan_repayments streams with a comparable endpoint to V2 API. [#122](https://github.com/singer-io/tap-mambu/pull/122)
+  * Updates schemas to match current documentation.
+  * Implement date windowing and pagination for the audit_trail.
+
 ## 4.2.1
   * Fix the bookmarking for multi-threaded streams [#117](https://github.com/singer-io/tap-mambu/pull/117)
 
