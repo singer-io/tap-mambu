@@ -15,7 +15,7 @@
             "string"
           ]
         },
-        "currencyCode": {
+        "currency_code": {
           "type": [
             "null",
             "string"
@@ -23,7 +23,7 @@
         }
       }
     },
-    "carryForwardInterestSplit": {
+    "carry_forward_interest_split": {
       "type": [
         "null",
         "object"
@@ -46,14 +46,14 @@
         }
       }
     },
-    "customSettingDetails": {
+    "custom_setting_details": {
       "type": [
         "null",
         "object"
       ],
       "additionalProperties": false,
       "properties": {
-        "loanTransactionKey": {
+        "loan_transaction_key": {
           "type": [
             "null",
             "string"
@@ -73,20 +73,20 @@
         }
       }
     },
-    "dueDate": {
+    "due_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "encodedKey": {
+    "encoded_key": {
       "type": [
         "null",
         "string"
       ]
     },
-    "expectedClosingBalance": {
+    "expected_closing_balance": {
       "type": [
         "null",
         "string"
@@ -121,7 +121,7 @@
               ],
               "format": "singer.decimal"
             },
-            "expectedUnapplied": {
+            "expected_unapplied": {
               "type": [
                 "null",
                 "string"
@@ -169,7 +169,7 @@
         }
       }
     },
-    "feeDetails": {
+    "fee_details": {
       "anyOf": [
         {
           "type": "array",
@@ -214,7 +214,7 @@
                   }
                 }
               },
-              "encodedKey": {
+              "encoded_key": {
                 "type": [
                   "null",
                   "string"
@@ -277,7 +277,7 @@
         }
       ]
     },
-    "fundersInterestDue": {
+    "funders_interest_due": {
       "type": [
         "null",
         "string"
@@ -353,34 +353,34 @@
         }
       }
     },
-    "interestAccrued": {
+    "interest_accrued": {
       "type": [
         "null",
         "string"
       ],
       "format": "singer.decimal"
     },
-    "isPaymentHoliday": {
+    "is_payment_holiday": {
       "type": [
         "null",
         "boolean"
       ]
     },
-    "lastPaidDate": {
+    "last_paid_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "lastPenaltyAppliedDate": {
+    "last_penalty_applied_date": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "nonScheduledPrincipalBalanceOverpayment": {
+    "non_scheduled_principal_balance_overpayment": {
       "type": [
         "null",
         "string"
@@ -399,14 +399,14 @@
         "string"
       ]
     },
-    "organizationCommissionDue": {
+    "organization_commission_due": {
       "type": [
         "null",
         "string"
       ],
       "format": "singer.decimal"
     },
-    "parentAccountKey": {
+    "parent_account_key": {
       "type": [
         "null",
         "string"
