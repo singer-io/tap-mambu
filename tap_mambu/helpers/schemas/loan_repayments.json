@@ -517,36 +517,6 @@
               "format": "singer.decimal"
             }
           }
-        },
-        "tax": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "due": {
-              "type": [
-                "null",
-                "string"
-              ],
-              "format": "singer.decimal"
-            },
-            "expected": {
-              "type": [
-                "null",
-                "string"
-              ],
-              "format": "singer.decimal"
-            },
-            "paid": {
-              "type": [
-                "null",
-                "string"
-              ],
-              "format": "singer.decimal"
-            }
-          }
         }
       }
     },
