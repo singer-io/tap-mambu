@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.3.0
+  * Upgrades loan_repayments streams with a comparable endpoint to V2 API. [#123](https://github.com/singer-io/tap-mambu/pull/123)
+  * Updates schemas to match current documentation.
+
 ## 4.2.1
   * Fix the bookmarking for multi-threaded streams [#117](https://github.com/singer-io/tap-mambu/pull/117)
 

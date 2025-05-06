@@ -2,63 +2,76 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "assigned_branch_key": {
+    "currency": {
       "type": [
         "null",
-        "string"
-      ]
-    },
-    "assigned_centre_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "assigned_user_key": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "custom_settings": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "loan_transaction_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "source": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "type": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              }
-            }
-          }
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "null",
+            "string"
+          ]
         },
-        {
-          "type": "null"
+        "currency_code": {
+          "type": [
+            "null",
+            "string"
+          ]
         }
-      ]
+      }
+    },
+    "carry_forward_interest_split": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "singer.decimal"
+        },
+        "tax": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "singer.decimal"
+        }
+      }
+    },
+    "custom_setting_details": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "loan_transaction_key": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "source": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "type": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
     },
     "due_date": {
       "type": [
@@ -73,33 +86,196 @@
         "string"
       ]
     },
-    "fees_applied_due": {
+    "expected_closing_balance": {
       "type": [
         "null",
         "string"
       ],
       "format": "singer.decimal"
     },
-    "fees_due": {
+    "fee": {
       "type": [
         "null",
-        "string"
+        "object"
       ],
-      "format": "singer.decimal"
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected_unapplied": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "tax": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        }
+      }
     },
-    "fees_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "fees_unapplied_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
+    "fee_details": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "amount": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "due": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "expected": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "paid": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "reduced": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  }
+                }
+              },
+              "encoded_key": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "id": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "name": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "tax": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "due": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "expected": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "paid": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  },
+                  "reduced": {
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "format": "singer.decimal"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "funders_interest_due": {
       "type": [
@@ -108,26 +284,87 @@
       ],
       "format": "singer.decimal"
     },
-    "index": {
+    "interest": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "tax": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        }
+      }
+    },
+    "interest_accrued": {
       "type": [
         "null",
         "string"
       ],
       "format": "singer.decimal"
     },
-    "interest_due": {
+    "is_payment_holiday": {
       "type": [
         "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "interest_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
+        "boolean"
+      ]
     },
     "last_paid_date": {
       "type": [
@@ -143,7 +380,20 @@
       ],
       "format": "date-time"
     },
+    "non_scheduled_principal_balance_overpayment": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "singer.decimal"
+    },
     "notes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "number": {
       "type": [
         "null",
         "string"
@@ -162,143 +412,126 @@
         "string"
       ]
     },
-    "penalty_due": {
+    "penalty": {
       "type": [
         "null",
-        "string"
+        "object"
       ],
-      "format": "singer.decimal"
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        },
+        "tax": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        }
+      }
     },
-    "penalty_paid": {
+    "principal": {
       "type": [
         "null",
-        "string"
+        "object"
       ],
-      "format": "singer.decimal"
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "due": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "expected": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            },
+            "paid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "singer.decimal"
+            }
+          }
+        }
+      }
     },
-    "principal_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "principal_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "repaid_date": {
+    "repaidDate": {
       "type": [
         "null",
         "string"
       ],
       "format": "date-time"
     },
-    "repayment_unapplied_fee_details": {
-      "anyOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "encoded_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "fee_due": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
-              },
-              "index_in_list": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
-              },
-              "predefined_fee_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "repayment_key": {
-                "type": [
-                  "null",
-                  "string"
-                ]
-              },
-              "tax_on_fee_due": {
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "format": "singer.decimal"
-              }
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "state": {
       "type": [
         "null",
         "string"
       ]
-    },
-    "tax_fees_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_fees_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_interest_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_interest_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_penalty_due": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
-    },
-    "tax_penalty_paid": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "format": "singer.decimal"
     }
   }
 }
