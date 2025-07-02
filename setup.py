@@ -10,7 +10,7 @@ setup(name='tap-mambu',
       py_modules=['tap_mambu'],
       python_requires='>=3.9',
       install_requires=[
-          'backoff==1.8.0',
+          'backoff==1.10.0',
           'requests==2.32.4',
           'singer-python==5.13.2',
           'pytz==2022.1'
