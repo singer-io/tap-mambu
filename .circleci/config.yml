@@ -46,7 +46,7 @@ jobs:
           command: |
             uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
-            uv pip install parameterized
+            uv pip install pytest parameterized
             pytest tests/unittests
       - store_test_results:
           path: test_output/report.xml
