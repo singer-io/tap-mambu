@@ -47,6 +47,9 @@ jobs:
           command: |
             uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
+            uv pip install -U 'pip<19.2' 'setuptools<51.0.0'
+            uv pip install .[dev]
+            uv pip install .[mambu-tests]
             uv pip install parameterized
             pytest tests/unittests
       - store_test_results:
@@ -65,7 +68,6 @@ jobs:
           name: 'Run Integration Tests'
           no_output_timeout: 30m
           command: |
-            uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/dev_env.sh
             mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
             export STITCH_CONFIG_DIR=/tmp/${CIRCLE_PROJECT_REPONAME}
