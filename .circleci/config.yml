@@ -24,6 +24,7 @@ jobs:
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
             uv pip install -U 'pip<19.2' 'setuptools<51.0.0'
             uv pip install .[dev]
+            uv pip install .[mambu-tests]
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
             uv pip install --upgrade awscli
             aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/tap_tester_sandbox /usr/local/share/virtualenvs/dev_env.sh
@@ -46,7 +47,7 @@ jobs:
           command: |
             uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
-            uv pip install pytest parameterized
+            uv pip install parameterized
             pytest tests/unittests
       - store_test_results:
           path: test_output/report.xml
