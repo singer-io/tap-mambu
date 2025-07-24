@@ -64,6 +64,7 @@ jobs:
           name: 'Run Integration Tests'
           no_output_timeout: 30m
           command: |
+            uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/dev_env.sh
             mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
             export STITCH_CONFIG_DIR=/tmp/${CIRCLE_PROJECT_REPONAME}
