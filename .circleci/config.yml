@@ -2,19 +2,10 @@ version: 2.1
 orbs:
   slack: circleci/slack@3.4.2
 
-executors:
-  docker-executor:
-    docker:
-      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:stitch-tap-tester-uv
-
 jobs:
   build:
-    executor: docker-executor
-    steps:
-      - run: echo "CI Done"
-
-  ensure_env:
-    executor: docker-executor
+    docker:
+      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:stitch-tap-tester-uv
     steps:
       - checkout
       - run:
@@ -25,54 +16,28 @@ jobs:
             uv pip install -U 'pip<19.2' 'setuptools<51.0.0'
             uv pip install .[dev]
             uv pip install .[mambu-tests]
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            uv pip install --upgrade awscli
-            aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/tap_tester_sandbox /usr/local/share/virtualenvs/dev_env.sh
       - slack/notify-on-failure:
           only_for_branches: master
-      - persist_to_workspace:
-          root: /usr/local/share/virtualenvs
-          paths:
-            - tap-mambu
-            - dev_env.sh
-
-  run_unit_tests:
-    executor: docker-executor
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /usr/local/share/virtualenvs
       - run:
           name: 'Unit Tests'
           command: |
-            uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
             source /usr/local/share/virtualenvs/tap-mambu/bin/activate
-            uv pip install -U 'pip<19.2' 'setuptools<51.0.0'
-            uv pip install .[dev]
-            uv pip install .[mambu-tests]
-            uv pip install parameterized
-            pytest tests/unittests
+            uv pip install pytest coverage  parameterized
+            coverage run -m pytest tests/unittests
       - store_test_results:
           path: test_output/report.xml
       - store_artifacts:
           path: htmlcov
-
-  run_integration_tests:
-    executor: docker-executor
-    parallelism: 5
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /usr/local/share/virtualenvs
       - run:
           name: 'Run Integration Tests'
           no_output_timeout: 30m
           command: |
-            uv venv --python 3.9 /usr/local/share/virtualenvs/tap-mambu
+            source /usr/local/share/virtualenvs/tap-tester/bin/activate
+            uv pip install --upgrade awscli
+            aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/tap_tester_sandbox /usr/local/share/virtualenvs/dev_env.sh
             source /usr/local/share/virtualenvs/dev_env.sh
             mkdir /tmp/${CIRCLE_PROJECT_REPONAME}
             export STITCH_CONFIG_DIR=/tmp/${CIRCLE_PROJECT_REPONAME}
-            source /usr/local/share/virtualenvs/tap-tester/bin/activate
             circleci tests glob "tests/test_*.py" | circleci tests split > ./tests-to-run
             if [ -s ./tests-to-run ]; then
               for test_file in $(cat ./tests-to-run)
@@ -88,33 +53,13 @@ jobs:
 
 workflows:
   version: 2
-  commit: &commit_jobs
+  commit:
     jobs:
-      - ensure_env:
-          context:
-            - circleci-user
-            - tier-1-tap-user
-      - run_unit_tests:
-          context:
-            - circleci-user
-            - tier-1-tap-user
-          requires:
-            - ensure_env
-      - run_integration_tests:
-          context:
-            - circleci-user
-            - tier-1-tap-user
-          requires:
-            - ensure_env
       - build:
           context:
             - circleci-user
             - tier-1-tap-user
-          requires:
-            - run_unit_tests
-            - run_integration_tests
   build_daily:
-    <<: *commit_jobs
     triggers:
       - schedule:
           cron: "0 1 * * *"
@@ -122,3 +67,8 @@ workflows:
             branches:
               only:
                 - master
+    jobs:
+      - build:
+          context:
+            - circleci-user
+            - tier-1-tap-user
