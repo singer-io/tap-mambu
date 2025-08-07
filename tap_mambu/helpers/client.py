@@ -168,10 +168,10 @@ class MambuClient(object):
         headers = {}
         # Endpoint: simple API call to return a single record (org settings) to test access
         # https://support.mambu.com/docs/organisational-settings-api#get-organisational-settings
-        endpoint = 'settings/organization'
+        endpoint = '/setup/organization'
         url = '{}/{}'.format(self.base_url, endpoint)
         headers['User-Agent'] = self.__user_agent
-        headers['Accept'] = 'application/vnd.mambu.v1+json'
+        headers['Accept'] = 'application/vnd.mambu.v2+json'
         if use_apikey:
             # Api Key API Consumer Authentication: https://support.mambu.com/docs/api-consumers
             self.__session.headers['apikey'] = self.__apikey
