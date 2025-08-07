@@ -24,7 +24,7 @@ _datetime_formats = [
 
 def get_timezone_info(client: MambuClient):
     global _timezone
-    response = client.request(method="GET", path="settings/organization", version="v1")
+    response = client.request(method="GET", path="/setup/organization", version="v2")
     _timezone = timezone(response.get("timeZoneID"))
 
 
