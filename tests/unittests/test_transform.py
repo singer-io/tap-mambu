@@ -36,4 +36,4 @@ class TestTransformJson(unittest.TestCase):
         actual = transform_json([{"id": '1'}],
                                 "my_path")
 
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
