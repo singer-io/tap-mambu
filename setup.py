@@ -3,16 +3,16 @@
 from setuptools import setup, find_packages
 
 setup(name='tap-mambu',
-      version='5.0.0',
+      version='4.4.0',
       description='Singer.io tap for extracting data from the Mambu 2.0 API',
       author='jeff.huth@bytecode.io',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
       py_modules=['tap_mambu'],
       python_requires='>=3.9',
       install_requires=[
-          'backoff==1.8.0',
-          'requests==2.31.0',
-          'singer-python==5.12.2',
+          'backoff==1.10.0',
+          'requests==2.32.4',
+          'singer-python==5.13.2',
           'pytz==2022.1'
       ],
       extras_require={
