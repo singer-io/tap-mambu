@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0
+## 4.4.0
   * Upgrades audit_trail and remove activities stream. [#122](https://github.com/singer-io/tap-mambu/pull/122)
   * Updates schemas to match current documentation.
   * Implement date windowing and pagination for the audit_trail.
