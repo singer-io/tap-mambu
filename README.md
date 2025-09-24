@@ -255,12 +255,15 @@ This tap:
         "user_agent": "tap-mambu <api_user_email@your_company.com>",
         "page_size": "500",
         "apikey_audit": "AUDIT_TRAIL_APIKEY",
-        "window_size": 7
+        "window_size": 7,
+        "timezone": "US/Pacific"
     }
     ```
 
     Note: The `window_size` parameter defaults to 1 day, which may cause slowdowns in historical sync for streams utilizing multi-threaded implementation. Conversely, using a larger `window_size` could lead to potential `out-of-memory` issues. It is advisable to select an optimal `window_size` based on the `start_date` and volume of data to mitigate these concerns.
 
+    The `timezone` represents your organization's local timezone. To find the [timezone](https://support.mambu.com/docs/organization-contact-currency-and-timezone) information, go to the main menu and go to Administration > General Setup > Organization Details > Time Zone
+  
     Optionally, also create a `state.json` file. `currently_syncing` is an optional attribute used for identifying the last object to be synced in case the job is interrupted mid-stream. The next run would begin where the last job left off.
 
     ```json
