@@ -1,7 +1,11 @@
+import singer
 from pytz import timezone
 from datetime import datetime
 from tap_mambu import MambuClient
+from tap_mambu.helpers.client import MambuForbiddenError
 import dateutil.parser
+
+LOGGER = singer.get_logger()
 
 
 _timezone = None
@@ -22,11 +26,18 @@ _datetime_formats = [
 ]
 
 
-def get_timezone_info(client: MambuClient):
+def get_timezone_info(client: MambuClient, config_timezone: str = None):
     global _timezone
-    response = client.request(method="GET", path="settings/organization", version="v1")
-    _timezone = timezone(response.get("timeZoneID"))
-
+    try:
+        response = client.request(method="GET", path="setup/organization", version="v2")
+        _timezone = timezone(response.get("timeZoneID"))
+    except MambuForbiddenError:
+        if config_timezone:
+            LOGGER.warning("Could not get timezone information from Mambu endpoint, using config timezone")
+            _timezone = timezone(config_timezone)
+        else:
+            raise RuntimeError("Unable to retrieve timezone information from the Mambu endpoint. Please provide administrator credentials or configure valid timezone in the UI(e.g., US/Pacific)." \
+                " Refer this for more details: https://support.mambu.com/docs/organization-contact-currency-and-timezone")
 
 def localize(dttm: datetime) -> datetime:
     if _timezone is None:
