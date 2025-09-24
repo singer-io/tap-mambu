@@ -10,7 +10,7 @@ AUDIT_TRAIL_WINDOW_SIZE = 30  # days
 class AuditTrailGenerator(TapGenerator):
     def _init_endpoint_config(self):
         super(AuditTrailGenerator, self)._init_endpoint_config()
-        self.endpoint_path = "v1/events"
+        self.endpoint_path = "v2/events"
         self.endpoint_api_method = "GET"
         self.endpoint_api_version = "v2"
         self.endpoint_api_key_type = "audit"
