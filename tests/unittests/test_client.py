@@ -53,7 +53,7 @@ def test_client_check_access_api_key(mock_requests_session_get):
     assert client.base_url == base_url
     assert client.page_size == DEFAULT_PAGE_SIZE
 
-    mock_requests_session_get.assert_called_once_with(url=f'{base_url}/users',
+    mock_requests_session_get.assert_called_once_with(url=f'{base_url}/branches',
                                                       headers={'Accept': 'application/vnd.mambu.v2+json',
                                                                'User-Agent': 'MambuTap-User_Agent_Test'})
 
@@ -77,7 +77,7 @@ def test_client_check_access_user_pass(mock_requests_session_get):
     assert client.base_url == base_url
     assert client.page_size == 100
 
-    mock_requests_session_get.assert_called_once_with(url=f'{base_url}/users',
+    mock_requests_session_get.assert_called_once_with(url=f'{base_url}/branches',
                                                       headers={'Accept': 'application/vnd.mambu.v2+json',
                                                                'User-Agent': 'MambuTap'})
 
