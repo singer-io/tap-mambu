@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.4.1
+  * Replace /users with /branches endpoint [#133](https://github.com/singer-io/tap-mambu/pull/133)
+
 ## 4.4.0
   * Update the access_check to use the v2 `/users` endpoint instead of the v1 `/settings/organization` endpoint. [#132](https://github.com/singer-io/tap-mambu/pull/132)
   * Replace the v1 `/settings/organization` endpoint with `/setup/organization` to retrieve timezone information.
