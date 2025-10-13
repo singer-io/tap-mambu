@@ -26,7 +26,7 @@ def get_timezone_info(client: MambuClient):
     global _timezone
     response = client.request(method="GET", path="settings/organization", version="v1")
     _timezone = timezone(response.get("timeZoneID"))
-
+    return str(_timezone)
 
 def localize(dttm: datetime) -> datetime:
     if _timezone is None:
