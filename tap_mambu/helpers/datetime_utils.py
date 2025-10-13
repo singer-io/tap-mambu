@@ -38,6 +38,8 @@ def get_timezone_info(client: MambuClient, config_timezone: str = None):
         else:
             raise RuntimeError("Unable to retrieve timezone information from the Mambu endpoint. Please provide administrator credentials or configure valid timezone in the UI(e.g., US/Pacific)." \
                 " Refer this for more details: https://support.mambu.com/docs/organization-contact-currency-and-timezone")
+    
+    return str(_timezone)
 
 def localize(dttm: datetime) -> datetime:
     if _timezone is None:
