@@ -250,7 +250,6 @@ class MambuBaseTest(unittest.TestCase):
             'username': os.environ['TAP_MAMBU_USERNAME'],
             'subdomain': os.environ['TAP_MAMBU_SUBDOMAIN'],
             'page_size': '90',
-            'timezone': 'US/Pacific',
             'window_size': 30
         }
 

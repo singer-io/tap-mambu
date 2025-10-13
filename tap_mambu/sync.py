@@ -35,7 +35,7 @@ def sync_all_streams(client, config, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
 
-    get_timezone_info(client, config_timezone=config.get("timezone"))
+    get_timezone_info(client)
 
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))
