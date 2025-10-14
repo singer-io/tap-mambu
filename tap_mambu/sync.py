@@ -1,5 +1,5 @@
 import singer
-
+import json
 from .helpers.constants import DEFAULT_PAGE_SIZE
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
 from .helpers.datetime_utils import get_timezone_info
@@ -30,12 +30,22 @@ def sync_endpoint(client, catalog, state,
 
     return processor.process_streams_from_generators()
 
+def _write_config(config, config_path, _timezone):
+    with open(config_path, encoding='utf-8') as file:
+        config = json.load(file)
 
-def sync_all_streams(client, config, catalog, state):
+    config['timezone'] = _timezone
+    with open(config_path, 'w', encoding='utf-8') as file:
+        json.dump(config, file, indent=2)
+
+    LOGGER.info("timezone has been updated in config")
+
+def sync_all_streams(client, config, config_path, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
 
-    get_timezone_info(client, config_timezone=config.get("timezone"))
+    _timezone = get_timezone_info(client, config_timezone=config.get("timezone"))
+    _write_config(config, config_path, _timezone)
 
     selected_streams = get_selected_streams(catalog)
     LOGGER.info('selected_streams: {}'.format(selected_streams))

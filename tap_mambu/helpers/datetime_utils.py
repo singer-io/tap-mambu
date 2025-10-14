@@ -29,6 +29,7 @@ _datetime_formats = [
 def get_timezone_info(client: MambuClient, config_timezone: str = None):
     global _timezone
     _timezone = timezone("Australia/Sydney")
+    return str(_timezone)
     # try:
     #     response = client.request(method="GET", path="setup/organization", version="v2")
     #     _timezone = timezone(response.get("timeZoneID"))
