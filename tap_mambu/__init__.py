@@ -47,6 +47,7 @@ def main():
         elif parsed_args.catalog:
             sync_all_streams(client=client,
                              config=parsed_args.config,
+                             config_path=parsed_args.config_path,
                              catalog=parsed_args.catalog,
                              state=state)
 
