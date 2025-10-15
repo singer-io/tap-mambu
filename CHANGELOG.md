@@ -1,7 +1,14 @@
 # Changelog
 
+## 4.6.0
+  * Update the access_check to use the v2 `/branches` endpoint instead of the v1 `/settings/organization` endpoint. [#132](https://github.com/singer-io/tap-mambu/pull/132)
+  * Replace the v1 `/settings/organization` endpoint with `/setup/organization` to retrieve timezone information.
+  * Add support for the `timezone` new config property
+    * The `/setup/organization` endpoint requires admin permissions. If admin credentials are not provided, the timezone config value will be used as a fallback.
+
 ## 4.5.0
   * Write `timezone` fetched via API in the config. [#135](https://github.com/singer-io/tap-mambu/pull/135)
+  * Revert changes of [#133](https://github.com/singer-io/tap-mambu/pull/133)
 
 ## 4.4.1
   * Replace /users with /branches endpoint [#133](https://github.com/singer-io/tap-mambu/pull/133)
