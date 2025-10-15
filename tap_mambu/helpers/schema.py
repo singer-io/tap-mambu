@@ -13,7 +13,7 @@ STREAMS = {
     'cards': {
         'key_properties': ['deposit_id', 'reference_token'],
         'replication_method': 'FULL_TABLE',
-        'parent': 'deposits'
+        'parent': 'deposit_accounts'
     },
     'communications': {
         'key_properties': ['encoded_key'],
@@ -66,7 +66,7 @@ STREAMS = {
     'loan_repayments': {
         'key_properties': ['encoded_key'],
         'replication_method': 'FULL_TABLE',
-        'parent': 'loans'
+        'parent': 'loan_accounts'
     },
     'loan_products': {
         'key_properties': ['id'],
