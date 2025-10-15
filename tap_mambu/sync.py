@@ -30,17 +30,8 @@ def sync_endpoint(client, catalog, state,
 
     return processor.process_streams_from_generators()
 
-def _write_config(config, config_path, _timezone):
-    with open(config_path, encoding='utf-8') as file:
-        config = json.load(file)
 
-    config['timezone'] = _timezone
-    with open(config_path, 'w', encoding='utf-8') as file:
-        json.dump(config, file, indent=2)
-
-    LOGGER.info("timezone has been updated in config")
-
-def sync_all_streams(client, config, config_path, catalog, state):
+def sync_all_streams(client, config, catalog, state):
     from .tap_generators.child_generator import ChildGenerator
     from .tap_processors.child_processor import ChildProcessor
 
