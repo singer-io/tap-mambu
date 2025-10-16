@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 4.4.1
+  * Adds parent-tap-stream-id field to catalog for child streams [#134](https://github.com/singer-io/tap-mambu/pull/134)
+
 ## 4.4.0
   * Upgrades audit_trail and remove activities stream. [#131](https://github.com/singer-io/tap-mambu/pull/131)
   * Updates schemas to match current documentation.
