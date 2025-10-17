@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 4.4.1
+## 4.5.0
   * Adds parent-tap-stream-id field to catalog for child streams [#134](https://github.com/singer-io/tap-mambu/pull/134)
 
 ## 4.4.0
