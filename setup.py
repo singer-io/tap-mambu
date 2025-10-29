@@ -7,7 +7,6 @@ setup(name='tap-mambu',
       description='Singer.io tap for extracting data from the Mambu 2.0 API',
       author='jeff.huth@bytecode.io',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
-      py_modules=['tap_mambu'],
       python_requires='>=3.9',
       install_requires=[
           'backoff==1.10.0',
