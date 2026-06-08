@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='tap-mambu',
-      version='4.5.0',
+      version='4.7.0',
       description='Singer.io tap for extracting data from the Mambu 2.0 API',
       author='jeff.huth@bytecode.io',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
@@ -11,7 +11,7 @@ setup(name='tap-mambu',
       python_requires='>=3.9',
       install_requires=[
           'backoff==1.10.0',
-          'requests==2.32.4',
+          'requests==2.34.2',
           'singer-python==5.13.2',
           'pytz==2022.1'
       ],

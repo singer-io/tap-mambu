@@ -1,5 +1,5 @@
 import singer
-
+import json
 from .helpers.constants import DEFAULT_PAGE_SIZE
 from .helpers import get_selected_streams, should_sync_stream, update_currently_syncing
 from .helpers.datetime_utils import get_timezone_info

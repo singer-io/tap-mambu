@@ -1,13 +1,32 @@
 # Changelog
 
-
-## 4.5.0
+## 4.7.0
   * Adds parent-tap-stream-id field to catalog for child streams [#134](https://github.com/singer-io/tap-mambu/pull/134)
-
-## 4.4.0
   * Upgrades audit_trail and remove activities stream. [#131](https://github.com/singer-io/tap-mambu/pull/131)
   * Updates schemas to match current documentation.
   * Implement date windowing and pagination for the audit_trail.
+
+# 4.6.1
+  * Bump requests to 2.33.0 for security updates [#138](https://github.com/singer-io/tap-mambu/pull/138)
+
+## 4.6.0
+  * Update the access_check to use the v2 `/branches` endpoint instead of the v1 `/settings/organization` endpoint. [#136](https://github.com/singer-io/tap-mambu/pull/136)
+  * Replace the v1 `/settings/organization` endpoint with `/setup/organization` to retrieve timezone information.
+  * Add support for the `timezone` new config property
+  * The `/setup/organization` endpoint requires admin permissions. If admin credentials are not provided, the timezone config value will be used as a fallback.
+
+## 4.5.0
+  * Write `timezone` fetched via API in the config. [#135](https://github.com/singer-io/tap-mambu/pull/135)
+  * Revert changes of [#133](https://github.com/singer-io/tap-mambu/pull/133)
+
+## 4.4.1
+  * Replace /users with /branches endpoint [#133](https://github.com/singer-io/tap-mambu/pull/133)
+
+## 4.4.0
+  * Update the access_check to use the v2 `/users` endpoint instead of the v1 `/settings/organization` endpoint. [#132](https://github.com/singer-io/tap-mambu/pull/132)
+  * Replace the v1 `/settings/organization` endpoint with `/setup/organization` to retrieve timezone information.
+  * Add support for the `timezone` new config property
+  * The `/setup/organization` endpoint requires admin permissions. If admin credentials are not provided, the timezone config value will be used as a fallback.
 
 ## 4.3.1
   * Bump dependency versions for twistlock compliance [#124](https://github.com/singer-io/tap-mambu/pull/123)
