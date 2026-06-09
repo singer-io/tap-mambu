@@ -36,8 +36,8 @@ import pytest
 from unittest.mock import patch as _patch
 
 
-@pytest.fixture(autouse=True)
-def _mock_check_stream_access():
+@pytest.fixture
+def mock_check_stream_access():
     """Patch check_stream_access so discover() can be called without a real API connection."""
     with _patch("tap_mambu.helpers.discover.check_stream_access", return_value=True):
         yield
