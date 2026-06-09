@@ -61,7 +61,10 @@ def check_stream_access(client, stream_name) -> bool:
     response means the credentials are valid and the stream is assumed accessible.
     Should only be called for streams that have a direct probe config (no 'parent' key).
     """
-    probe = STREAM_PROBE_CONFIG.get(stream_name, {})
+    probe = STREAM_PROBE_CONFIG.get(stream_name)
+    if not probe or "parent" in probe:
+        raise ValueError(f"Stream '{stream_name}' does not have a direct probe configuration.")
+
     path = probe["path"]
     method = probe["method"]
     version = probe.get("version", "v2")
