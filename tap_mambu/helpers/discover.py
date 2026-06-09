@@ -5,6 +5,8 @@ from tap_mambu.helpers.schema import get_schemas, STREAMS
 from tap_mambu.helpers.client import (
     MambuUnauthorizedError,
     MambuForbiddenError,
+    MambuNotFoundError,
+    MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
     MambuError,
 )
@@ -52,9 +54,11 @@ def check_stream_access(client, stream_name) -> bool:
     """
     Probes a stream endpoint with minimal params to verify the credentials
     have access to that stream.
-    Returns False on 401/403 (auth denied) or missing audit API key.
-    Returns True on success or any other non-auth API error — a non-auth
-    response means the server accepted the credentials.
+    Returns False on 401/403 (auth denied), 404 (endpoint not found),
+    405 (method not allowed), or missing audit API key — these all indicate
+    the stream will fail at runtime and should be excluded from the catalog.
+    Returns True on success or any other API error — a non-auth server
+    response means the credentials are valid and the stream is assumed accessible.
     Should only be called for streams that have a direct probe config (no 'parent' key).
     """
     probe = STREAM_PROBE_CONFIG.get(stream_name, {})
@@ -73,7 +77,9 @@ def check_stream_access(client, stream_name) -> bool:
                            apikey_type=apikey_type, json=_MINIMAL_POST_BODY,
                            params=_PROBE_PARAMS, endpoint=stream_name)
         return True
-    except (MambuUnauthorizedError, MambuForbiddenError, MambuNoAuditApikeyInConfig):
+    except (MambuUnauthorizedError, MambuForbiddenError,
+            MambuNotFoundError, MambuMethodNotAllowedError,
+            MambuNoAuditApikeyInConfig):
         return False
     except MambuError:
         return True

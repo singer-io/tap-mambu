@@ -6,6 +6,8 @@ from tap_mambu.helpers.discover import discover, check_stream_access, STREAM_PRO
 from tap_mambu.helpers.client import (
     MambuUnauthorizedError,
     MambuForbiddenError,
+    MambuNotFoundError,
+    MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
     MambuError,
     MambuBadRequestError,
@@ -43,6 +45,20 @@ class TestCheckStreamAccess(unittest.TestCase):
         client = self._client()
         client.request.side_effect = MambuNoAuditApikeyInConfig("missing audit key")
         result = check_stream_access(client, "audit_trail")
+        self.assertFalse(result)
+
+    def test_returns_false_on_not_found(self):
+        """404 means the endpoint doesn't exist — stream will fail at runtime."""
+        client = self._client()
+        client.request.side_effect = MambuNotFoundError("404")
+        result = check_stream_access(client, "branches")
+        self.assertFalse(result)
+
+    def test_returns_false_on_method_not_allowed(self):
+        """405 means the HTTP method is not supported — stream will fail at runtime."""
+        client = self._client()
+        client.request.side_effect = MambuMethodNotAllowedError("405")
+        result = check_stream_access(client, "branches")
         self.assertFalse(result)
 
     def test_returns_true_on_non_auth_mambu_error(self):
