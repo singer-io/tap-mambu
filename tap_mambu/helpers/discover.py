@@ -63,7 +63,6 @@ def check_stream_access(client, stream_name) -> bool:
     version = probe.get("version", "v2")
     apikey_type = probe.get("apikey_type")
 
-    LOGGER.info("Checking access for stream '%s' via %s %s", stream_name, method, path)
     try:
         if method == "GET":
             client.request(method="GET", path=path, version=version,
@@ -77,10 +76,6 @@ def check_stream_access(client, stream_name) -> bool:
     except (MambuUnauthorizedError, MambuForbiddenError, MambuNoAuditApikeyInConfig):
         return False
     except MambuError:
-        LOGGER.warning(
-            "Stream '%s' probe returned a non-auth API error; assuming accessible.",
-            stream_name,
-        )
         return True
 
 

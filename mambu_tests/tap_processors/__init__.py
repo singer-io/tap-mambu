@@ -8,7 +8,7 @@ from tap_mambu.helpers.generator_processor_pairs import get_generator_processor_
 
 def setup_processor_base_test(stream_name):
     from tap_mambu import discover
-    catalog = discover()
+    catalog = discover(MagicMock())
     client_mock = MagicMock()
     _, processor_class = get_generator_processor_for_stream(stream_name)
 
