@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.0
+  * Added discovery-time access checks: streams the credentials cannot access are excluded from the catalog with a warning instead of failing at runtime. Child streams (`cards`, `loan_repayments`) are automatically excluded when their parent stream is inaccessible. [#136](https://github.com/singer-io/tap-mambu/pull/136)
+
 # 4.6.1
   * Bump requests to 2.33.0 for security updates [#135](https://github.com/singer-io/tap-mambu/pull/135)
 
