@@ -2,14 +2,13 @@ import unittest
 from unittest.mock import MagicMock, patch
 from singer.catalog import Catalog
 
-from tap_mambu.helpers.discover import discover, check_stream_access, STREAM_PROBE_CONFIG
+from tap_mambu.helpers.discover import discover, check_stream_access
 from tap_mambu.helpers.client import (
     MambuUnauthorizedError,
     MambuForbiddenError,
     MambuNotFoundError,
     MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
-    MambuError,
     MambuBadRequestError,
 )
 
