@@ -9,6 +9,7 @@ from tap_mambu.helpers.client import (
     MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
     MambuError,
+    MambuApiLimitError,
 )
 
 LOGGER = singer.get_logger()
@@ -84,11 +85,11 @@ def check_stream_access(client, stream_name) -> bool:
             MambuNotFoundError, MambuMethodNotAllowedError,
             MambuNoAuditApikeyInConfig):
         return False
-    except MambuError:
+    except (MambuError, MambuApiLimitError):
         return True
 
 
-def discover(client) -> Catalog:
+def discover(client=None) -> Catalog:
     """Run discovery mode, probing each stream endpoint to verify access.
     Streams that return an auth error are excluded from the catalog.
     Child streams (cards, loan_repayments) are included only if their
@@ -100,6 +101,9 @@ def discover(client) -> Catalog:
 
     # Two-pass: probe top-level streams first so parent accessibility is known
     # before child streams are evaluated.
+    missing_probe_cfg = set(schemas) - set(STREAM_PROBE_CONFIG)
+    if missing_probe_cfg:
+        raise ValueError(f"Missing STREAM_PROBE_CONFIG entries for streams: {sorted(missing_probe_cfg)}")
     top_level = {name: cfg for name, cfg in STREAM_PROBE_CONFIG.items() if "parent" not in cfg}
     child = {name: cfg for name, cfg in STREAM_PROBE_CONFIG.items() if "parent" in cfg}
 
@@ -117,7 +121,7 @@ def discover(client) -> Catalog:
                     parent_name,
                 )
                 continue
-        elif not check_stream_access(client, stream_name):
+        elif client is not None and not check_stream_access(client, stream_name):
             LOGGER.warning(
                 "Stream '%s' will be excluded from the catalog due to insufficient permissions.",
                 stream_name,
