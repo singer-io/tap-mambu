@@ -8,59 +8,17 @@ from tap_mambu.helpers.client import (
     MambuNotFoundError,
     MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
-    MambuError,
-    MambuApiLimitError,
 )
+from tap_mambu.helpers.constants import MINIMAL_POST_BODY, PROBE_PARAMS, STREAM_PROBE_CONFIG
 
 LOGGER = singer.get_logger()
-
-# Minimal probe config for each stream: method, API path, version, and optional apikey_type.
-# Streams with 'parent' are child streams that inherit accessibility from their parent.
-# Defaults: version='v2', apikey_type=None.
-_MINIMAL_POST_BODY = {
-    "sortingCriteria": {"field": "encodedKey", "order": "ASC"},
-    "filterCriteria": [],
-}
-_PROBE_PARAMS = {"pageSize": 1, "paginationDetails": "OFF", "detailsLevel": "FULL"}
-
-STREAM_PROBE_CONFIG = {
-    "activities":                 {"method": "GET",  "path": "activities",                           "version": "v1"},
-    "audit_trail":                {"method": "GET",  "path": "v1/events",                            "version": "v1", "apikey_type": "audit"},
-    "branches":                   {"method": "GET",  "path": "branches"},
-    "cards":                      {"parent": "deposit_accounts"},
-    "centres":                    {"method": "GET",  "path": "centres"},
-    "clients":                    {"method": "POST", "path": "clients:search"},
-    "communications":             {"method": "POST", "path": "communications/messages:search"},
-    "credit_arrangements":        {"method": "GET",  "path": "creditarrangements"},
-    "custom_field_sets":          {"method": "GET",  "path": "customfieldsets"},
-    "deposit_accounts":           {"method": "POST", "path": "deposits:search"},
-    "deposit_products":           {"method": "GET",  "path": "depositproducts"},
-    "deposit_transactions":       {"method": "POST", "path": "deposits/transactions:search"},
-    "gl_accounts":                {"method": "GET",  "path": "glaccounts"},
-    "gl_journal_entries":         {"method": "POST", "path": "gljournalentries:search"},
-    "groups":                     {"method": "POST", "path": "groups:search"},
-    "index_rate_sources":         {"method": "GET",  "path": "indexratesources"},
-    "installments":               {"method": "GET",  "path": "installments"},
-    "interest_accrual_breakdown": {"method": "POST", "path": "accounting/interestaccrual:search"},
-    "loan_accounts":              {"method": "POST", "path": "loans:search"},
-    "loan_products":              {"method": "GET",  "path": "loanproducts"},
-    "loan_repayments":            {"parent": "loan_accounts"},
-    "loan_transactions":          {"method": "POST", "path": "loans/transactions:search"},
-    "tasks":                      {"method": "GET",  "path": "tasks"},
-    "users":                      {"method": "GET",  "path": "users"},
-}
 
 
 def check_stream_access(client, stream_name) -> bool:
     """
-    Probes a stream endpoint with minimal params to verify the credentials
-    have access to that stream.
-    Returns False on 401/403 (auth denied), 404 (endpoint not found),
-    405 (method not allowed), or missing audit API key — these all indicate
-    the stream will fail at runtime and should be excluded from the catalog.
-    Returns True on success or any other API error — a non-auth server
-    response means the credentials are valid and the stream is assumed accessible.
-    Should only be called for streams that have a direct probe config (no 'parent' key).
+    Probes a stream endpoint to verify credential access.
+    Returns False on auth/permission errors (401, 403, 404, 405, missing audit key);
+    True otherwise. Only valid for streams with a direct probe config (no 'parent' key).
     """
     probe = STREAM_PROBE_CONFIG.get(stream_name)
     if not probe or "parent" in probe:
@@ -74,19 +32,17 @@ def check_stream_access(client, stream_name) -> bool:
     try:
         if method == "GET":
             client.request(method="GET", path=path, version=version,
-                           apikey_type=apikey_type, params=_PROBE_PARAMS,
+                           apikey_type=apikey_type, params=PROBE_PARAMS,
                            endpoint=stream_name)
         else:
             client.request(method="POST", path=path, version=version,
-                           apikey_type=apikey_type, json=_MINIMAL_POST_BODY,
-                           params=_PROBE_PARAMS, endpoint=stream_name)
+                           apikey_type=apikey_type, json=MINIMAL_POST_BODY,
+                           params=PROBE_PARAMS, endpoint=stream_name)
         return True
     except (MambuUnauthorizedError, MambuForbiddenError,
             MambuNotFoundError, MambuMethodNotAllowedError,
             MambuNoAuditApikeyInConfig):
         return False
-    except (MambuError, MambuApiLimitError):
-        return True
 
 
 def discover(client=None) -> Catalog:

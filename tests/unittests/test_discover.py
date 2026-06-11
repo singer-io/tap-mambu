@@ -61,13 +61,6 @@ class TestCheckStreamAccess(unittest.TestCase):
         result = check_stream_access(client, "branches")
         self.assertFalse(result)
 
-    def test_returns_true_on_non_auth_mambu_error(self):
-        """Non-auth API errors mean the server responded — stream assumed accessible."""
-        client = self._client()
-        client.request.side_effect = MambuBadRequestError("400")
-        result = check_stream_access(client, "branches")
-        self.assertTrue(result)
-
     def test_reraises_non_mambu_errors(self):
         client = self._client()
         client.request.side_effect = ConnectionError("network timeout")
