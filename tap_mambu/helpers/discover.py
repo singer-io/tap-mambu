@@ -8,6 +8,8 @@ from tap_mambu.helpers.client import (
     MambuNotFoundError,
     MambuMethodNotAllowedError,
     MambuNoAuditApikeyInConfig,
+    MambuError,
+    MambuApiLimitError,
 )
 from tap_mambu.helpers.constants import MINIMAL_POST_BODY, PROBE_PARAMS, STREAM_PROBE_CONFIG
 
@@ -43,6 +45,8 @@ def check_stream_access(client, stream_name) -> bool:
             MambuNotFoundError, MambuMethodNotAllowedError,
             MambuNoAuditApikeyInConfig):
         return False
+    except (MambuError, MambuApiLimitError):
+        return True
 
 
 def discover(client=None) -> Catalog:
