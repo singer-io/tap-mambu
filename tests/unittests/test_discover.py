@@ -95,7 +95,7 @@ class TestCheckStreamAccess(unittest.TestCase):
         check_stream_access(client, "branches")
         call_kwargs = client.request.call_args
         params = call_kwargs.kwargs.get("params", {})
-        self.assertEqual(params.get("pageSize"), 1)
+        self.assertEqual(params.get("limit"), 1)
 
 
 # ---------------------------------------------------------------------------

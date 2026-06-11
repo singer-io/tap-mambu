@@ -8,7 +8,7 @@ MINIMAL_POST_BODY = {
     "sortingCriteria": {"field": "encodedKey", "order": "ASC"},
     "filterCriteria": [],
 }
-PROBE_PARAMS = {"pageSize": 1, "paginationDetails": "OFF", "detailsLevel": "FULL"}
+PROBE_PARAMS = {"limit": 1, "paginationDetails": "OFF", "detailsLevel": "FULL"}
 
 STREAM_PROBE_CONFIG = {
     "activities":                 {"method": "GET",  "path": "activities",                           "version": "v1"},
