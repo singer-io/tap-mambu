@@ -1,11 +1,16 @@
 """
 Test that the tap can replicate multiple pages of data
 """
-from datetime import timedelta
+from datetime import timedelta, datetime
 import backoff
-from singer.utils import strftime, strptime_to_utc
 from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
+
+
+def strptime_to_utc(date_string):
+    """Parse datetime string to datetime object."""
+    parsed = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+    return parsed.replace(tzinfo=None)
 
 @backoff.on_predicate(backoff.expo, lambda x: x <= 0, max_tries=10)
 def poll_state_version(conn_id):
@@ -31,7 +36,7 @@ class BookmarksTest(MambuBaseTest):
     def subtract_day(self, bookmark):
         bookmark_dt = strptime_to_utc(bookmark)
         adjusted_bookmark = bookmark_dt - timedelta(days=1)
-        return strftime(adjusted_bookmark)
+        return adjusted_bookmark.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def test_run(self):
         """

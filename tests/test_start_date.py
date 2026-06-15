@@ -1,9 +1,15 @@
 """
 Test that the tap respects the start date
 """
-from singer.utils import strptime_to_utc
+from datetime import datetime
 from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
+
+
+def strptime_to_utc(date_string):
+    """Parse datetime string into a naive UTC datetime."""
+    parsed = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+    return parsed.replace(tzinfo=None)
 
 class StartDateTest(MambuBaseTest):
     """
