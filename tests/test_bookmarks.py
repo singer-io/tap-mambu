@@ -9,9 +9,8 @@ from base import MambuBaseTest
 
 def strptime_to_utc(date_string):
     """Parse datetime string to datetime object."""
-    if date_string.endswith('Z'):
-        return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
-    return datetime.fromisoformat(date_string.replace('Z', '+00:00')).replace(tzinfo=None)
+    parsed = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+    return parsed.replace(tzinfo=None)
 
 @backoff.on_predicate(backoff.expo, lambda x: x <= 0, max_tries=10)
 def poll_state_version(conn_id):
