@@ -95,7 +95,7 @@ class TestCheckStreamAccess(unittest.TestCase):
         check_stream_access(client, "branches")
         call_kwargs = client.request.call_args
         params = call_kwargs.kwargs.get("params", {})
-        self.assertEqual(params.get("limit"), 1)
+        self.assertEqual(params.get("pageSize"), 1)
 
 
 # ---------------------------------------------------------------------------
@@ -172,9 +172,9 @@ class TestDiscover(unittest.TestCase):
     @patch("tap_mambu.helpers.discover.check_stream_access")
     def test_all_inaccessible_raises_exception(self, mock_check):
         mock_check.return_value = False
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(MambuForbiddenError) as ctx:
             discover(MagicMock())
-        self.assertIn("do not have read access", str(ctx.exception))
+        self.assertIn("do not have 'read' access to any", str(ctx.exception))
 
     @patch("tap_mambu.helpers.discover.check_stream_access")
     def test_incremental_stream_sets_replication_key_automatic(self, mock_check):

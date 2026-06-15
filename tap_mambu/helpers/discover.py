@@ -49,45 +49,60 @@ def check_stream_access(client, stream_name) -> bool:
         return True
 
 
-def discover(client=None) -> Catalog:
-    """Run discovery mode, probing each stream endpoint to verify access.
-    Streams that return an auth error are excluded from the catalog.
-    Child streams (cards, loan_repayments) are included only if their
-    parent stream is accessible.
-    """
-    schemas, field_metadata = get_schemas()
-    catalog = Catalog([])
-    accessible_streams = set()
+def _prune_inaccessible_children(schemas: dict, field_metadata: dict) -> None:
+    """Remove child streams from the catalog whose parent stream was excluded."""
+    for stream_name, probe_cfg in list(STREAM_PROBE_CONFIG.items()):
+        parent_name = probe_cfg.get("parent")
+        if stream_name in schemas and parent_name and parent_name not in schemas:
+            LOGGER.warning(
+                "Stream '%s' excluded from catalog because its parent stream '%s' is not accessible.",
+                stream_name,
+                parent_name,
+            )
+            schemas.pop(stream_name, None)
+            field_metadata.pop(stream_name, None)
 
-    # Two-pass: probe top-level streams first so parent accessibility is known
-    # before child streams are evaluated.
+
+def _apply_access_checks(client, schemas: dict, field_metadata: dict) -> None:
+    """Remove inaccessible top-level streams and dependent children in place."""
+    inaccessible_streams = [
+        stream_name
+        for stream_name, probe_cfg in STREAM_PROBE_CONFIG.items()
+        if stream_name in schemas and "parent" not in probe_cfg and client is not None
+        and not check_stream_access(client, stream_name)
+    ]
+
+    for stream_name in inaccessible_streams:
+        schemas.pop(stream_name, None)
+        field_metadata.pop(stream_name, None)
+
+    _prune_inaccessible_children(schemas, field_metadata)
+
+    if inaccessible_streams:
+        total_parent_streams = len([cfg for cfg in STREAM_PROBE_CONFIG.values() if "parent" not in cfg])
+        if len(inaccessible_streams) == total_parent_streams:
+            raise MambuForbiddenError(
+                "HTTP-error-code: 403, Error: The account credentials supplied do not have 'read' access to any "
+                "of the streams supported by the tap. Data collection cannot be initiated due to lack of permissions."
+            )
+        LOGGER.warning(
+            "The account credentials supplied do not have 'read' access to the following stream(s): %s. "
+            "These streams have been excluded from the catalog.",
+            ", ".join(inaccessible_streams),
+        )
+
+
+def discover(client=None) -> Catalog:
+    """Run discovery and exclude streams the credentials cannot read."""
+    schemas, field_metadata = get_schemas()
     missing_probe_cfg = set(schemas) - set(STREAM_PROBE_CONFIG)
     if missing_probe_cfg:
         raise ValueError(f"Missing STREAM_PROBE_CONFIG entries for streams: {sorted(missing_probe_cfg)}")
-    top_level = {name: cfg for name, cfg in STREAM_PROBE_CONFIG.items() if "parent" not in cfg}
-    child = {name: cfg for name, cfg in STREAM_PROBE_CONFIG.items() if "parent" in cfg}
+    _apply_access_checks(client, schemas, field_metadata)
 
-    for stream_name, probe_cfg in {**top_level, **child}.items():
-        if stream_name not in schemas:
-            continue
+    catalog = Catalog([])
 
-        if "parent" in probe_cfg:
-            parent_name = probe_cfg["parent"]
-            if parent_name not in accessible_streams:
-                LOGGER.warning(
-                    "Stream '%s' will be excluded from the catalog because its "
-                    "parent stream '%s' is not accessible.",
-                    stream_name,
-                    parent_name,
-                )
-                continue
-        elif client is not None and not check_stream_access(client, stream_name):
-            LOGGER.warning(
-                "Stream '%s' will be excluded from the catalog due to insufficient permissions.",
-                stream_name,
-            )
-            continue
-
+    for stream_name in schemas:
         stream = STREAMS[stream_name]
         schema = Schema.from_dict(schemas[stream_name])
         mdata = metadata.to_map(field_metadata[stream_name])
@@ -96,7 +111,6 @@ def discover(client=None) -> Catalog:
             for field_name in stream.get("replication_keys", []):
                 metadata.write(mdata, ("properties", field_name), "inclusion", "automatic")
 
-        accessible_streams.add(stream_name)
         catalog.streams.append(CatalogEntry(
             stream=stream_name,
             tap_stream_id=stream_name,
@@ -104,11 +118,5 @@ def discover(client=None) -> Catalog:
             schema=schema,
             metadata=metadata.to_list(mdata)
         ))
-
-    if not catalog.streams:
-        raise Exception(
-            "The credentials do not have read access to any of the supported streams. "
-            "Verify that the API credentials have the required permissions."
-        )
 
     return catalog
