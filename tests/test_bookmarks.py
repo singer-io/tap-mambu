@@ -1,7 +1,7 @@
 """
 Test that the tap can replicate multiple pages of data
 """
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 import backoff
 from tap_tester import connections, menagerie, runner
 from base import MambuBaseTest
@@ -10,7 +10,9 @@ from base import MambuBaseTest
 def strptime_to_utc(date_string):
     """Parse datetime string to datetime object."""
     parsed = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
-    return parsed.replace(tzinfo=None)
+    if parsed.tzinfo is None:
+        return parsed
+    return parsed.astimezone(timezone.utc).replace(tzinfo=None)
 
 @backoff.on_predicate(backoff.expo, lambda x: x <= 0, max_tries=10)
 def poll_state_version(conn_id):
