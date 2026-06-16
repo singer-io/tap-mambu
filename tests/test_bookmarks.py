@@ -38,7 +38,7 @@ class BookmarksTest(MambuBaseTest):
     def subtract_day(self, bookmark):
         bookmark_dt = strptime_to_utc(bookmark)
         adjusted_bookmark = bookmark_dt - timedelta(days=1)
-        return adjusted_bookmark.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return adjusted_bookmark.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     def test_run(self):
         """
