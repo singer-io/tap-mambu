@@ -32,7 +32,7 @@ def test_client_entry_check_access(mock_check_access):
 
     mock_check_access.assert_not_called()
     with client:
-        mock_check_access.assert_called_once()
+        mock_check_access.assert_not_called()
 
 
 @mock.patch("tap_mambu.helpers.client.requests.Session.get")

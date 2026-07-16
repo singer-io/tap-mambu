@@ -170,6 +170,16 @@ class TestDiscover(unittest.TestCase):
         self.assertIn("users", warned)
 
     @patch("tap_mambu.helpers.discover.check_stream_access")
+    def test_consolidated_warning_includes_pruned_child_streams(self, mock_check):
+        mock_check.side_effect = lambda client, name: name != "deposit_accounts"
+        with patch("tap_mambu.helpers.discover.LOGGER") as mock_logger:
+            discover(MagicMock())
+
+        warning_calls = [str(call) for call in mock_logger.warning.call_args_list]
+        self.assertTrue(any("No 'read' access to stream(s):" in call for call in warning_calls))
+        self.assertTrue(any("deposit_accounts, cards" in call for call in warning_calls))
+
+    @patch("tap_mambu.helpers.discover.check_stream_access")
     def test_all_inaccessible_raises_exception(self, mock_check):
         mock_check.return_value = False
         with self.assertRaises(MambuForbiddenError) as ctx:

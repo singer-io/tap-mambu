@@ -45,12 +45,11 @@ def check_stream_access(client, stream_name) -> bool:
             MambuNotFoundError, MambuMethodNotAllowedError,
             MambuNoAuditApikeyInConfig):
         return False
-    except (MambuError, MambuApiLimitError):
-        return True
 
 
-def _prune_inaccessible_children(schemas: dict, field_metadata: dict) -> None:
+def _prune_inaccessible_children(schemas: dict, field_metadata: dict) -> list:
     """Remove child streams from the catalog whose parent stream was excluded."""
+    inaccessible_children = []
     for stream_name, probe_cfg in list(STREAM_PROBE_CONFIG.items()):
         parent_name = probe_cfg.get("parent")
         if stream_name in schemas and parent_name and parent_name not in schemas:
@@ -61,6 +60,9 @@ def _prune_inaccessible_children(schemas: dict, field_metadata: dict) -> None:
             )
             schemas.pop(stream_name, None)
             field_metadata.pop(stream_name, None)
+            inaccessible_children.append(stream_name)
+
+    return inaccessible_children
 
 
 def _apply_access_checks(client, schemas: dict, field_metadata: dict) -> None:
@@ -76,7 +78,12 @@ def _apply_access_checks(client, schemas: dict, field_metadata: dict) -> None:
         schemas.pop(stream_name, None)
         field_metadata.pop(stream_name, None)
 
-    _prune_inaccessible_children(schemas, field_metadata)
+    inaccessible_children = _prune_inaccessible_children(schemas, field_metadata)
+    all_inaccessible = inaccessible_streams + [
+        stream_name
+        for stream_name in inaccessible_children
+        if stream_name not in inaccessible_streams
+    ]
 
     accessible_streams = [s for s in STREAMS if s in schemas]
 
@@ -85,10 +92,10 @@ def _apply_access_checks(client, schemas: dict, field_metadata: dict) -> None:
             "HTTP-error-code: 403, Error: The credentials do not have "
             "'read' access to any supported streams."
         )
-    if inaccessible_streams:
+    if all_inaccessible:
         LOGGER.warning(
             "No 'read' access to stream(s): %s. Excluded from catalog.",
-            ", ".join(inaccessible_streams),
+            ", ".join(all_inaccessible),
         )
 
 
