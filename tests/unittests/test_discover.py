@@ -78,6 +78,22 @@ class TestCheckStreamAccess(unittest.TestCase):
         call_kwargs = client.request.call_args
         self.assertEqual(call_kwargs.kwargs["method"], "POST")
 
+    def test_clients_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "clients")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "lastModifiedDate")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+
+    def test_post_probe_uses_offset_limit_params(self):
+        client = self._client()
+        check_stream_access(client, "clients")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("offset"), 0)
+        self.assertEqual(params.get("limit"), 1)
+
     def test_audit_trail_uses_audit_apikey_type(self):
         client = self._client()
         check_stream_access(client, "audit_trail")
