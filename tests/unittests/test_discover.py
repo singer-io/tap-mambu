@@ -86,6 +86,14 @@ class TestCheckStreamAccess(unittest.TestCase):
         self.assertEqual(body.get("sortingCriteria", {}).get("field"), "lastModifiedDate")
         self.assertEqual(len(body.get("filterCriteria", [])), 2)
 
+    def test_deposit_accounts_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "deposit_accounts")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "lastModifiedDate")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+
     def test_post_probe_uses_offset_limit_params(self):
         client = self._client()
         check_stream_access(client, "clients")
@@ -165,6 +173,79 @@ class TestCheckStreamAccess(unittest.TestCase):
         call_kwargs = client.request.call_args
         params = call_kwargs.kwargs.get("params", {})
         self.assertEqual(params.get("sortBy"), "id:ASC")
+
+    def test_deposit_products_probe_uses_offset_limit_params(self):
+        client = self._client()
+        check_stream_access(client, "deposit_products")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("offset"), 0)
+        self.assertEqual(params.get("limit"), 1)
+
+    def test_deposit_transactions_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "deposit_transactions")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "id")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+        self.assertEqual(body.get("filterCriteria", [])[0].get("field"), "creationDate")
+
+    def test_gl_accounts_probe_uses_type_param(self):
+        client = self._client()
+        check_stream_access(client, "gl_accounts")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("type"), "ASSET")
+
+    def test_gl_journal_entries_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "gl_journal_entries")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "entryId")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+        self.assertEqual(body.get("filterCriteria", [])[0].get("field"), "creationDate")
+
+    def test_groups_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "groups")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "lastModifiedDate")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+
+    def test_index_rate_sources_probe_uses_no_params(self):
+        client = self._client()
+        check_stream_access(client, "index_rate_sources")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", None)
+        self.assertEqual(params, {})
+
+    def test_interest_accrual_breakdown_probe_uses_date_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "interest_accrual_breakdown")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "entryId")
+        self.assertEqual(body.get("filterCriteria", [])[0].get("value"), "1970-01-01")
+
+    def test_loan_accounts_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "loan_accounts")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "id")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+
+    def test_loan_transactions_probe_uses_search_filter_body(self):
+        client = self._client()
+        check_stream_access(client, "loan_transactions")
+        call_kwargs = client.request.call_args
+        body = call_kwargs.kwargs.get("json", {})
+        self.assertEqual(body.get("sortingCriteria", {}).get("field"), "id")
+        self.assertEqual(len(body.get("filterCriteria", [])), 2)
+        self.assertEqual(body.get("filterCriteria", [])[0].get("field"), "creationDate")
 
     def test_communications_probe_uses_filter_body(self):
         client = self._client()
