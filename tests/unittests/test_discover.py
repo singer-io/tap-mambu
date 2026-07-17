@@ -105,6 +105,29 @@ class TestCheckStreamAccess(unittest.TestCase):
         self.assertEqual(params.get("from"), "1970-01-01")
         self.assertEqual(params.get("to"), "1970-01-01")
 
+    def test_audit_trail_probe_uses_occurred_at_range(self):
+        client = self._client()
+        check_stream_access(client, "audit_trail")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("sort_order"), "asc")
+        self.assertEqual(params.get("occurred_at[gte]"), "1970-01-01T00:00:00Z")
+        self.assertEqual(params.get("occurred_at[lte]"), "1970-01-01T00:00:00Z")
+
+    def test_installments_probe_uses_due_date_range(self):
+        client = self._client()
+        check_stream_access(client, "installments")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("dueFrom"), "1970-01-01")
+        self.assertEqual(params.get("dueTo"), "1970-01-01")
+
+    def test_communications_probe_uses_empty_list_body(self):
+        client = self._client()
+        check_stream_access(client, "communications")
+        call_kwargs = client.request.call_args
+        self.assertEqual(call_kwargs.kwargs.get("json"), [])
+
 
 # ---------------------------------------------------------------------------
 # discover()

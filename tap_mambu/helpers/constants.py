@@ -10,6 +10,18 @@ MINIMAL_POST_BODY = {
 }
 PROBE_PARAMS = {"pageSize": 1, "paginationDetails": "OFF", "detailsLevel": "FULL"}
 ACTIVITIES_PROBE_PARAMS = {"from": "1970-01-01", "to": "1970-01-01"}
+AUDIT_TRAIL_PROBE_PARAMS = {
+    "sort_order": "asc",
+    "occurred_at[gte]": "1970-01-01T00:00:00Z",
+    "occurred_at[lte]": "1970-01-01T00:00:00Z",
+}
+INSTALLMENTS_PROBE_PARAMS = {
+    "dueFrom": "1970-01-01",
+    "dueTo": "1970-01-01",
+    "detailsLevel": "FULL",
+    "paginationDetails": "OFF",
+}
+COMMUNICATIONS_PROBE_BODY = []
 
 STREAM_PROBE_CONFIG = {
     "activities":                 {
@@ -18,12 +30,22 @@ STREAM_PROBE_CONFIG = {
         "version": "v1",
         "params": ACTIVITIES_PROBE_PARAMS,
     },
-    "audit_trail":                {"method": "GET",  "path": "v1/events",                            "version": "v1", "apikey_type": "audit"},
+    "audit_trail":                {
+        "method": "GET",
+        "path": "v1/events",
+        "version": "v1",
+        "apikey_type": "audit",
+        "params": AUDIT_TRAIL_PROBE_PARAMS,
+    },
     "branches":                   {"method": "GET",  "path": "branches"},
     "cards":                      {"parent": "deposit_accounts"},
     "centres":                    {"method": "GET",  "path": "centres"},
     "clients":                    {"method": "POST", "path": "clients:search"},
-    "communications":             {"method": "POST", "path": "communications/messages:search"},
+    "communications":             {
+        "method": "POST",
+        "path": "communications/messages:search",
+        "json": COMMUNICATIONS_PROBE_BODY,
+    },
     "credit_arrangements":        {"method": "GET",  "path": "creditarrangements"},
     "custom_field_sets":          {"method": "GET",  "path": "customfieldsets"},
     "deposit_accounts":           {"method": "POST", "path": "deposits:search"},
@@ -33,7 +55,11 @@ STREAM_PROBE_CONFIG = {
     "gl_journal_entries":         {"method": "POST", "path": "gljournalentries:search"},
     "groups":                     {"method": "POST", "path": "groups:search"},
     "index_rate_sources":         {"method": "GET",  "path": "indexratesources"},
-    "installments":               {"method": "GET",  "path": "installments"},
+    "installments":               {
+        "method": "GET",
+        "path": "installments",
+        "params": INSTALLMENTS_PROBE_PARAMS,
+    },
     "interest_accrual_breakdown": {"method": "POST", "path": "accounting/interestaccrual:search"},
     "loan_accounts":              {"method": "POST", "path": "loans:search"},
     "loan_products":              {"method": "GET",  "path": "loanproducts"},
