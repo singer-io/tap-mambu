@@ -7,6 +7,11 @@ from ..helpers.schema import STREAMS
 from ..helpers import convert
 
 
+def _snake_to_camel(name):
+    parts = name.split("_")
+    return parts[0] + "".join(part.capitalize() for part in parts[1:])
+
+
 class MultithreadedParentProcessor(TapProcessor):
     def _init_config(self):
         super(MultithreadedParentProcessor, self)._init_config()
@@ -29,9 +34,15 @@ class MultithreadedParentProcessor(TapProcessor):
         super(MultithreadedParentProcessor, self)._process_child_records(record)
         parent_replication_values = {}
         for replication_key in STREAMS.get(self.stream_name, {}).get("replication_keys", []):
-            record_key = convert(replication_key)
-            if record_key in record:
-                parent_replication_values[replication_key] = record[record_key]
+            candidate_keys = {
+                replication_key,
+                convert(replication_key),
+                _snake_to_camel(replication_key),
+            }
+            for record_key in candidate_keys:
+                if record_key in record:
+                    parent_replication_values[replication_key] = record[record_key]
+                    break
 
         for child_stream_name in self.endpoint_child_streams:
             if child_stream_name in get_selected_streams(self.catalog):

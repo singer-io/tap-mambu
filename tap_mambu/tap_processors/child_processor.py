@@ -1,4 +1,5 @@
 from .processor import TapProcessor
+from ..helpers.schema import STREAMS
 
 
 class ChildProcessor(TapProcessor):
@@ -14,7 +15,7 @@ class ChildProcessor(TapProcessor):
 
     def process_record(self, record, time_extracted, bookmark_field):
         record[f'{self.endpoint_parent}_id'] = self.endpoint_parent_id
-        for replication_key, value in self.parent_replication_values.items():
-            if value is not None and replication_key not in record:
-                record[replication_key] = value
+        for replication_key in STREAMS.get(self.stream_name, {}).get("replication_keys", []):
+            if replication_key not in record:
+                record[replication_key] = self.parent_replication_values.get(replication_key)
         return super().process_record(record, time_extracted, bookmark_field)
