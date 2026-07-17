@@ -1,6 +1,7 @@
 import re
 import singer
 from singer import write_state, metadata
+from singer.utils import strptime_to_utc
 
 
 def get_bookmark(state, stream, sub_type, default):
@@ -13,12 +14,23 @@ def get_bookmark(state, stream, sub_type, default):
 
 
 def write_bookmark(state, stream, sub_type, value):
+    def _max_datetime_bookmark(existing_value, new_value):
+        if existing_value is None:
+            return new_value
+        try:
+            existing_dt = strptime_to_utc(existing_value)
+            new_dt = strptime_to_utc(new_value)
+            return existing_value if existing_dt >= new_dt else new_value
+        except (TypeError, ValueError):
+            return new_value
+
     if 'bookmarks' not in state:
         state['bookmarks'] = {}
     if stream not in state['bookmarks']:
         state['bookmarks'][stream] = {}
     if sub_type == 'self':
-        state['bookmarks'][stream] = value
+        existing_value = state['bookmarks'].get(stream)
+        state['bookmarks'][stream] = _max_datetime_bookmark(existing_value, value)
     else:
         if sub_type not in state['bookmarks'][stream]:
             state['bookmarks'][stream][sub_type] = {}
