@@ -90,12 +90,20 @@ class TestCheckStreamAccess(unittest.TestCase):
         call_kwargs = client.request.call_args
         self.assertEqual(call_kwargs.kwargs.get("version"), "v1")
 
-    def test_probe_uses_page_size_1(self):
+    def test_probe_uses_page_size_1_for_default_probe_streams(self):
         client = self._client()
         check_stream_access(client, "branches")
         call_kwargs = client.request.call_args
         params = call_kwargs.kwargs.get("params", {})
         self.assertEqual(params.get("pageSize"), 1)
+
+    def test_activities_probe_uses_date_window_params(self):
+        client = self._client()
+        check_stream_access(client, "activities")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("from"), "1970-01-01")
+        self.assertEqual(params.get("to"), "1970-01-01")
 
 
 # ---------------------------------------------------------------------------

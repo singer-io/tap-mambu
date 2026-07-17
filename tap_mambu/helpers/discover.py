@@ -30,16 +30,18 @@ def check_stream_access(client, stream_name) -> bool:
     method = probe["method"]
     version = probe.get("version", "v2")
     apikey_type = probe.get("apikey_type")
+    params = probe.get("params", PROBE_PARAMS)
+    post_body = probe.get("json", MINIMAL_POST_BODY)
 
     try:
         if method == "GET":
             client.request(method="GET", path=path, version=version,
-                           apikey_type=apikey_type, params=PROBE_PARAMS,
+                           apikey_type=apikey_type, params=params,
                            endpoint=stream_name)
         else:
             client.request(method="POST", path=path, version=version,
-                           apikey_type=apikey_type, json=MINIMAL_POST_BODY,
-                           params=PROBE_PARAMS, endpoint=stream_name)
+                           apikey_type=apikey_type, json=post_body,
+                           params=params, endpoint=stream_name)
         return True
     except (MambuUnauthorizedError, MambuForbiddenError,
             MambuNotFoundError, MambuMethodNotAllowedError,

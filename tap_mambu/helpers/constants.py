@@ -9,9 +9,15 @@ MINIMAL_POST_BODY = {
     "filterCriteria": [],
 }
 PROBE_PARAMS = {"pageSize": 1, "paginationDetails": "OFF", "detailsLevel": "FULL"}
+ACTIVITIES_PROBE_PARAMS = {"from": "1970-01-01", "to": "1970-01-01"}
 
 STREAM_PROBE_CONFIG = {
-    "activities":                 {"method": "GET",  "path": "activities",                           "version": "v1"},
+    "activities":                 {
+        "method": "GET",
+        "path": "activities",
+        "version": "v1",
+        "params": ACTIVITIES_PROBE_PARAMS,
+    },
     "audit_trail":                {"method": "GET",  "path": "v1/events",                            "version": "v1", "apikey_type": "audit"},
     "branches":                   {"method": "GET",  "path": "branches"},
     "cards":                      {"parent": "deposit_accounts"},
