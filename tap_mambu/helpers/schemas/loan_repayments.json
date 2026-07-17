@@ -360,6 +360,20 @@
       ],
       "format": "singer.decimal"
     },
+    "last_account_appraisal_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
     "is_payment_holiday": {
       "type": [
         "null",
