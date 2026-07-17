@@ -88,12 +88,9 @@ class BookmarksTest(MambuBaseTest):
                     second_sync_bookmark_value = second_sync_bookmarks['bookmarks'][stream]
                     simulated_bookmark_value = new_state['bookmarks'][stream]
 
-                    # Verify the second sync bookmark remains within expected bounds:
-                    # after simulated bookmark and not beyond first sync final bookmark.
-                    self.assertGreaterEqual(strptime_to_utc(second_sync_bookmark_value),
-                                            strptime_to_utc(simulated_bookmark_value))
-                    self.assertLessEqual(strptime_to_utc(second_sync_bookmark_value),
-                                         strptime_to_utc(first_sync_bookmark_value))
+                    # Verify the both syncs end on the same bookmark
+                    self.assertEqual(first_sync_bookmark_value,
+                                     second_sync_bookmark_value)
 
                     # Verify that first sync records fall between the start date and the final
                     # bookmark value
