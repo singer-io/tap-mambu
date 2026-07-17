@@ -5,6 +5,8 @@ from tap_mambu.helpers.datetime_utils import datetime_to_utc_str, str_to_localiz
 
 class Transformer(SingerTransformer):
     def _transform_datetime(self, value):
+        if value is None:
+            return None
         return datetime_to_utc_str(str_to_localized_datetime(value))
 
 

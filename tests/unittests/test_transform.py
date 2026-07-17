@@ -1,5 +1,6 @@
 import unittest
 from tap_mambu.helpers import transform_json
+from tap_mambu.helpers.transformer import Transformer
 
 
 class TestTransformJson(unittest.TestCase):
@@ -37,3 +38,11 @@ class TestTransformJson(unittest.TestCase):
                                 "my_path")
 
         self.assertEqual(expected, actual)
+
+
+class TestTransformer(unittest.TestCase):
+
+    def test_transform_datetime_handles_none(self):
+        with Transformer() as transformer:
+            # pylint: disable=protected-access
+            self.assertIsNone(transformer._transform_datetime(None))
