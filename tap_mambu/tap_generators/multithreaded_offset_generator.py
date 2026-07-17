@@ -135,10 +135,14 @@ class MultithreadedOffsetGenerator(TapGenerator):
         pass
 
     def set_last_sync_completed(self, end_time):
+        if end_time is None:
+            return
+
+        end_time_dttm = str_to_datetime(end_time) if isinstance(end_time, str) else end_time
         last_bookmark = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
-        if end_time < str_to_datetime(last_bookmark):
+        if end_time_dttm < str_to_datetime(last_bookmark):
             write_bookmark(self.state, self.stream_name,
-                           self.sub_type, datetime_to_utc_str(end_time))
+                           self.sub_type, datetime_to_utc_str(end_time_dttm))
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):

@@ -1,5 +1,6 @@
 import re
 import singer
+from datetime import datetime, timezone
 from singer import write_state, metadata
 from singer.utils import strptime_to_utc
 
@@ -14,7 +15,21 @@ def get_bookmark(state, stream, sub_type, default):
 
 
 def write_bookmark(state, stream, sub_type, value):
+    def _normalize_bookmark_value(bookmark_value):
+        if isinstance(bookmark_value, datetime):
+            return bookmark_value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        if isinstance(bookmark_value, list):
+            return [_normalize_bookmark_value(item) for item in bookmark_value]
+        if isinstance(bookmark_value, dict):
+            return {
+                key: _normalize_bookmark_value(item_value)
+                for key, item_value in bookmark_value.items()
+            }
+        return bookmark_value
+
     def _max_datetime_bookmark(existing_value, new_value):
+        existing_value = _normalize_bookmark_value(existing_value)
+        new_value = _normalize_bookmark_value(new_value)
         if existing_value is None:
             return new_value
         try:
@@ -34,7 +49,7 @@ def write_bookmark(state, stream, sub_type, value):
     else:
         if sub_type not in state['bookmarks'][stream]:
             state['bookmarks'][stream][sub_type] = {}
-        state['bookmarks'][stream][sub_type] = value
+        state['bookmarks'][stream][sub_type] = _normalize_bookmark_value(value)
     write_state(state)
 
 
