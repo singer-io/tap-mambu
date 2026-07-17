@@ -25,17 +25,19 @@ class AuditTrailProcessor(TapProcessor):
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
         if bookmark_field and (bookmark_field in transformed_record):
-            bookmark_dttm = str_to_datetime(transformed_record[bookmark_field])
-            max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
-            if bookmark_dttm > max_bookmark_value_dttm:
-                self.max_bookmark_value = datetime_to_utc_str(bookmark_dttm)
-                # Reset identical record count
-                self.bookmark_offset = 0
+            bookmark_value = transformed_record.get(bookmark_field)
+            if bookmark_value is not None:
+                bookmark_dttm = str_to_datetime(bookmark_value)
+                max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
+                if bookmark_dttm > max_bookmark_value_dttm:
+                    self.max_bookmark_value = datetime_to_utc_str(bookmark_dttm)
+                    # Reset identical record count
+                    self.bookmark_offset = 0
 
-            max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
-            if max_bookmark_value_dttm == bookmark_dttm:
-                # Increment identical record count
-                self.bookmark_offset += 1
+                max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
+                if max_bookmark_value_dttm == bookmark_dttm:
+                    # Increment identical record count
+                    self.bookmark_offset += 1
 
         for generator in self.generators:
             # Bad practice, but necessary as we need to change extraction parameters while extracting
