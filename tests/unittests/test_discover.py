@@ -138,11 +138,45 @@ class TestCheckStreamAccess(unittest.TestCase):
         self.assertEqual(params.get("dueFrom"), "1970-01-01")
         self.assertEqual(params.get("dueTo"), "1970-01-01")
 
-    def test_communications_probe_uses_empty_list_body(self):
+    def test_credit_arrangements_probe_uses_creation_date_sort(self):
+        client = self._client()
+        check_stream_access(client, "credit_arrangements")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("sortBy"), "creationDate:ASC")
+
+    def test_loan_products_probe_uses_id_sort(self):
+        client = self._client()
+        check_stream_access(client, "loan_products")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("sortBy"), "id:ASC")
+
+    def test_tasks_probe_uses_last_modified_date_sort(self):
+        client = self._client()
+        check_stream_access(client, "tasks")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("sortBy"), "lastModifiedDate:ASC")
+
+    def test_users_probe_uses_id_sort(self):
+        client = self._client()
+        check_stream_access(client, "users")
+        call_kwargs = client.request.call_args
+        params = call_kwargs.kwargs.get("params", {})
+        self.assertEqual(params.get("sortBy"), "id:ASC")
+
+    def test_communications_probe_uses_filter_body(self):
         client = self._client()
         check_stream_access(client, "communications")
         call_kwargs = client.request.call_args
-        self.assertEqual(call_kwargs.kwargs.get("json"), [])
+        body = call_kwargs.kwargs.get("json")
+        self.assertIsInstance(body, list)
+        self.assertEqual(len(body), 3)
+        self.assertEqual(body[0].get("field"), "creationDate")
+        self.assertEqual(body[0].get("operator"), "AFTER")
+        self.assertEqual(body[2].get("field"), "state")
+        self.assertEqual(body[2].get("value"), "SENT")
 
 
 # ---------------------------------------------------------------------------

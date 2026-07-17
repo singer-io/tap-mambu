@@ -29,7 +29,41 @@ INSTALLMENTS_PROBE_PARAMS = {
     "detailsLevel": "FULL",
     "paginationDetails": "OFF",
 }
-COMMUNICATIONS_PROBE_BODY = []
+SORT_BY_CREATION_DATE_PROBE_PARAMS = {
+    "pageSize": 1,
+    "paginationDetails": "OFF",
+    "detailsLevel": "FULL",
+    "sortBy": "creationDate:ASC",
+}
+SORT_BY_ID_PROBE_PARAMS = {
+    "pageSize": 1,
+    "paginationDetails": "OFF",
+    "detailsLevel": "FULL",
+    "sortBy": "id:ASC",
+}
+SORT_BY_LAST_MODIFIED_DATE_PROBE_PARAMS = {
+    "pageSize": 1,
+    "paginationDetails": "OFF",
+    "detailsLevel": "FULL",
+    "sortBy": "lastModifiedDate:ASC",
+}
+COMMUNICATIONS_PROBE_BODY = [
+    {
+        "field": "creationDate",
+        "operator": "AFTER",
+        "value": "1970-01-01T00:00:00Z",
+    },
+    {
+        "field": "creationDate",
+        "operator": "BEFORE",
+        "value": "1970-01-02T00:00:00Z",
+    },
+    {
+        "field": "state",
+        "operator": "EQUALS",
+        "value": "SENT",
+    },
+]
 
 STREAM_PROBE_CONFIG = {
     "activities":                 {
@@ -60,7 +94,11 @@ STREAM_PROBE_CONFIG = {
         "params": POST_PROBE_PARAMS,
         "json": COMMUNICATIONS_PROBE_BODY,
     },
-    "credit_arrangements":        {"method": "GET",  "path": "creditarrangements"},
+    "credit_arrangements":        {
+        "method": "GET",
+        "path": "creditarrangements",
+        "params": SORT_BY_CREATION_DATE_PROBE_PARAMS,
+    },
     "custom_field_sets":          {"method": "GET",  "path": "customfieldsets"},
     "deposit_accounts":           {"method": "POST", "path": "deposits:search", "params": POST_PROBE_PARAMS},
     "deposit_products":           {"method": "GET",  "path": "depositproducts"},
@@ -76,9 +114,21 @@ STREAM_PROBE_CONFIG = {
     },
     "interest_accrual_breakdown": {"method": "POST", "path": "accounting/interestaccrual:search", "params": POST_PROBE_PARAMS},
     "loan_accounts":              {"method": "POST", "path": "loans:search", "params": POST_PROBE_PARAMS},
-    "loan_products":              {"method": "GET",  "path": "loanproducts"},
+    "loan_products":              {
+        "method": "GET",
+        "path": "loanproducts",
+        "params": SORT_BY_ID_PROBE_PARAMS,
+    },
     "loan_repayments":            {"parent": "loan_accounts"},
     "loan_transactions":          {"method": "POST", "path": "loans/transactions:search", "params": POST_PROBE_PARAMS},
-    "tasks":                      {"method": "GET",  "path": "tasks"},
-    "users":                      {"method": "GET",  "path": "users"},
+    "tasks":                      {
+        "method": "GET",
+        "path": "tasks",
+        "params": SORT_BY_LAST_MODIFIED_DATE_PROBE_PARAMS,
+    },
+    "users":                      {
+        "method": "GET",
+        "path": "users",
+        "params": SORT_BY_ID_PROBE_PARAMS,
+    },
 }
