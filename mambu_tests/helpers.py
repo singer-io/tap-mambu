@@ -34,6 +34,7 @@ class GeneratorMock:
         self.client = "mock_client"
         self.state = "mock_state"
         self.config = "mock_config"
+        self.start_windows_datetime_str = None
 
     def __iter__(self):
         return self
@@ -44,6 +45,15 @@ class GeneratorMock:
         return self.data.pop(0)
 
     def write_bookmark(self):
+        pass
+
+    def get_default_start_value(self):
+        return None
+
+    def set_last_sync_completed(self, end_time):
+        pass
+
+    def remove_sub_stream_bookmark(self):
         pass
 
 
