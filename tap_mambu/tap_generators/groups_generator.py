@@ -1,5 +1,5 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers.datetime_utils import datetime_to_local_str
+from ..helpers.datetime_utils import datetime_to_local_str, str_to_localized_datetime
 
 
 class GroupsGenerator(MultithreadedBookmarkGenerator):
@@ -11,6 +11,13 @@ class GroupsGenerator(MultithreadedBookmarkGenerator):
             "field": "lastModifiedDate",
             "order": "ASC"
         }
+        self.endpoint_filter_criteria = [
+            {
+                "field": "lastModifiedDate",
+                "operator": "AFTER",
+                "value": datetime_to_local_str(str_to_localized_datetime(self.start_date))
+            }
+        ]
 
     def prepare_batch_params(self):
         super(GroupsGenerator, self).prepare_batch_params()

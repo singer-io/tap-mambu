@@ -2,6 +2,10 @@ from tap_mambu.tap_generators.generator import TapGenerator
 
 
 class NoPaginationGenerator(TapGenerator):
+    def _init_endpoint_config(self):
+        super(NoPaginationGenerator, self)._init_endpoint_config()
+        self.endpoint_sorting_criteria = {}
+
     def _init_params(self):
         self.time_extracted = None
 

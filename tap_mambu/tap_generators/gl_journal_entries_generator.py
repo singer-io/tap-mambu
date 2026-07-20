@@ -1,5 +1,6 @@
+import dateutil.parser
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers.datetime_utils import datetime_to_utc_str
+from ..helpers.datetime_utils import datetime_to_utc_str, utc_now
 
 
 class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
@@ -11,6 +12,14 @@ class GlJournalEntriesGenerator(MultithreadedBookmarkGenerator):
             "field": "entryId",
             "order": "ASC"
         }
+        self.endpoint_filter_criteria = [
+            {
+                "field": "creationDate",
+                "operator": "BETWEEN",
+                "value": dateutil.parser.parse(self.start_date).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "secondValue": datetime_to_utc_str(utc_now())
+            }
+        ]
 
     def prepare_batch_params(self):
         super(GlJournalEntriesGenerator, self).prepare_batch_params()

@@ -1,3 +1,4 @@
+import dateutil.parser
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
 from ..helpers.datetime_utils import datetime_to_utc_str
 
@@ -15,6 +16,13 @@ class DepositAccountsGenerator(MultithreadedBookmarkGenerator):
             "field": "lastModifiedDate",
             "order": "ASC"
         }
+        self.endpoint_filter_criteria = [
+            {
+                "field": "lastModifiedDate",
+                "operator": "AFTER",
+                "value": dateutil.parser.parse(self.start_date).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            }
+        ]
 
     def prepare_batch_params(self):
         super(DepositAccountsGenerator, self).prepare_batch_params()

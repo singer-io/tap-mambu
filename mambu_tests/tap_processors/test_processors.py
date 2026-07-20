@@ -128,7 +128,8 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                                    stream_name=processor.endpoint_child_streams[-1],
                                                    sub_type="self",
                                                    config=config_json,
-                                                   parent_id="5")
+                                                   parent_id="5",
+                                                   parent_replication_values={'last_modified_date': '2022-01-01T00:00:00.000000Z'})
 
     captured = capsys.readouterr()
     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
@@ -239,6 +240,7 @@ def test_write_exceptions(mock_write_schema, mock_write_record):
 
 def test_catalog_automatic_fields():
     from tap_mambu import discover
+    from tap_mambu.helpers.schema import STREAMS
 
     client_mock = MagicMock()
     client_mock.page_size = 5
@@ -255,6 +257,8 @@ def test_catalog_automatic_fields():
             if mdata["breadcrumb"] and mdata["metadata"]["inclusion"] == "automatic"
         ]
 
+        is_incremental = STREAMS.get(stream, {}).get("replication_method") == "INCREMENTAL"
+
         generator = None
         for generator_class in generator_classes:
             generator = generator_class(stream_name=stream,
@@ -263,7 +267,7 @@ def test_catalog_automatic_fields():
                                         state={"currently_syncing": stream},
                                         sub_type="self",
                                         **({"parent_id": "0"} if issubclass(generator_class, ChildGenerator) else {}))
-            if generator.endpoint_bookmark_field != "":
+            if generator.endpoint_bookmark_field != "" and is_incremental:
                 # Those streams do not respect the camelCase convention for field names
                 if generator.stream_name not in ["audit_trail"]:
                     assert "_" not in generator.endpoint_bookmark_field,\

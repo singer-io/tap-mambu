@@ -1,5 +1,5 @@
 from .multithreaded_bookmark_generator import MultithreadedBookmarkGenerator
-from ..helpers.datetime_utils import datetime_to_utc_str, str_to_datetime
+from ..helpers.datetime_utils import datetime_to_utc_str, datetime_to_local_str, str_to_datetime, str_to_localized_datetime
 from ..helpers import get_bookmark, write_bookmark
 
 
@@ -17,6 +17,13 @@ class LoanAccountsLMGenerator(MultithreadedBookmarkGenerator):
             "field": "id",
             "order": "ASC"
         }
+        self.endpoint_filter_criteria = [
+            {
+                "field": "lastModifiedDate",
+                "operator": "AFTER",
+                "value": datetime_to_local_str(str_to_localized_datetime(self.start_date))
+            }
+        ]
 
     def prepare_batch_params(self):
         super(LoanAccountsLMGenerator, self).prepare_batch_params()
@@ -64,3 +71,4 @@ class LoanAccountsADGenerator(LoanAccountsLMGenerator):
     def _init_endpoint_config(self):
         super(LoanAccountsADGenerator, self)._init_endpoint_config()
         self.endpoint_bookmark_field = "lastAccountAppraisalDate"
+        self.endpoint_filter_criteria[0]["field"] = "lastAccountAppraisalDate"

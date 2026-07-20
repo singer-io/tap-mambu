@@ -95,6 +95,27 @@ class DiscoveryTest(MambuBaseTest):
                     actual,
                     msg="expected primary key {} but actual is {}".format(expected, actual))
 
+                # verify parent-tap-stream-id for child streams
+                expected_parent = self.expected_metadata()[stream].get(self.PARENT_TAP_STREAM_ID)
+                actual_parent = stream_metadata.get(self.PARENT_TAP_STREAM_ID)
+                if expected_parent:
+                    self.assertEqual(
+                        expected_parent,
+                        actual_parent,
+                        msg=(
+                            f"Expected parent-tap-stream-id '{expected_parent}' but got "
+                            f"'{actual_parent}' for stream {stream}"
+                        )
+                    )
+                else:
+                    self.assertIsNone(
+                        actual_parent,
+                        msg=(
+                            f"Unexpected parent-tap-stream-id found for stream {stream}: "
+                            f"{actual_parent}"
+                        )
+                    )
+
                 # verify that if there is a replication key we are doing INCREMENTAL otherwise FULL
 
 

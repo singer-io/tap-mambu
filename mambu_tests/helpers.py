@@ -34,6 +34,7 @@ class GeneratorMock:
         self.client = "mock_client"
         self.state = "mock_state"
         self.config = "mock_config"
+        self.start_windows_datetime_str = None
 
     def __iter__(self):
         return self
@@ -46,10 +47,20 @@ class GeneratorMock:
     def write_bookmark(self):
         pass
 
+    def get_default_start_value(self):
+        return None
+
+    def set_last_sync_completed(self, end_time):
+        pass
+
+    def remove_sub_stream_bookmark(self):
+        pass
+
 
 class ClientMock:
     def __init__(self, page_size=100):
         self.page_size = page_size
+        self.window_size = 3000
         self.request = MagicMock()
 
 
@@ -85,6 +96,7 @@ class MultithreadedOffsetGeneratorFake(MultithreadedOffsetGenerator):
         self.state = state
         self.sub_type = sub_type
         super().__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = False
 
 
 class MultithreadedBookmarkGeneratorFake(MultithreadedBookmarkGenerator):

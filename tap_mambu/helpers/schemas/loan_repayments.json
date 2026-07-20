@@ -366,6 +366,20 @@
         "boolean"
       ]
     },
+    "last_account_appraisal_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "last_modified_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
     "last_paid_date": {
       "type": [
         "null",
