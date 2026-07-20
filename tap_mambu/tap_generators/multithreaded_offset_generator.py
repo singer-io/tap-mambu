@@ -176,7 +176,10 @@ class MultithreadedOffsetGenerator(TapGenerator):
                     self.start_windows_datetime_str = temp
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
-                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
+                # Cap the bookmark at `end` (today+1) to avoid writing a future date.
+                # write_bookmark uses max-semantics, so a future date would prevent
+                # subsequent syncs from advancing the bookmark correctly.
+                self.write_sub_stream_bookmark(datetime_to_utc_str(min(start, end)))
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)
