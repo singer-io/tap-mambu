@@ -173,7 +173,7 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.preprocess_batches(final_buffer)
                 if not final_buffer or stop_iteration:
                     self.offset = 0
-                    self.start_windows_datetime_str = start
+                    self.start_windows_datetime_str = temp
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
                 self.write_sub_stream_bookmark(datetime_to_utc_str(start))
