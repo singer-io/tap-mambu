@@ -126,7 +126,11 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.last_batch_size = len(self.last_batch_set)
 
     def write_sub_stream_bookmark(self, start):
-        write_bookmark(self.state, self.sub_stream_name, self.sub_type, start)
+        # Base implementation is intentionally a no-op.
+        # Subclasses that write to a *separate* sub-stream key (e.g. LoanAccountsLMGenerator)
+        # override this method.  Writing to the same key used by processor.write_bookmark()
+        # would conflict with its max-semantics and produce non-deterministic bookmarks.
+        pass
 
     def get_default_start_value(self):
         return get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
@@ -176,13 +180,6 @@ class MultithreadedOffsetGenerator(TapGenerator):
                     self.start_windows_datetime_str = min(temp, end)
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
-                # Only write an intermediate checkpoint when there are more windows to process.
-                # For the final window, we skip writing so that processor.write_bookmark()
-                # (record-date based) owns the final bookmark value.  Writing a wall-clock
-                # window boundary here would be absorbed by write_bookmark's max-semantics
-                # and produce a time-varying bookmark that breaks the bookmark test.
-                if start < end:
-                    self.write_sub_stream_bookmark(datetime_to_utc_str(start))
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)
