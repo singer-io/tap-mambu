@@ -63,6 +63,10 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
             temp_buffer = set(transformed_batch)
 
             if not final_buffer:
+                if not temp_buffer:  # First batch for this window returned 0 records, no need to send more batches
+                    self.stop_all_request_threads(futures)
+                    stop_iteration = True
+                    break
                 final_buffer = final_buffer | temp_buffer
                 continue
 
