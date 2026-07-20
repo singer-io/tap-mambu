@@ -11,6 +11,13 @@ class InterestAccrualBreakdownGenerator(MultithreadedBookmarkDayByDayGenerator):
             "field": "entryId",
             "order": "ASC"
         }
+        self.endpoint_filter_criteria = [
+            {
+                "field": "creationDate",
+                "operator": "AFTER",
+                "value": self.start_date[:10]
+            }
+        ]
 
     def prepare_batch_params(self):
         super(InterestAccrualBreakdownGenerator, self).prepare_batch_params()

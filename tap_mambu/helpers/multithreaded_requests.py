@@ -6,6 +6,17 @@ from typing import List
 LOGGER = singer.get_logger()
 
 
+class PerformanceMetrics:
+    def __init__(self, metric_name):
+        self.metric_name = metric_name
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+
 class MultithreadedRequestsPool:
     _dispatcher = ThreadPoolExecutor(max_workers=20)
 
@@ -23,15 +34,16 @@ class MultithreadedRequestsPool:
                     f'{endpoint_api_version}): {client.base_url}/{endpoint_path}?{endpoint_querystring}'
                     f' - body = {endpoint_body}')
 
-        response = client.request(
-            method=endpoint_api_method,
-            path=endpoint_path,
-            version=endpoint_api_version,
-            apikey_type=endpoint_api_key_type,
-            params=endpoint_querystring,
-            endpoint=stream_name,
-            json=endpoint_body
-        )
+        with PerformanceMetrics(metric_name='generator'):
+            response = client.request(
+                method=endpoint_api_method,
+                path=endpoint_path,
+                version=endpoint_api_version,
+                apikey_type=endpoint_api_key_type,
+                params=endpoint_querystring,
+                endpoint=stream_name,
+                json=endpoint_body
+            )
 
         LOGGER.info(f'(generator) Stream {stream_name} - extracted records: {len(response)}')
         return response

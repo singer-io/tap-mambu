@@ -60,6 +60,7 @@ class GeneratorMock:
 class ClientMock:
     def __init__(self, page_size=100):
         self.page_size = page_size
+        self.window_size = 3000
         self.request = MagicMock()
 
 
@@ -95,6 +96,7 @@ class MultithreadedOffsetGeneratorFake(MultithreadedOffsetGenerator):
         self.state = state
         self.sub_type = sub_type
         super().__init__(stream_name, client, config, state, sub_type)
+        self.date_windowing = False
 
 
 class MultithreadedBookmarkGeneratorFake(MultithreadedBookmarkGenerator):

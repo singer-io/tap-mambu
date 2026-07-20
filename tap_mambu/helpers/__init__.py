@@ -63,12 +63,20 @@ def convert_json(this_json):
 def convert_custom_fields(this_json):
     for record in this_json:
         cust_field_sets = []
+        keys_to_remove = []
         for key, value in record.items():
             if key.startswith('_'):
+                keys_to_remove.append(key)
                 if isinstance(value, dict):
-                    cust_field_sets.append({key: value})
+                    for field_id, field_value in value.items():
+                        cust_field_sets.append({"field_set_id": key, "id": field_id, "value": field_value})
                 elif isinstance(value, list):
-                    cust_field_sets.append({key: value})
+                    for element in value:
+                        if isinstance(element, dict):
+                            for field_id, field_value in element.items():
+                                cust_field_sets.append({"field_set_id": key, "id": field_id, "value": field_value})
+        for key in keys_to_remove:
+            del record[key]
         record['custom_fields'] = cust_field_sets
     return this_json
 

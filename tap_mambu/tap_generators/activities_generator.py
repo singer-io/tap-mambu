@@ -1,3 +1,4 @@
+from singer import utils
 from .multithreaded_bookmark_generator import MultithreadedBookmarkDayByDayGenerator
 from ..helpers.datetime_utils import datetime_to_utc_str
 from datetime import datetime
@@ -10,6 +11,8 @@ class ActivitiesGenerator(MultithreadedBookmarkDayByDayGenerator):
         self.endpoint_api_method = "GET"
         self.endpoint_api_version = "v1"
         self.endpoint_bookmark_field = "timestamp"
+        self.endpoint_params["from"] = self.start_date[:10]
+        self.endpoint_params["to"] = utils.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:10]
 
     def modify_request_params(self, start, end):
         self.static_params["from"] = datetime.strftime(start, '%Y-%m-%d')

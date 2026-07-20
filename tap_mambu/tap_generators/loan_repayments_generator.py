@@ -11,6 +11,8 @@ class LoanRepaymentsGenerator(NoPaginationGenerator, ChildGenerator):
         self.endpoint_path = f"loans/{self.endpoint_parent_id}/schedule"
 
     def transform_batch(self, batch):
+        if isinstance(batch, list):
+            return super(LoanRepaymentsGenerator, self).transform_batch(batch)
         batch_installments = batch['installments']
         batch_currency = batch['currency']
 
