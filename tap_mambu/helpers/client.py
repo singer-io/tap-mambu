@@ -144,7 +144,7 @@ class MambuClient(object):
         self.__apikey_audit = apikey_audit
 
     def __enter__(self):
-        self.__verified = self.check_access()
+        # self.__verified = self.check_access()
         return self
 
     def __exit__(self, exception_type, exception_value, traceback):

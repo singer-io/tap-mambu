@@ -126,7 +126,11 @@ class MultithreadedOffsetGenerator(TapGenerator):
         self.last_batch_size = len(self.last_batch_set)
 
     def write_sub_stream_bookmark(self, start):
-        write_bookmark(self.state, self.sub_stream_name, self.sub_type, start)
+        # Base implementation is intentionally a no-op.
+        # Subclasses that write to a *separate* sub-stream key (e.g. LoanAccountsLMGenerator)
+        # override this method.  Writing to the same key used by processor.write_bookmark()
+        # would conflict with its max-semantics and produce non-deterministic bookmarks.
+        pass
 
     def get_default_start_value(self):
         return get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
@@ -135,10 +139,14 @@ class MultithreadedOffsetGenerator(TapGenerator):
         pass
 
     def set_last_sync_completed(self, end_time):
+        if end_time is None:
+            return
+
+        end_time_dttm = str_to_datetime(end_time) if isinstance(end_time, str) else end_time
         last_bookmark = get_bookmark(self.state, self.stream_name, self.sub_type, self.start_date)
-        if end_time < str_to_datetime(last_bookmark):
+        if end_time_dttm > str_to_datetime(last_bookmark):
             write_bookmark(self.state, self.stream_name,
-                           self.sub_type, datetime_to_utc_str(end_time))
+                           self.sub_type, datetime_to_utc_str(end_time_dttm))
 
     @backoff.on_exception(backoff.expo, RuntimeError, max_tries=5)
     def _all_fetch_batch_steps(self):
@@ -169,10 +177,9 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.preprocess_batches(final_buffer)
                 if not final_buffer or stop_iteration:
                     self.offset = 0
-                    self.start_windows_datetime_str = start
+                    self.start_windows_datetime_str = min(temp, end)
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
-                self.write_sub_stream_bookmark(datetime_to_utc_str(start))
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)

@@ -17,6 +17,7 @@ class MambuBaseTest(unittest.TestCase):
     PRIMARY_KEYS = "table-key-properties"
     FOREIGN_KEYS = "table-foreign-key-properties"
     REPLICATION_METHOD = "forced-replication-method"
+    PARENT_TAP_STREAM_ID = "parent-tap-stream-id"
     API_LIMIT = "max-row-limit"
     INCREMENTAL = "INCREMENTAL"
     FULL_TABLE = "FULL_TABLE"
@@ -59,6 +60,7 @@ class MambuBaseTest(unittest.TestCase):
                     "reference_token"
                 },
                 self.REPLICATION_METHOD: "FULL_TABLE",
+                self.PARENT_TAP_STREAM_ID: "deposit_accounts",
             },
             "communications": {
                 self.PRIMARY_KEYS: {
@@ -149,6 +151,7 @@ class MambuBaseTest(unittest.TestCase):
                     "encoded_key"
                 },
                 self.REPLICATION_METHOD: "FULL_TABLE",
+                self.PARENT_TAP_STREAM_ID: "loan_accounts",
             },
             "loan_products": {
                 self.PRIMARY_KEYS: {
