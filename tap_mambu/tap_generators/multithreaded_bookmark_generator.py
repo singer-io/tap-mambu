@@ -35,14 +35,28 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                 self.end_of_file = True
             first_run = False
 
+    def _queue_single_batch(self):
+        self.prepare_batch()
+        return MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
+                                                       self.endpoint_path, self.endpoint_api_method,
+                                                       self.endpoint_api_version,
+                                                       self.endpoint_api_key_type,
+                                                       deepcopy(self.endpoint_body),
+                                                       deepcopy(self.params))
+
     def queue_batches(self):
-        # prepare batches (with self.limit for each of them until we reach batch_limit)
+        # For date-windowed bookmark generators, queue only the first batch eagerly.
+        # Additional batches are queued lazily in collect_batches only if the first
+        # batch returns data — avoiding wasted requests on empty date windows.
+        if self.date_windowing:
+            return [self._queue_single_batch()]
+
+        # Non-date-windowed: queue all batches upfront as before
         futures = list()
         original_offset = self.offset
         for offset in range(0, self.batch_limit, self.artificial_limit):
             self.offset = original_offset + offset
             self.prepare_batch()
-            # send batches to multithreaded_requests_pool
             futures.append(MultithreadedRequestsPool.queue_request(self.client, self.stream_name,
                                                                    self.endpoint_path, self.endpoint_api_method,
                                                                    self.endpoint_api_version,
@@ -51,10 +65,20 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
                                                                    deepcopy(self.params)))
         return futures
 
+    def _queue_remaining_batches(self, first_offset):
+        """Queue the remaining batch_limit-1 batches after confirming first batch has data."""
+        futures = []
+        for offset in range(self.artificial_limit, self.batch_limit, self.artificial_limit):
+            self.offset = first_offset + offset
+            futures.append(self._queue_single_batch())
+        return futures
+
     def collect_batches(self, futures):
         # wait for responses, and check them for errors
         final_buffer = set()
         stop_iteration = False
+        first_offset = self.offset
+
         for future in futures:
             while not future.done():
                 time.sleep(0.1)
@@ -64,10 +88,12 @@ class MultithreadedBookmarkGenerator(MultithreadedOffsetGenerator):
 
             if not final_buffer:
                 if not temp_buffer:  # First batch for this window returned 0 records, no need to send more batches
-                    self.stop_all_request_threads(futures)
                     stop_iteration = True
                     break
                 final_buffer = final_buffer | temp_buffer
+                # Lazily queue the remaining batches now that we know there is data
+                if self.date_windowing and len(futures) == 1:
+                    futures.extend(self._queue_remaining_batches(first_offset))
                 continue
 
             if not temp_buffer:  # We finished the data to extract, time to stop
