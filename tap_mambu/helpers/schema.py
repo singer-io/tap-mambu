@@ -12,8 +12,7 @@ STREAMS = {
     },
     'cards': {
         'key_properties': ['deposit_id', 'reference_token'],
-        'replication_method': 'INCREMENTAL',
-        'replication_keys': ['last_modified_date'],
+        'replication_method': 'FULL_TABLE',
         'parent': 'deposit_accounts'
     },
     'communications': {
@@ -66,8 +65,7 @@ STREAMS = {
     },
     'loan_repayments': {
         'key_properties': ['encoded_key'],
-        'replication_method': 'INCREMENTAL',
-        'replication_keys': ['last_modified_date', 'last_account_appraisal_date'],
+        'replication_method': 'FULL_TABLE',
         'parent': 'loan_accounts'
     },
     'loan_products': {

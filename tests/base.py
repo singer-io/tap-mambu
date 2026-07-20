@@ -59,10 +59,7 @@ class MambuBaseTest(unittest.TestCase):
                     "deposit_id",
                     "reference_token"
                 },
-                self.REPLICATION_METHOD: "INCREMENTAL",
-                self.REPLICATION_KEYS: {
-                    "last_modified_date"
-                },
+                self.REPLICATION_METHOD: "FULL_TABLE",
                 self.PARENT_TAP_STREAM_ID: "deposit_accounts",
             },
             "communications": {
@@ -153,10 +150,7 @@ class MambuBaseTest(unittest.TestCase):
                 self.PRIMARY_KEYS: {
                     "encoded_key"
                 },
-                self.REPLICATION_METHOD: "INCREMENTAL",
-                self.REPLICATION_KEYS: {
-                    "last_modified_date", "last_account_appraisal_date"
-                },
+                self.REPLICATION_METHOD: "FULL_TABLE",
                 self.PARENT_TAP_STREAM_ID: "loan_accounts",
             },
             "loan_products": {

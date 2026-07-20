@@ -173,13 +173,16 @@ class MultithreadedOffsetGenerator(TapGenerator):
                 self.preprocess_batches(final_buffer)
                 if not final_buffer or stop_iteration:
                     self.offset = 0
-                    self.start_windows_datetime_str = temp
+                    self.start_windows_datetime_str = min(temp, end)
                     start = temp
                     temp = start + timedelta(days=self.date_window_size)
-                # Cap the bookmark at `end` (today+1) to avoid writing a future date.
-                # write_bookmark uses max-semantics, so a future date would prevent
-                # subsequent syncs from advancing the bookmark correctly.
-                self.write_sub_stream_bookmark(datetime_to_utc_str(min(start, end)))
+                # Only write an intermediate checkpoint when there are more windows to process.
+                # For the final window, we skip writing so that processor.write_bookmark()
+                # (record-date based) owns the final bookmark value.  Writing a wall-clock
+                # window boundary here would be absorbed by write_bookmark's max-semantics
+                # and produce a time-varying bookmark that breaks the bookmark test.
+                if start < end:
+                    self.write_sub_stream_bookmark(datetime_to_utc_str(start))
         else:
             final_buffer, stop_iteration = self.collect_batches(self.queue_batches())
             self.preprocess_batches(final_buffer)

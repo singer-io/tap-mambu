@@ -7,6 +7,5 @@ class DepositCardsGenerator(NoPaginationGenerator, ChildGenerator):
         super(DepositCardsGenerator, self)._init_endpoint_config()
         self.endpoint_api_method = "GET"
         self.endpoint_path = f"deposits/{self.endpoint_parent_id}/cards"
-        self.endpoint_bookmark_field = "lastModifiedDate"
         self.endpoint_sorting_criteria = {}
         self.endpoint_filter_criteria = []

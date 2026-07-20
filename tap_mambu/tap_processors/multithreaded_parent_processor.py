@@ -24,7 +24,11 @@ class MultithreadedParentProcessor(TapProcessor):
             record_count += future.result()
 
         for generator in self.generators:
-            generator.set_last_sync_completed(self.generators[0].start_windows_datetime_str)
+            # Do NOT call set_last_sync_completed here — it would write a wall-clock window
+            # boundary (start_windows_datetime_str) into the bookmark state.  That value is
+            # time-varying and would be retained by write_bookmark's max-semantics, causing
+            # the second sync to start from a different (or future) date than the first.
+            # The record-date-based bookmark written by processor.write_bookmark() is sufficient.
             generator.remove_sub_stream_bookmark()
         return record_count
 
