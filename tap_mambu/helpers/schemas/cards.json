@@ -5,10 +5,6 @@
     "deposit_id": {
       "type": ["null", "string"]
     },
-    "last_modified_date": {
-      "type": ["null", "string"],
-      "format": "date-time"
-    },
     "reference_token": {
       "type": ["null", "string"]
     }
