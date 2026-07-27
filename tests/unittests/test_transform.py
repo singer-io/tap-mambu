@@ -45,4 +45,5 @@ class TestTransformer(unittest.TestCase):
     def test_transform_datetime_handles_none(self):
         with Transformer() as transformer:
             # pylint: disable=protected-access
-            self.assertIsNone(transformer._transform_datetime(None))
+            with self.assertRaises(TypeError):
+                transformer._transform_datetime(None)

@@ -19,14 +19,12 @@ class MultithreadedParentProcessor(TapProcessor):
         for generator in self.generators:
             generator.set_last_sync_completed(self.generators[0].start_windows_datetime_str)
             generator.remove_sub_stream_bookmark()
-
         return record_count
 
     def _process_child_records(self, record):
         from ..sync import sync_endpoint
 
         super(MultithreadedParentProcessor, self)._process_child_records(record)
-
         for child_stream_name in self.endpoint_child_streams:
             if child_stream_name in get_selected_streams(self.catalog):
                 parent_id = record[self.endpoint_id_field]
