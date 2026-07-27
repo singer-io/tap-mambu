@@ -93,11 +93,8 @@ class TapProcessor(ABC):
     def _update_bookmark(self, transformed_record, bookmark_field):
         bookmark_field = convert(bookmark_field)
         if bookmark_field and (bookmark_field in transformed_record):
-            bookmark_value = transformed_record.get(bookmark_field)
-            if bookmark_value is None:
-                return
+            bookmark_dttm = str_to_datetime(transformed_record[bookmark_field])
 
-            bookmark_dttm = str_to_datetime(bookmark_value)
             max_bookmark_value_dttm = str_to_datetime(self.max_bookmark_value)
             if bookmark_dttm > max_bookmark_value_dttm:
                 self.max_bookmark_value = datetime_to_utc_str(min(bookmark_dttm, self.start_time))
@@ -109,12 +106,9 @@ class TapProcessor(ABC):
         if not bookmark_field or (bookmark_field not in transformed_record):
             return True
 
-        bookmark_value = transformed_record.get(bookmark_field)
-        if bookmark_value is None:
-            return True
 
         # Keep only records whose bookmark is after the last_datetime
-        if str_to_localized_datetime(bookmark_value) >= \
+        if str_to_localized_datetime(transformed_record[bookmark_field]) >= \
                 str_to_localized_datetime(self.last_bookmark_value):
             return True
         return False

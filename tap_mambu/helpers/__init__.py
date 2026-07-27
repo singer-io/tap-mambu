@@ -1,8 +1,6 @@
 import re
 import singer
-from datetime import datetime, timezone
 from singer import write_state, metadata
-from singer.utils import strptime_to_utc
 
 
 def get_bookmark(state, stream, sub_type, default):
