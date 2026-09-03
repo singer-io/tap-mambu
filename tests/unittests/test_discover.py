@@ -50,11 +50,14 @@ class TestCheckStreamAccess(unittest.TestCase):
         self.assertFalse(result)
         mock_logger.warning.assert_called_once()
 
-    def test_raises_on_missing_audit_apikey(self):
+    def test_returns_false_on_missing_audit_apikey(self):
         client = self._client()
         client.request.side_effect = MambuNoAuditApikeyInConfig("missing audit key")
-        with self.assertRaises(MambuNoAuditApikeyInConfig):
-            check_stream_access(client, "audit_trail")
+        with patch("tap_mambu.helpers.discover.LOGGER") as mock_logger:
+            result = check_stream_access(client, "audit_trail")
+
+        self.assertFalse(result)
+        mock_logger.warning.assert_called_once()
 
     def test_raises_on_not_found(self):
         client = self._client()

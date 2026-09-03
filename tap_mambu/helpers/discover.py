@@ -45,14 +45,14 @@ def check_stream_access(client, stream_name) -> bool:
                            apikey_type=apikey_type, json=post_body,
                            params=params, endpoint=stream_name)
         return True
-    except (MambuUnauthorizedError, MambuForbiddenError) as err:
+    except (MambuUnauthorizedError, MambuForbiddenError, MambuNoAuditApikeyInConfig) as err:
         LOGGER.warning(
             "Unauthorized Stream: %s, excluding from catalog. HTTP-Error-Message:'%s'",
             stream_name,
             err,
         )
         return False
-    except (MambuNotFoundError, MambuMethodNotAllowedError, MambuNoAuditApikeyInConfig) as err:
+    except (MambuNotFoundError, MambuMethodNotAllowedError) as err:
         LOGGER.error(
             "Access probe failed for stream '%s'. HTTP-Error-Message:'%s'",
             stream_name,
