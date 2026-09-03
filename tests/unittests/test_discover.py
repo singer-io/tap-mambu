@@ -346,7 +346,7 @@ class TestDiscover(unittest.TestCase):
             discover(MagicMock())
 
         warning_calls = [str(call) for call in mock_logger.warning.call_args_list]
-        self.assertTrue(any("No 'read' access to stream(s):" in call for call in warning_calls))
+        self.assertTrue(any("Unauthorized streams excluded from catalog:" in call for call in warning_calls))
         self.assertTrue(any("deposit_accounts, cards" in call for call in warning_calls))
 
     @patch("tap_mambu.helpers.discover.check_stream_access")
