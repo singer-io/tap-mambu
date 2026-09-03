@@ -27,7 +27,7 @@ def test_tap_processor_deduplication(mock_write_bookmark,
                                      mock_write_schema,  # Mock write_schema so we don't pollute the output
                                      capsys):
     from tap_mambu import discover
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     expected_output = [
         {"encoded_key": "1", "last_modified_date": '2022-01-01T01:00:00.000000Z'},
@@ -83,7 +83,7 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     generator_data = [
         {
@@ -148,7 +148,7 @@ def test_bookmarks(mock_write_state):
     from tap_mambu import discover
     from tap_mambu.tap_processors.processor import TapProcessor
 
-    catalog = discover()
+    catalog = discover(MagicMock())
     client_mock = MagicMock()
     processor = TapProcessor(catalog=catalog,
                              stream_name="loan_accounts",
@@ -199,7 +199,7 @@ def test_write_schema(mock_write_schema):
 def test_write_exceptions(mock_write_schema, mock_write_record):
     from tap_mambu import discover
     from tap_mambu.tap_processors.processor import TapProcessor
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     mock_write_record.side_effect = [None, OSError("Mock Record Exception")]
     mock_write_schema.side_effect = [None, OSError("Mock Schema Exception")]
@@ -243,7 +243,7 @@ def test_catalog_automatic_fields():
     client_mock = MagicMock()
     client_mock.page_size = 5
     client_mock.request = MagicMock()
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     for stream in get_available_streams():
         catalog_stream = catalog.get_stream(stream)
