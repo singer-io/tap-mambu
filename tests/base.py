@@ -252,6 +252,7 @@ class MambuBaseTest(unittest.TestCase):
             'start_date': '2017-01-01T00:00:00Z',
             'username': os.environ['TAP_MAMBU_USERNAME'],
             'subdomain': os.environ['TAP_MAMBU_SUBDOMAIN'],
+            'apikey_audit': os.environ['TAP_MAMBU_AUDIT_APIKEY'],
             'page_size': '90',
             'timezone': 'US/Pacific',
             'window_size': 30
