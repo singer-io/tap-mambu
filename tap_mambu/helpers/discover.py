@@ -19,8 +19,10 @@ LOGGER = singer.get_logger()
 def check_stream_access(client, stream_name) -> bool:
     """
     Probes a stream endpoint to verify credential access.
-    Returns False on auth/permission errors (401, 403, 404, 405, missing audit key);
-    True otherwise. Only valid for streams with a direct probe config (no 'parent' key).
+    Returns False on auth/permission errors (401, 403).
+    Raises other probe exceptions (for example: 404, 405, missing audit key)
+    so callers can fail fast with explicit error context.
+    Only valid for streams with a direct probe config (no 'parent' key).
     """
     probe = STREAM_PROBE_CONFIG.get(stream_name)
     if not probe or "parent" in probe:
@@ -43,10 +45,20 @@ def check_stream_access(client, stream_name) -> bool:
                            apikey_type=apikey_type, json=post_body,
                            params=params, endpoint=stream_name)
         return True
-    except (MambuUnauthorizedError, MambuForbiddenError,
-            MambuNotFoundError, MambuMethodNotAllowedError,
-            MambuNoAuditApikeyInConfig):
+    except (MambuUnauthorizedError, MambuForbiddenError) as err:
+        LOGGER.warning(
+            "Unauthorized Stream: %s, excluding from catalog. HTTP-Error-Message:'%s'",
+            stream_name,
+            err,
+        )
         return False
+    except (MambuNotFoundError, MambuMethodNotAllowedError, MambuNoAuditApikeyInConfig) as err:
+        LOGGER.error(
+            "Access probe failed for stream '%s'. HTTP-Error-Message:'%s'",
+            stream_name,
+            err,
+        )
+        raise
 
 
 def _prune_inaccessible_children(schemas: dict, field_metadata: dict) -> list:

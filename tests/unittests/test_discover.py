@@ -40,25 +40,33 @@ class TestCheckStreamAccess(unittest.TestCase):
         result = check_stream_access(client, "users")
         self.assertFalse(result)
 
-    def test_returns_false_on_missing_audit_apikey(self):
+    def test_logs_warning_on_forbidden(self):
+        client = self._client()
+        client.request.side_effect = MambuForbiddenError("403")
+
+        with patch("tap_mambu.helpers.discover.LOGGER") as mock_logger:
+            result = check_stream_access(client, "users")
+
+        self.assertFalse(result)
+        mock_logger.warning.assert_called_once()
+
+    def test_raises_on_missing_audit_apikey(self):
         client = self._client()
         client.request.side_effect = MambuNoAuditApikeyInConfig("missing audit key")
-        result = check_stream_access(client, "audit_trail")
-        self.assertFalse(result)
+        with self.assertRaises(MambuNoAuditApikeyInConfig):
+            check_stream_access(client, "audit_trail")
 
-    def test_returns_false_on_not_found(self):
-        """404 means the endpoint doesn't exist — stream will fail at runtime."""
+    def test_raises_on_not_found(self):
         client = self._client()
         client.request.side_effect = MambuNotFoundError("404")
-        result = check_stream_access(client, "branches")
-        self.assertFalse(result)
+        with self.assertRaises(MambuNotFoundError):
+            check_stream_access(client, "branches")
 
-    def test_returns_false_on_method_not_allowed(self):
-        """405 means the HTTP method is not supported — stream will fail at runtime."""
+    def test_raises_on_method_not_allowed(self):
         client = self._client()
         client.request.side_effect = MambuMethodNotAllowedError("405")
-        result = check_stream_access(client, "branches")
-        self.assertFalse(result)
+        with self.assertRaises(MambuMethodNotAllowedError):
+            check_stream_access(client, "branches")
 
     def test_reraises_non_mambu_errors(self):
         client = self._client()
