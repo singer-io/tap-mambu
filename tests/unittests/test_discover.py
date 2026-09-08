@@ -57,7 +57,22 @@ class TestCheckStreamAccess(unittest.TestCase):
             result = check_stream_access(client, "audit_trail")
 
         self.assertFalse(result)
-        mock_logger.warning.assert_called_once()
+        mock_logger.warning.assert_called_once_with(
+            "Missing audit API key for stream '%s'; excluding from catalog. HTTP-Error-Message:'%s'",
+            "audit_trail",
+            client.request.side_effect,
+        )
+
+    def test_missing_audit_apikey_warning_is_not_unauthorized(self):
+        client = self._client()
+        client.request.side_effect = MambuNoAuditApikeyInConfig("missing audit key")
+
+        with patch("tap_mambu.helpers.discover.LOGGER") as mock_logger:
+            result = check_stream_access(client, "audit_trail")
+
+        self.assertFalse(result)
+        warning_message = mock_logger.warning.call_args.args[0]
+        self.assertNotIn("Unauthorized Stream", warning_message)
 
     def test_raises_on_not_found(self):
         client = self._client()
@@ -70,6 +85,20 @@ class TestCheckStreamAccess(unittest.TestCase):
         client.request.side_effect = MambuMethodNotAllowedError("405")
         with self.assertRaises(MambuMethodNotAllowedError):
             check_stream_access(client, "branches")
+
+    def test_does_not_custom_log_not_found_or_method_not_allowed(self):
+        client = self._client()
+
+        with patch("tap_mambu.helpers.discover.LOGGER") as mock_logger:
+            client.request.side_effect = MambuNotFoundError("404")
+            with self.assertRaises(MambuNotFoundError):
+                check_stream_access(client, "branches")
+
+            client.request.side_effect = MambuMethodNotAllowedError("405")
+            with self.assertRaises(MambuMethodNotAllowedError):
+                check_stream_access(client, "branches")
+
+        mock_logger.error.assert_not_called()
 
     def test_reraises_non_mambu_errors(self):
         client = self._client()
