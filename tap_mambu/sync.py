@@ -18,10 +18,7 @@ def sync_endpoint(client, catalog, state,
                                   config=config,
                                   state=state,
                                   sub_type=sub_type,
-                                  **({} if parent_id is None else {
-                                      "parent_id": parent_id,
-                                      "parent_replication_value": parent_replication_value
-                                  }))
+                                  **({} if parent_id is None else {"parent_id": parent_id}))
                   for generator_class in generator_classes]
     processor = processor_class(catalog=catalog,
                                 stream_name=stream_name,
