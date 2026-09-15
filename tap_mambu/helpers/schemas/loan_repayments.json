@@ -2,6 +2,13 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "loan_accounts_last_modified_date": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "currency": {
       "type": [
         "null",

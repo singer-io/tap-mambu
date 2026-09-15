@@ -372,6 +372,13 @@
               "string"
             ]
           },
+          "deposit_last_modified_date": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "reference_token": {
             "type": [
               "null",
@@ -391,8 +398,20 @@
               "deposit_id",
               "reference_token"
             ],
-            "forced-replication-method": "FULL_TABLE",
+            "forced-replication-method": "INCREMENTAL",
+            "valid-replication-keys": [
+              "deposit_last_modified_date"
+            ],
             "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "deposit_last_modified_date"
+          ],
+          "metadata": {
+            "inclusion": "automatic"
           }
         },
         {
@@ -9462,6 +9481,13 @@
               "string"
             ]
           },
+          "loan_accounts_last_modified_date": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "parent_account_key": {
             "type": [
               "null",
@@ -9591,8 +9617,20 @@
             "table-key-properties": [
               "encoded_key"
             ],
-            "forced-replication-method": "FULL_TABLE",
+            "forced-replication-method": "INCREMENTAL",
+            "valid-replication-keys": [
+              "loan_accounts_last_modified_date"
+            ],
             "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "loan_accounts_last_modified_date"
+          ],
+          "metadata": {
+            "inclusion": "automatic"
           }
         },
         {

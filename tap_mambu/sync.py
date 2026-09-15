@@ -10,14 +10,18 @@ LOGGER = singer.get_logger()
 
 
 def sync_endpoint(client, catalog, state,
-                  stream_name, sub_type, config, parent_id=None):
+                  stream_name, sub_type, config, parent_id=None,
+                  parent_replication_value=None):
     generator_classes, processor_class = get_generator_processor_for_stream(stream_name)
     generators = [generator_class(stream_name=stream_name,
                                   client=client,
                                   config=config,
                                   state=state,
                                   sub_type=sub_type,
-                                  **({} if parent_id is None else {"parent_id": parent_id}))
+                                  **({} if parent_id is None else {
+                                      "parent_id": parent_id,
+                                      "parent_replication_value": parent_replication_value
+                                  }))
                   for generator_class in generator_classes]
     processor = processor_class(catalog=catalog,
                                 stream_name=stream_name,
@@ -26,7 +30,10 @@ def sync_endpoint(client, catalog, state,
                                 state=state,
                                 sub_type=sub_type,
                                 generators=generators,
-                                **({} if parent_id is None else {"parent_id": parent_id}))
+                                **({} if parent_id is None else {
+                                    "parent_id": parent_id,
+                                    "parent_replication_value": parent_replication_value
+                                }))
 
     return processor.process_streams_from_generators()
 

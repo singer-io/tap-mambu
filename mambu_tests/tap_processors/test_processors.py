@@ -128,7 +128,8 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                                    stream_name=processor.endpoint_child_streams[-1],
                                                    sub_type="self",
                                                    config=config_json,
-                                                   parent_id="5")
+                                                   parent_id="5",
+                                                   parent_replication_value="2022-01-01T00:00:00.000000Z")
 
     captured = capsys.readouterr()
     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
@@ -282,7 +283,10 @@ def test_catalog_automatic_fields():
                                         state={'currently_syncing': 'loan_accounts'},
                                         sub_type="self",
                                         generators=[generator],
-                                        **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+                                        **({
+                                            "parent_id": "0",
+                                            "parent_replication_value": "2022-01-01T00:00:00Z"
+                                        } if issubclass(processor_class, ChildProcessor) else {}))
 
             if isinstance(processor, DeduplicationProcessor):
                 assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\

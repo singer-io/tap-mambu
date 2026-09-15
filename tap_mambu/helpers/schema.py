@@ -12,7 +12,8 @@ STREAMS = {
     },
     'cards': {
         'key_properties': ['deposit_id', 'reference_token'],
-        'replication_method': 'FULL_TABLE',
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['deposit_last_modified_date'],
         'parent': 'deposit_accounts'
     },
     'communications': {
@@ -65,7 +66,8 @@ STREAMS = {
     },
     'loan_repayments': {
         'key_properties': ['encoded_key'],
-        'replication_method': 'FULL_TABLE',
+        'replication_method': 'INCREMENTAL',
+        'replication_keys': ['loan_accounts_last_modified_date'],
         'parent': 'loan_accounts'
     },
     'loan_products': {
@@ -154,7 +156,6 @@ def get_schemas():
         parent_stream = stream_metadata.get('parent')
         if parent_stream:
             mdata[0]['metadata'].update({'parent-tap-stream-id': parent_stream})
-
         field_metadata[stream_name] = mdata
 
     return schemas, field_metadata

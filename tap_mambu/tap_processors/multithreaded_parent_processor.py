@@ -40,5 +40,6 @@ class MultithreadedParentProcessor(TapProcessor):
                     stream_name=child_stream_name,
                     sub_type=self.sub_type,
                     config=self.config,
-                    parent_id=parent_id)
+                    parent_id=parent_id,
+                    parent_replication_value=record.get('last_modified_date'))
                 self.futures.append(future)
