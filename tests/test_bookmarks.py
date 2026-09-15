@@ -139,8 +139,9 @@ class BookmarksTest(MambuBaseTest):
                     else:
                         self.assertLess(second_sync_count, first_sync_count)
 
-                    # Verify at least 1 record was replicated in the second sync
-                    if first_sync_count:
+                    # A selected parent can have no child records, so a child
+                    # stream can validly be empty on the second sync.
+                    if first_sync_count and stream not in self.parent_incremental_streams:
                         self.assertGreater(
                             second_sync_count,
                             0,
