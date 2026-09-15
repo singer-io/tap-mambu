@@ -1,7 +1,7 @@
 from concurrent import futures
 
 from .processor import TapProcessor, LOGGER
-from ..helpers import get_selected_streams
+from ..helpers import get_selected_streams, write_bookmark
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
 
@@ -15,6 +15,11 @@ class MultithreadedParentProcessor(TapProcessor):
 
         for future in futures.as_completed(self.futures):
             record_count += future.result()
+
+        for child_stream_name in self.endpoint_child_streams:
+            if child_stream_name in get_selected_streams(self.catalog):
+                write_bookmark(self.state, child_stream_name, self.sub_type,
+                               self.max_bookmark_value)
 
         for generator in self.generators:
             generator.set_last_sync_completed(self.generators[0].start_windows_datetime_str)

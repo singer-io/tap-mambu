@@ -19,3 +19,6 @@ class ChildProcessor(TapProcessor):
         record[f'{self.endpoint_parent}_id'] = self.endpoint_parent_id
         record[self.parent_replication_field] = self.parent_replication_value
         return super().process_record(record, time_extracted, bookmark_field)
+
+    def write_bookmark(self):
+        pass
