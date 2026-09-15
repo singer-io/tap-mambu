@@ -65,7 +65,7 @@ STREAMS = {
         'replication_keys': ['last_modified_date', 'last_account_appraisal_date']
     },
     'loan_repayments': {
-        'key_properties': ['encoded_key'],
+        'key_properties': ['encoded_key', 'loan_accounts_id'],
         'replication_method': 'INCREMENTAL',
         'replication_keys': ['loan_accounts_last_modified_date'],
         'parent': 'loan_accounts'
