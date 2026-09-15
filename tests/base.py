@@ -151,7 +151,8 @@ class MambuBaseTest(unittest.TestCase):
             },
             "loan_repayments": {
                 self.PRIMARY_KEYS: {
-                    "encoded_key"
+                    "encoded_key",
+                    "loan_accounts_id"
                 },
                 self.REPLICATION_METHOD: "INCREMENTAL",
                 self.PARENT_TAP_STREAM_ID: "loan_accounts",
