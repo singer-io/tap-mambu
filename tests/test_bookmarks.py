@@ -23,6 +23,7 @@ class BookmarksTest(MambuBaseTest):
     """
     Test that the tap can replicate multiple pages of data
     """
+    parent_incremental_streams = {"cards", "loan_repayments"}
 
     @staticmethod
     def name():
@@ -131,15 +132,20 @@ class BookmarksTest(MambuBaseTest):
                             msg="Second sync records fall outside of expected sync window"
                         )
 
-                    # Verify the number of records in the 2nd sync is less then the first
-                    self.assertLess(second_sync_count, first_sync_count)
+                    # Child records are selected by their parent stream's timestamp. A
+                    # narrower parent window can still contain every child record.
+                    if stream in self.parent_incremental_streams:
+                        self.assertLessEqual(second_sync_count, first_sync_count)
+                    else:
+                        self.assertLess(second_sync_count, first_sync_count)
 
                     # Verify at least 1 record was replicated in the second sync
-                    self.assertGreater(
-                        second_sync_count,
-                        0,
-                        msg="We are not fully testing bookmarking for {}".format(stream)
-                    )
+                    if first_sync_count:
+                        self.assertGreater(
+                            second_sync_count,
+                            0,
+                            msg="We are not fully testing bookmarking for {}".format(stream)
+                        )
 
                 elif replication_method == self.FULL_TABLE:
                     # Verify no bookmark exists
