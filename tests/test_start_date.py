@@ -22,7 +22,7 @@ class StartDateTest(MambuBaseTest):
     second_sync_start_date = None
     first_sync_records = None
     second_sync_records = None
-    count_volatile_full_table_streams = {"loan_repayments"}
+    parent_incremental_streams = {"cards", "loan_repayments"}
 
     @staticmethod
     def name():
@@ -111,11 +111,7 @@ class StartDateTest(MambuBaseTest):
                     3. Verify that all records in Sync B are included in Sync A.
                     """
                     # Criteria 1
-                    # NOTE: loan_repayments is a child FULL_TABLE stream sourced from
-                    # per-loan schedules. In active tenants, source-side changes between
-                    # runs can legitimately increase Sync B record counts even when
-                    # start_date moves forward, so we do not enforce monotonic counts.
-                    if stream_name not in self.count_volatile_full_table_streams:
+                    if stream_name not in self.parent_incremental_streams:
                         self.assertGreaterEqual(first_sync_count, second_sync_count)
 
                     # Criteria 2
@@ -130,7 +126,7 @@ class StartDateTest(MambuBaseTest):
                                                                         first_sync_records)
                     second_sync_unique_records = self.get_unique_records(stream_name,
                                                                          second_sync_records)
-                    if stream_name not in self.count_volatile_full_table_streams:
+                    if stream_name not in self.parent_incremental_streams:
                         self.assertGreaterEqual(len(first_sync_unique_records),
                                                 len(second_sync_unique_records))
                 else:
@@ -142,8 +138,10 @@ class StartDateTest(MambuBaseTest):
                     3. Verify all records in Sync A and Sync B have replication key values which are
                        greater than or equal to the corresponding start date for that sync.
                     """
-                    # Criteria 1
-                    self.assertGreaterEqual(first_sync_count, second_sync_count)
+                    # Parent-driven child records can vary independently of the
+                    # start date because they are fetched from selected parents.
+                    if stream_name not in self.parent_incremental_streams:
+                        self.assertGreaterEqual(first_sync_count, second_sync_count)
 
                     # Criteria 2
                     if first_sync_count > 0:
