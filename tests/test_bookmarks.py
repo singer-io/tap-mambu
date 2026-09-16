@@ -96,9 +96,16 @@ class BookmarksTest(MambuBaseTest):
                     second_sync_bookmark_value = second_sync_bookmarks['bookmarks'][stream]
                     simulated_bookmark_value = new_state['bookmarks'][stream]
 
-                    # Verify the both syncs end on the same bookmark
-                    self.assertEqual(first_sync_bookmark_value,
-                                     second_sync_bookmark_value)
+                    # Parent-driven children can have a different final high-water
+                    # mark when the parent has multiple cursor generators.
+                    if stream in self.parent_incremental_streams:
+                        self.assertGreaterEqual(
+                            strptime_to_utc(second_sync_bookmark_value),
+                            strptime_to_utc(simulated_bookmark_value)
+                        )
+                    else:
+                        self.assertEqual(first_sync_bookmark_value,
+                                         second_sync_bookmark_value)
 
                     # Verify that first sync records fall between the start date and the final
                     # bookmark value
