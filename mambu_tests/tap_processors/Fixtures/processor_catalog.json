@@ -9471,11 +9471,18 @@
     {
       "tap_stream_id": "loan_repayments",
       "key_properties": [
-        "encoded_key"
+        "encoded_key",
+        "loan_accounts_id"
       ],
       "schema": {
         "properties": {
           "encoded_key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "loan_accounts_id": {
             "type": [
               "null",
               "string"
@@ -9615,13 +9622,24 @@
           "breadcrumb": [],
           "metadata": {
             "table-key-properties": [
-              "encoded_key"
+              "encoded_key",
+              "loan_accounts_id"
             ],
             "forced-replication-method": "INCREMENTAL",
             "valid-replication-keys": [
               "loan_accounts_last_modified_date"
             ],
-            "inclusion": "available"
+            "inclusion": "available",
+            "parent-tap-stream-id": "loan_accounts"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "loan_accounts_id"
+          ],
+          "metadata": {
+            "inclusion": "automatic"
           }
         },
         {

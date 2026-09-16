@@ -130,6 +130,8 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                                    config=config_json,
                                                    parent_id="5",
                                                    parent_replication_value="2022-01-01T00:00:00.000000Z")
+    assert processor.child_bookmark_values["child_1"] == "2022-01-01T00:00:00.000000Z"
+    assert processor.child_bookmark_values["child_2"] == "2022-01-01T00:00:00.000000Z"
 
     captured = capsys.readouterr()
     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
@@ -159,6 +161,10 @@ def test_parent_processor_writes_child_bookmarks(mock_get_selected_streams, mock
     processor.state = {}
     processor.sub_type = "self"
     processor.max_bookmark_value = "2022-01-01T00:00:00.000000Z"
+    processor.child_bookmark_values = {
+        "cards": "2022-01-02T00:00:00.000000Z",
+        "loan_repayments": "2022-01-03T00:00:00.000000Z"
+    }
     processor.generators = [GeneratorMock([])]
     processor.generators[0].start_windows_datetime_str = "2022-01-01T00:00:00.000000Z"
     mock_get_selected_streams.return_value = processor.endpoint_child_streams
@@ -167,8 +173,8 @@ def test_parent_processor_writes_child_bookmarks(mock_get_selected_streams, mock
         processor.process_records()
 
     mock_write_bookmark.assert_has_calls([
-        call(processor.state, "cards", "self", processor.max_bookmark_value),
-        call(processor.state, "loan_repayments", "self", processor.max_bookmark_value)
+        call(processor.state, "cards", "self", processor.child_bookmark_values["cards"]),
+        call(processor.state, "loan_repayments", "self", processor.child_bookmark_values["loan_repayments"])
     ])
 
 
