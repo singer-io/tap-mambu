@@ -1,7 +1,7 @@
 from concurrent import futures
 
 from .processor import TapProcessor, LOGGER
-from ..helpers import get_selected_streams, write_bookmark
+from ..helpers import get_bookmark, get_selected_streams, write_bookmark
 from ..helpers.datetime_utils import str_to_datetime
 from ..helpers.multithreaded_requests import MultithreadedRequestsPool
 
@@ -12,7 +12,16 @@ class MultithreadedParentProcessor(TapProcessor):
         self.futures = list()
         self.child_bookmark_values = dict()
 
+    def _init_endpoint_config(self):
+        super(MultithreadedParentProcessor, self)._init_endpoint_config()
+        self.child_bookmark_values = dict()
+
     def process_records(self):
+        for child_stream_name in self.endpoint_child_streams:
+            self.child_bookmark_values.setdefault(
+                child_stream_name,
+                get_bookmark(self.state, child_stream_name, self.sub_type, None))
+
         record_count = super(MultithreadedParentProcessor, self).process_records()
 
         for future in futures.as_completed(self.futures):
