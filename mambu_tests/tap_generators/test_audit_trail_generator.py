@@ -24,9 +24,9 @@ def test_audit_trail_generator_endpoint_config_init(utc_now_mock):
 
     generator = generators[0]
 
-    assert generator.endpoint_path == 'v1/events'
+    assert generator.endpoint_path == 'v2/events'
     assert generator.endpoint_api_method == "GET"
-    assert generator.endpoint_api_version == "v1"
+    assert generator.endpoint_api_version == "v2"
     assert generator.endpoint_api_key_type == "audit"
     assert generator.endpoint_params == {
         "sort_order": "asc",
