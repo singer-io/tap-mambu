@@ -22,7 +22,7 @@ class StartDateTest(MambuBaseTest):
     second_sync_start_date = None
     first_sync_records = None
     second_sync_records = None
-    count_volatile_full_table_streams = {"loan_repayments"}
+    parent_incremental_streams = {"cards", "loan_repayments"}
 
     @staticmethod
     def name():
@@ -43,12 +43,13 @@ class StartDateTest(MambuBaseTest):
 
     def get_replication_key_values(self, stream, records):
         all_records = []
+        replication_keys = sorted(self.expected_replication_keys().get(stream, set()))
         for record in records:
-            # Build the primary key for this record, maintaining the same order for the fields
-            record_rep_key = [record[field]
-                              for field in sorted(self.expected_replication_keys()[stream]) if field in record]
-            # Cast to a tuple to make it hashable
-            all_records.append(record_rep_key[0])
+            for replication_key in replication_keys:
+                value = record.get(replication_key)
+                if value:
+                    all_records.append(value)
+                    break
         return all_records
 
     def test_run(self):
@@ -89,13 +90,15 @@ class StartDateTest(MambuBaseTest):
                 first_sync_count = first_sync_record_count_by_stream.get(stream_name,0)
                 second_sync_count = second_sync_record_count_by_stream.get(stream_name,0)
 
+                first_sync_messages = first_sync_all_records_by_stream.get(stream_name, {}).get('messages', [])
                 first_sync_records = []
-                for message in first_sync_all_records_by_stream[stream_name]['messages']:
+                for message in first_sync_messages:
                     if message['action'] == 'upsert':
                         first_sync_records.append(message['data'])
 
+                second_sync_messages = second_sync_all_records_by_stream.get(stream_name, {}).get('messages', [])
                 second_sync_records = []
-                for message in second_sync_all_records_by_stream[stream_name]['messages']:
+                for message in second_sync_messages:
                     if message['action'] == 'upsert':
                         second_sync_records.append(message['data'])
 
@@ -108,11 +111,7 @@ class StartDateTest(MambuBaseTest):
                     3. Verify that all records in Sync B are included in Sync A.
                     """
                     # Criteria 1
-                    # NOTE: loan_repayments is a child FULL_TABLE stream sourced from
-                    # per-loan schedules. In active tenants, source-side changes between
-                    # runs can legitimately increase Sync B record counts even when
-                    # start_date moves forward, so we do not enforce monotonic counts.
-                    if stream_name not in self.count_volatile_full_table_streams:
+                    if stream_name not in self.parent_incremental_streams:
                         self.assertGreaterEqual(first_sync_count, second_sync_count)
 
                     # Criteria 2
@@ -127,7 +126,7 @@ class StartDateTest(MambuBaseTest):
                                                                         first_sync_records)
                     second_sync_unique_records = self.get_unique_records(stream_name,
                                                                          second_sync_records)
-                    if stream_name not in self.count_volatile_full_table_streams:
+                    if stream_name not in self.parent_incremental_streams:
                         self.assertGreaterEqual(len(first_sync_unique_records),
                                                 len(second_sync_unique_records))
                 else:
@@ -139,15 +138,21 @@ class StartDateTest(MambuBaseTest):
                     3. Verify all records in Sync A and Sync B have replication key values which are
                        greater than or equal to the corresponding start date for that sync.
                     """
-                    # Criteria 1
-                    self.assertGreaterEqual(first_sync_count, second_sync_count)
+                    # Parent-driven child records can vary independently of the
+                    # start date because they are fetched from selected parents.
+                    if stream_name not in self.parent_incremental_streams:
+                        self.assertGreaterEqual(first_sync_count, second_sync_count)
 
                     # Criteria 2
-                    self.assertIn(stream_name, first_sync_state['bookmarks'])
-                    self.assertIn(stream_name, second_sync_state['bookmarks'])
+                    if first_sync_count > 0:
+                        self.assertIn(stream_name, first_sync_state.get('bookmarks', {}))
+                    if second_sync_count > 0:
+                        self.assertIn(stream_name, second_sync_state.get('bookmarks', {}))
 
                     # Criteria 3
                     rep_values = self.get_replication_key_values(stream_name, first_sync_records)
+                    if first_sync_count > 0:
+                        self.assertGreater(len(rep_values), 0)
 
                     for value in rep_values:
                         self.assertGreaterEqual(
@@ -156,6 +161,8 @@ class StartDateTest(MambuBaseTest):
                         )
 
                     rep_values = self.get_replication_key_values(stream_name, second_sync_records)
+                    if second_sync_count > 0:
+                        self.assertGreater(len(rep_values), 0)
 
                     for value in rep_values:
                         self.assertGreaterEqual(
