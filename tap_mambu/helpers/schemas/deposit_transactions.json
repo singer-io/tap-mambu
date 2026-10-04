@@ -100,8 +100,7 @@
       "type": [
         "null",
         "string"
-      ],
-      "format": "singer.decimal"
+      ]
     },
     "block_id": {
       "type": [
