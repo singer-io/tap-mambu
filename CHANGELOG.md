@@ -1,11 +1,8 @@
 # Changelog
 
-## 5.0.1
-  * Fixed `deposit_transactions.amount` schema typing to prevent downstream `sendRecord` failures when oversized values exceed `NUMERIC(38,9)` limits.
-  * Added regression test to ensure `deposit_transactions.amount` is emitted as plain string (without `singer.decimal` format).
-
 ## 5.0.0
   * Converted child streams (`cards`, `loan_repayments`) to INCREMENTAL replication using the parent's `last_modified_date` and added coordinated parent bookmark management. [#144](https://github.com/singer-io/tap-mambu/pull/144)
+  * Fixed `deposit_transactions.amount` schema typing to prevent downstream `sendRecord` failures when oversized values exceed `NUMERIC(38,9)` limits.
 
 ## 4.7.0
   * Added discovery-time access checks: streams that the credentials cannot access are excluded from the catalog with a warning instead of failing at runtime. Child streams (`cards`, `loan_repayments`) are automatically excluded when their parent stream is inaccessible. [#140](https://github.com/singer-io/tap-mambu/pull/140)
