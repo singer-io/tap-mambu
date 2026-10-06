@@ -1,5 +1,8 @@
 # Changelog
 
+# 4.6.2
+  * Bump pytest to 9.1.1 for security updates [#146](https://github.com/singer-io/tap-mambu/pull/146)
+
 # 4.6.1
   * Bump requests to 2.33.0 for security updates [#135](https://github.com/singer-io/tap-mambu/pull/135)
 
