@@ -7,6 +7,10 @@
     },
     "reference_token": {
       "type": ["null", "string"]
+    },
+    "deposit_last_modified_date": {
+      "format": "date-time",
+      "type": ["null", "string"]
     }
   }
 }

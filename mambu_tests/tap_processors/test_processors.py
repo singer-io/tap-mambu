@@ -27,7 +27,7 @@ def test_tap_processor_deduplication(mock_write_bookmark,
                                      mock_write_schema,  # Mock write_schema so we don't pollute the output
                                      capsys):
     from tap_mambu import discover
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     expected_output = [
         {"encoded_key": "1", "last_modified_date": '2022-01-01T01:00:00.000000Z'},
@@ -83,7 +83,7 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     fake_children_record_count = 4
     mock_get_selected_streams.return_value = ["child_1", "child_2"]
     mock_sync_endpoint_refactor.return_value = fake_children_record_count
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     generator_data = [
         {
@@ -128,7 +128,10 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
                                                    stream_name=processor.endpoint_child_streams[-1],
                                                    sub_type="self",
                                                    config=config_json,
-                                                   parent_id="5")
+                                                   parent_id="5",
+                                                   parent_replication_value="2022-01-01T00:00:00.000000Z")
+    assert processor.child_bookmark_values["child_1"] == "2022-01-01T00:00:00.000000Z"
+    assert processor.child_bookmark_values["child_2"] == "2022-01-01T00:00:00.000000Z"
 
     captured = capsys.readouterr()
     stdout_list = [json.loads(line) for line in captured.out.split("\n") if line]
@@ -143,12 +146,44 @@ def test_tap_processor_process_child_records(mock_sync_endpoint_refactor,
     ], "Output should contain mocked records"
 
 
+@mock.patch("tap_mambu.tap_processors.multithreaded_parent_processor.write_bookmark")
+@mock.patch("tap_mambu.tap_processors.multithreaded_parent_processor.get_selected_streams")
+def test_parent_processor_writes_child_bookmarks(mock_get_selected_streams, mock_write_bookmark):
+    from concurrent.futures import Future
+    from tap_mambu.tap_processors.multithreaded_parent_processor import MultithreadedParentProcessor
+
+    future = Future()
+    future.set_result(0)
+    processor = object.__new__(MultithreadedParentProcessor)
+    processor.futures = [future]
+    processor.endpoint_child_streams = ["cards", "loan_repayments"]
+    processor.catalog = object()
+    processor.state = {}
+    processor.sub_type = "self"
+    processor.max_bookmark_value = "2022-01-01T00:00:00.000000Z"
+    processor.child_bookmark_values = {
+        "cards": "2022-01-02T00:00:00.000000Z",
+        "loan_repayments": "2022-01-03T00:00:00.000000Z"
+    }
+    processor.generators = [GeneratorMock([])]
+    processor.generators[0].start_windows_datetime_str = "2022-01-01T00:00:00.000000Z"
+    mock_get_selected_streams.return_value = processor.endpoint_child_streams
+
+    with mock.patch("tap_mambu.tap_processors.processor.TapProcessor.process_records", return_value=0):
+        processor.process_records()
+
+    mock_write_bookmark.assert_has_calls([
+        call(processor.state, "cards", "self", processor.child_bookmark_values["cards"]),
+        call(processor.state, "loan_repayments", "self", processor.child_bookmark_values["loan_repayments"])
+    ])
+
+
 @mock.patch("tap_mambu.helpers.write_state")
 def test_bookmarks(mock_write_state):
     from tap_mambu import discover
     from tap_mambu.tap_processors.processor import TapProcessor
 
-    catalog = discover()
+    catalog = discover(MagicMock())
     client_mock = MagicMock()
     processor = TapProcessor(catalog=catalog,
                              stream_name="loan_accounts",
@@ -199,7 +234,7 @@ def test_write_schema(mock_write_schema):
 def test_write_exceptions(mock_write_schema, mock_write_record):
     from tap_mambu import discover
     from tap_mambu.tap_processors.processor import TapProcessor
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     mock_write_record.side_effect = [None, OSError("Mock Record Exception")]
     mock_write_schema.side_effect = [None, OSError("Mock Schema Exception")]
@@ -243,7 +278,7 @@ def test_catalog_automatic_fields():
     client_mock = MagicMock()
     client_mock.page_size = 5
     client_mock.request = MagicMock()
-    catalog = discover()
+    catalog = discover(MagicMock())
 
     for stream in get_available_streams():
         catalog_stream = catalog.get_stream(stream)
@@ -282,7 +317,10 @@ def test_catalog_automatic_fields():
                                         state={'currently_syncing': 'loan_accounts'},
                                         sub_type="self",
                                         generators=[generator],
-                                        **({"parent_id": "0"} if issubclass(processor_class, ChildProcessor) else {}))
+                                        **({
+                                            "parent_id": "0",
+                                            "parent_replication_value": "2022-01-01T00:00:00Z"
+                                        } if issubclass(processor_class, ChildProcessor) else {}))
 
             if isinstance(processor, DeduplicationProcessor):
                 assert all([char.islower() for char in processor.endpoint_deduplication_key if char != "_"]),\

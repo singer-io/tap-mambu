@@ -95,7 +95,8 @@ This tap:
 - Endpoint: https://instance.sandbox.mambu.com/api/deposits/[deposit_id]/cards
 - Primary keys: deposit_id, reference_token
 - Foreign keys: deposit_id (deposits)
-- Replication strategy: Full table (ALL for parent deposit_id)
+- Replication strategy: Incremental (parent last_modified_date)
+  - Bookmark: deposit_last_modified_date (date-time)
 - Transformations: Fields camelCase to snake_case
 
 [**deposit_products (GET v1)**](https://support.mambu.com/docs/savings-products-api)

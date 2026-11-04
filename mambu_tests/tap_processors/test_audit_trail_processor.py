@@ -16,7 +16,7 @@ def test_audit_trail_update_bookmark(mock_write_state):
     from tap_mambu import discover
     from tap_mambu.tap_processors.audit_trail_processor import AuditTrailProcessor
 
-    catalog = discover()
+    catalog = discover(MagicMock())
     client_mock = MagicMock()
     generator_mock = GeneratorMock([])
     generator_mock.static_params = {}
@@ -47,7 +47,7 @@ def test_audit_trail_write_bookmark(mock_write_state):
     from tap_mambu import discover
     from tap_mambu.tap_processors.audit_trail_processor import AuditTrailProcessor
 
-    catalog = discover()
+    catalog = discover(MagicMock())
     client_mock = MagicMock()
     processor = AuditTrailProcessor(catalog=catalog,
                                     stream_name="audit_trail",
