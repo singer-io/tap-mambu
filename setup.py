@@ -20,12 +20,12 @@ setup(name='tap-mambu',
               'ipdb',
               'pylint==2.5.3',
               "mock==5.0.2",
-              'pytest==6.2.4'
+              'pytest==9.1.1'
           ],
           'mambu-tests': [
               'coverage==6.3.1',
               'pylint==2.12.2',
-              'pytest==6.2.5',
+              'pytest==9.1.1',
               'mock==4.0.3'
           ],
           'mambu-performance': [
