@@ -1,4 +1,4 @@
-# Changelog 
+# Changelog
 
 # 4.6.1
   * Bump requests to 2.33.0 for security updates [#135](https://github.com/singer-io/tap-mambu/pull/135)
