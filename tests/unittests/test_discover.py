@@ -398,3 +398,21 @@ class TestDiscover(unittest.TestCase):
         mdata = singer_metadata.to_map(branches.metadata)
         inclusion = mdata.get(("properties", "last_modified_date"), {}).get("inclusion")
         self.assertEqual(inclusion, "automatic")
+
+    @patch("tap_mambu.helpers.discover.check_stream_access")
+    def test_deposit_transactions_amount_is_plain_string_not_singer_decimal(self, mock_check):
+        """Large amount values can exceed NUMERIC(38,9) in downstream loaders.
+
+        Keep this field as a plain string (no singer.decimal format) so oversized
+        values are sent as strings and do not fail with sendRecord numeric overflow.
+        """
+        mock_check.return_value = True
+        catalog = discover(MagicMock())
+        deposit_transactions = next(
+            s for s in catalog.streams if s.tap_stream_id == "deposit_transactions"
+        )
+        schema_dict = deposit_transactions.schema.to_dict()
+        amount_schema = schema_dict["properties"]["amount"]
+
+        self.assertEqual(amount_schema.get("type"), ["null", "string"])
+        self.assertNotIn("format", amount_schema)
