@@ -18,13 +18,13 @@ setup(name='tap-mambu',
       extras_require={
           'dev': [
               'ipdb',
-              'pylint==2.5.3',
+              'pylint==4.0.9',
               "mock==5.0.2",
               'pytest==9.1.1'
           ],
           'mambu-tests': [
               'coverage==6.3.1',
-              'pylint==2.12.2',
+              'pylint==4.0.9',
               'pytest==9.1.1',
               'mock==4.0.3'
           ],
